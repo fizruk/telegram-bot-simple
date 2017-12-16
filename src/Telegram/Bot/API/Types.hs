@@ -5,6 +5,7 @@ module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..))
 import Data.Int (Int32)
+import Data.String
 import Data.Text (Text)
 import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
@@ -315,7 +316,7 @@ instance FromJSON UserProfilePhotos where parseJSON = gparseJSON
 -- It is guaranteed that the link will be valid for at least 1 hour.
 -- When the link expires, a new one can be requested by calling getFile.
 data File = File
-  { fileFileId :: Text -- ^ Unique identifier for this file
+  { fileFileId :: FileId -- ^ Unique identifier for this file
   , fileFileSize :: Maybe Int32 -- ^ File size, if known
   , fileFilePath :: Maybe Text -- ^ File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
   } deriving (Generic, Show)
@@ -346,6 +347,9 @@ data KeyboardButton = KeyboardButton
   , keyboardButtonRequestContact :: Maybe Bool -- ^ If True, the user's phone number will be sent as a contact when the button is pressed. Available in private chats only
   , keyboardButtonRequestLocation :: Maybe Bool -- ^ If True, the user's current location will be sent when the button is pressed. Available in private chats only
   } deriving (Generic, Show)
+
+instance IsString KeyboardButton where
+  fromString s = KeyboardButton (fromString s) Nothing Nothing
 
 instance ToJSON   KeyboardButton where toJSON = gtoJSON
 instance FromJSON KeyboardButton where parseJSON = gparseJSON
@@ -392,6 +396,10 @@ data InlineKeyboardButton = InlineKeyboardButton
 
   , inlineKeyboardButtonPay :: Maybe Bool -- ^ Specify True, to send a Pay button.
   } deriving (Generic, Show)
+
+instance IsString InlineKeyboardButton where
+  fromString s = InlineKeyboardButton (fromString s)
+    Nothing Nothing Nothing Nothing Nothing
 
 instance ToJSON   InlineKeyboardButton where toJSON = gtoJSON
 instance FromJSON InlineKeyboardButton where parseJSON = gparseJSON

@@ -6,6 +6,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
+  ghc-options: -Wall
   hs-source-dirs:      src/
   exposed-modules:
     Telegram.Bot.API
@@ -18,6 +19,7 @@ library
     Telegram.Bot.API.Stickers
     Telegram.Bot.API.Types
     Telegram.Bot.API.UpdatingMessages
+    Telegram.Bot.Handler
     Telegram.Bot.Simple
   build-depends:
                 base
@@ -25,11 +27,21 @@ library
               , http-api-data
               , http-client
               , http-client-tls
+              , monad-control
               , mtl
+              , profunctors
               , servant
               , servant-client
               , split
               , text
               , time
               , transformers
+  default-language: Haskell2010
+
+executable example-echo-bot
+  ghc-options: -Wall
+  main-is: examples/EchoBot.hs
+  build-depends:
+                base
+              , telegram-bot-simple
   default-language: Haskell2010

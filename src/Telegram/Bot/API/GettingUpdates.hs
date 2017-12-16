@@ -1,10 +1,12 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 module Telegram.Bot.API.GettingUpdates where
 
+import Data.Foldable (asum)
 import Data.Aeson (ToJSON(..), FromJSON(..))
 import Data.Int (Int32)
 import Data.Proxy
@@ -42,6 +44,16 @@ data Update = Update
 
 instance ToJSON   Update where toJSON = gtoJSON
 instance FromJSON Update where parseJSON = gparseJSON
+
+updateChatId :: Update -> Maybe ChatId
+updateChatId Update{..} = do
+  Message{..} <- asum
+    [ updateMessage
+    , updateEditedMessage
+    , updateChannelPost
+    , updateEditedChannelPost
+    ]
+  return (chatId messageChat)
 
 -- ** 'getUpdates'
 
