@@ -90,10 +90,7 @@ startBot bot env = do
   runClientM (startBotPolling bot modelVar) env
 
 startBot_ :: BotApp model action -> ClientEnv -> IO ()
-startBot_ bot env = do
-  modelVar <- newTVarIO (botInitialModel bot)
-  runClientM (startBotPolling bot modelVar) env
-  return ()
+startBot_ bot = void . startBot bot
 
 startBotPolling :: BotApp model action -> TVar model -> ClientM ()
 startBotPolling BotApp{..} = startPolling . handleUpdate
@@ -161,8 +158,7 @@ reply rmsg = do
   case mchatId of
     Just chatId -> do
       let msg = replyMessageToSendMessageRequest (SomeChatId chatId) rmsg
-      liftClientM $ sendMessage msg
-      return ()
+      void $ liftClientM $ sendMessage msg
     Nothing -> do
       liftIO $ putStrLn "No chat to reply to"
 

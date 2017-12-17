@@ -14,6 +14,7 @@ library
     Telegram.Bot.API.Games
     Telegram.Bot.API.GettingUpdates
     Telegram.Bot.API.InlineMode
+    Telegram.Bot.API.MakingRequests
     Telegram.Bot.API.Methods
     Telegram.Bot.API.Payments
     Telegram.Bot.API.Stickers
@@ -35,6 +36,7 @@ library
               , servant-client
               , split
               , stm
+              , template-haskell
               , text
               , time
               , transformers
@@ -47,6 +49,7 @@ executable example-echo-bot
   build-depends:
                 base
               , telegram-bot-simple
+              , text
   default-language: Haskell2010
 
 executable example-todo-bot
@@ -55,4 +58,6 @@ executable example-todo-bot
   build-depends:
                 base
               , telegram-bot-simple
+              , text
+              , unordered-containers
   default-language: Haskell2010

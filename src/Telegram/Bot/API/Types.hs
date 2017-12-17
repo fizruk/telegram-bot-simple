@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..))
@@ -32,9 +33,6 @@ data User = User
   , userLanguageCode :: Maybe Text -- ^ IETF language tag of the user's language
   } deriving (Show, Generic)
 
-instance ToJSON   User where toJSON = gtoJSON
-instance FromJSON User where parseJSON = gparseJSON
-
 -- | Unique identifier for this user or bot.
 newtype UserId = UserId Int32
   deriving (Eq, Show, ToJSON, FromJSON)
@@ -59,9 +57,6 @@ data Chat = Chat
   , chatStickerSetName               :: Maybe Text      -- ^ For supergroups, name of group sticker set. Returned only in getChat.
   , chatCanSetStickerSet             :: Maybe Bool      -- ^ True, if the bot can change the group sticker set. Returned only in getChat.
   } deriving (Generic, Show)
-
-instance ToJSON   Chat where toJSON = gtoJSON
-instance FromJSON Chat where parseJSON = gparseJSON
 
 -- | Unique identifier for this chat.
 newtype ChatId = ChatId Integer
@@ -130,9 +125,6 @@ data Message = Message
 --  , messageSuccessfulPayment :: Maybe SuccessfulPayment -- ^ Message is a service message about a successful payment, information about the payment. More about payments »
   } deriving (Generic, Show)
 
-instance ToJSON   Message where toJSON = gtoJSON
-instance FromJSON Message where parseJSON = gparseJSON
-
 -- | Unique message identifier inside this chat.
 newtype MessageId = MessageId Int32
   deriving (Eq, Show, ToJSON, FromJSON)
@@ -151,9 +143,6 @@ data MessageEntity = MessageEntity
   , messageEntityUrl :: Maybe Text -- ^ For “text_link” only, url that will be opened after user taps on the text
   , messageEntityUser :: Maybe User -- ^ For “text_mention” only, the mentioned user
   } deriving (Generic, Show)
-
-instance ToJSON   MessageEntity where toJSON = gtoJSON
-instance FromJSON MessageEntity where parseJSON = gparseJSON
 
 -- | Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames)
 data MessageEntityType
@@ -183,9 +172,6 @@ data PhotoSize = PhotoSize
   , photoSizeFileSize :: Maybe Int32 -- ^ File size
   } deriving (Generic, Show)
 
-instance ToJSON   PhotoSize where toJSON = gtoJSON
-instance FromJSON PhotoSize where parseJSON = gparseJSON
-
 -- | Unique identifier for this file.
 newtype FileId = FileId Text
   deriving (Eq, Show, ToJSON, FromJSON)
@@ -202,9 +188,6 @@ data Audio = Audio
   , audioFileSize :: Maybe Int32 -- ^ File size
   } deriving (Generic, Show)
 
-instance ToJSON   Audio where toJSON = gtoJSON
-instance FromJSON Audio where parseJSON = gparseJSON
-
 -- ** 'Document'
 
 -- | This object represents a general file (as opposed to photos, voice messages and audio files).
@@ -215,9 +198,6 @@ data Document = Document
   , documentMimeType :: Maybe Text -- ^ MIME type of the file as defined by sender
   , documentFileSize :: Maybe Int32 -- ^ File size
   } deriving (Generic, Show)
-
-instance ToJSON   Document where toJSON = gtoJSON
-instance FromJSON Document where parseJSON = gparseJSON
 
 -- ** 'Video'
 
@@ -232,9 +212,6 @@ data Video = Video
   , videoFileSize :: Maybe Int32 -- ^ File size
   } deriving (Generic, Show)
 
-instance ToJSON   Video where toJSON = gtoJSON
-instance FromJSON Video where parseJSON = gparseJSON
-
 -- ** 'Voice'
 
 -- | This object represents a voice note.
@@ -244,9 +221,6 @@ data Voice = Voice
   , voiceMimeType :: Maybe Text -- ^ MIME type of the file as defined by sender
   , voiceFileSize :: Maybe Int32 -- ^ File size
   } deriving (Generic, Show)
-
-instance ToJSON   Voice where toJSON = gtoJSON
-instance FromJSON Voice where parseJSON = gparseJSON
 
 -- ** 'VideoNote'
 
@@ -259,9 +233,6 @@ data VideoNote = VideoNote
   , videoNoteFileSize :: Maybe Int32 -- ^ File size
   } deriving (Generic, Show)
 
-instance ToJSON   VideoNote where toJSON = gtoJSON
-instance FromJSON VideoNote where parseJSON = gparseJSON
-
 -- ** 'Contact'
 
 -- | This object represents a phone contact.
@@ -272,9 +243,6 @@ data Contact = Contact
   , contactUserId :: Maybe UserId -- ^ Contact's user identifier in Telegram
   } deriving (Generic, Show)
 
-instance ToJSON   Contact where toJSON = gtoJSON
-instance FromJSON Contact where parseJSON = gparseJSON
-
 -- ** Location
 
 -- | This object represents a point on the map.
@@ -282,9 +250,6 @@ data Location = Location
   { locationLongitude :: Float -- ^ Longitude as defined by sender
   , locationLatitude  :: Float -- ^ Latitude as defined by sender
   } deriving (Generic, Show)
-
-instance ToJSON   Location where toJSON = gtoJSON
-instance FromJSON Location where parseJSON = gparseJSON
 
 -- ** 'Venue'
 
@@ -296,9 +261,6 @@ data Venue = Venue
   , venueFoursquareId :: Maybe Text -- ^ Foursquare identifier of the venue
   } deriving (Generic, Show)
 
-instance ToJSON   Venue where toJSON = gtoJSON
-instance FromJSON Venue where parseJSON = gparseJSON
-
 -- ** 'UserProfilePhotos'
 
 -- | This object represent a user's profile pictures.
@@ -306,9 +268,6 @@ data UserProfilePhotos = UserProfilePhotos
   { userProfilePhotosTotalCount :: Int32 -- ^ Total number of profile pictures the target user has
   , userProfilePhotosPhotos :: [[PhotoSize]] -- ^ Requested profile pictures (in up to 4 sizes each)
   } deriving (Generic, Show)
-
-instance ToJSON   UserProfilePhotos where toJSON = gtoJSON
-instance FromJSON UserProfilePhotos where parseJSON = gparseJSON
 
 -- ** 'File'
 
@@ -322,9 +281,6 @@ data File = File
   , fileFilePath :: Maybe Text -- ^ File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
   } deriving (Generic, Show)
 
-instance ToJSON   File where toJSON = gtoJSON
-instance FromJSON File where parseJSON = gparseJSON
-
 -- ** 'ReplyKeyboardMarkup'
 
 -- | This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
@@ -334,9 +290,6 @@ data ReplyKeyboardMarkup = ReplyKeyboardMarkup
   , replyKeyboardMarkupOneTimeKeyboard :: Maybe Bool -- ^ Requests clients to hide the keyboard as soon as it's been used. The keyboard will still be available, but clients will automatically display the usual letter-keyboard in the chat – the user can press a special button in the input field to see the custom keyboard again. Defaults to false.
   , replyKeyboardMarkupSelective :: Maybe Bool -- ^ Use this parameter if you want to show the keyboard to specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
   } deriving (Generic, Show)
-
-instance ToJSON   ReplyKeyboardMarkup where toJSON = gtoJSON
-instance FromJSON ReplyKeyboardMarkup where parseJSON = gparseJSON
 
 -- ** 'KeyboardButton'
 
@@ -352,9 +305,6 @@ data KeyboardButton = KeyboardButton
 instance IsString KeyboardButton where
   fromString s = KeyboardButton (fromString s) Nothing Nothing
 
-instance ToJSON   KeyboardButton where toJSON = gtoJSON
-instance FromJSON KeyboardButton where parseJSON = gparseJSON
-
 -- ** 'ReplyKeyboardRemove'
 
 -- | Upon receiving a message with this object,
@@ -369,9 +319,6 @@ data ReplyKeyboardRemove = ReplyKeyboardRemove
   , replyKeyboardRemoveSelective :: Maybe Bool -- ^ Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
   } deriving (Generic, Show)
 
-instance ToJSON   ReplyKeyboardRemove where toJSON = gtoJSON
-instance FromJSON ReplyKeyboardRemove where parseJSON = gparseJSON
-
 -- ** 'InlineKeyboardMarkup'
 
 -- | This object represents an inline keyboard that appears
@@ -379,9 +326,6 @@ instance FromJSON ReplyKeyboardRemove where parseJSON = gparseJSON
 data InlineKeyboardMarkup = InlineKeyboardMarkup
   { inlineKeyboardMarkupInlineKeyboard :: [[InlineKeyboardButton]] -- ^ Array of button rows, each represented by an Array of InlineKeyboardButton objects
   } deriving (Generic, Show)
-
-instance ToJSON   InlineKeyboardMarkup where toJSON = gtoJSON
-instance FromJSON InlineKeyboardMarkup where parseJSON = gparseJSON
 
 -- ** 'InlineKeyboardButton'
 
@@ -401,9 +345,6 @@ data InlineKeyboardButton = InlineKeyboardButton
 labeledInlineKeyboardButton :: Text -> InlineKeyboardButton
 labeledInlineKeyboardButton label = InlineKeyboardButton label Nothing Nothing Nothing Nothing Nothing
 
-instance ToJSON   InlineKeyboardButton where toJSON = gtoJSON
-instance FromJSON InlineKeyboardButton where parseJSON = gparseJSON
-
 -- ** 'CallbackQuery'
 
 -- | This object represents an incoming callback query from a callback button
@@ -422,14 +363,8 @@ data CallbackQuery = CallbackQuery
   , callbackQueryGameShortName :: Maybe Text -- ^ Short name of a Game to be returned, serves as the unique identifier for the game
   } deriving (Generic, Show)
 
-instance ToJSON   CallbackQuery where toJSON = gtoJSON
-instance FromJSON CallbackQuery where parseJSON = gparseJSON
-
 newtype CallbackQueryId = CallbackQueryId Text
-  deriving (Eq, Show, Generic)
-
-instance ToJSON   CallbackQueryId where toJSON = gtoJSON
-instance FromJSON CallbackQueryId where parseJSON = gparseJSON
+  deriving (Eq, Show, Generic, ToJSON, FromJSON)
 
 -- ** 'ForceReply'
 
@@ -443,9 +378,6 @@ data ForceReply = ForceReply
   , forceReplySelective :: Maybe Bool -- ^ Use this parameter if you want to force reply from specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
   } deriving (Generic, Show)
 
-instance ToJSON   ForceReply where toJSON = gtoJSON
-instance FromJSON ForceReply where parseJSON = gparseJSON
-
 -- ** Chat photo
 
 -- | Chat photo. Returned only in getChat.
@@ -453,9 +385,6 @@ data ChatPhoto = ChatPhoto
   { chatPhotoSmallFileId :: FileId -- ^ Unique file identifier of small (160x160) chat photo. This file_id can be used only for photo download.
   , chatPhotoBigFileId   :: FileId -- ^ Unique file identifier of big (640x640) chat photo. This file_id can be used only for photo download.
   } deriving (Generic, Show)
-
-instance ToJSON   ChatPhoto where toJSON = gtoJSON
-instance FromJSON ChatPhoto where parseJSON = gparseJSON
 
 -- ** 'ChatMember'
 
@@ -479,9 +408,6 @@ data ChatMember = ChatMember
   , chatMemberCanAddWebPagePreviews :: Maybe Bool -- ^ Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages
   } deriving (Generic, Show)
 
-instance ToJSON   ChatMember where toJSON = gtoJSON
-instance FromJSON ChatMember where parseJSON = gparseJSON
-
 -- ** 'ResponseParameters'
 
 -- | Contains information about why a request was unsuccessful.
@@ -490,5 +416,28 @@ data ResponseParameters = ResponseParameters
   , responseParametersRetryAfter :: Maybe Seconds -- ^ In case of exceeding flood control, the number of seconds left to wait before the request can be repeated
   } deriving (Show, Generic)
 
-instance ToJSON   ResponseParameters where toJSON = gtoJSON
-instance FromJSON ResponseParameters where parseJSON = gparseJSON
+deriveJSON' ''User
+deriveJSON' ''Chat
+deriveJSON' ''Message
+deriveJSON' ''MessageEntity
+deriveJSON' ''PhotoSize
+deriveJSON' ''Audio
+deriveJSON' ''Document
+deriveJSON' ''Video
+deriveJSON' ''Voice
+deriveJSON' ''VideoNote
+deriveJSON' ''Contact
+deriveJSON' ''Location
+deriveJSON' ''Venue
+deriveJSON' ''UserProfilePhotos
+deriveJSON' ''File
+deriveJSON' ''ReplyKeyboardMarkup
+deriveJSON' ''KeyboardButton
+deriveJSON' ''ReplyKeyboardRemove
+deriveJSON' ''InlineKeyboardMarkup
+deriveJSON' ''InlineKeyboardButton
+deriveJSON' ''CallbackQuery
+deriveJSON' ''ForceReply
+deriveJSON' ''ChatPhoto
+deriveJSON' ''ChatMember
+deriveJSON' ''ResponseParameters

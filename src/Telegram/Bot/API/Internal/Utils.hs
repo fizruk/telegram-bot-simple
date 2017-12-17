@@ -9,10 +9,15 @@ module Telegram.Bot.API.Internal.Utils where
 
 import Control.Applicative ((<|>))
 import Data.Aeson (FromJSON(..), ToJSON(..), Value(..), GToJSON, GFromJSON, genericToJSON, genericParseJSON, Zero)
+import Data.Aeson.TH (deriveJSON)
 import Data.Aeson.Types (Options(..), defaultOptions, Parser)
 import Data.Char (isUpper, toUpper, toLower)
 import Data.List (intercalate)
 import GHC.Generics
+import Language.Haskell.TH
+
+deriveJSON' :: Name -> Q [Dec]
+deriveJSON' name = deriveJSON (jsonOptions (nameBase name)) name
 
 gtoJSON :: forall a d f. (Generic a, GToJSON Zero (Rep a), Rep a ~ D1 d f, Datatype d)
   => a -> Value
