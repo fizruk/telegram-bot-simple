@@ -5,6 +5,7 @@ module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..))
 import Data.Int (Int32)
+import Data.Hashable (Hashable)
 import Data.String
 import Data.Text (Text)
 import Data.Time.Clock.POSIX (POSIXTime)
@@ -64,7 +65,7 @@ instance FromJSON Chat where parseJSON = gparseJSON
 
 -- | Unique identifier for this chat.
 newtype ChatId = ChatId Integer
-  deriving (Eq, Show, ToJSON, FromJSON)
+  deriving (Eq, Show, ToJSON, FromJSON, Hashable)
 
 -- | Type of chat.
 data ChatType
@@ -397,9 +398,8 @@ data InlineKeyboardButton = InlineKeyboardButton
   , inlineKeyboardButtonPay :: Maybe Bool -- ^ Specify True, to send a Pay button.
   } deriving (Generic, Show)
 
-instance IsString InlineKeyboardButton where
-  fromString s = InlineKeyboardButton (fromString s)
-    Nothing Nothing Nothing Nothing Nothing
+labeledInlineKeyboardButton :: Text -> InlineKeyboardButton
+labeledInlineKeyboardButton label = InlineKeyboardButton label Nothing Nothing Nothing Nothing Nothing
 
 instance ToJSON   InlineKeyboardButton where toJSON = gtoJSON
 instance FromJSON InlineKeyboardButton where parseJSON = gparseJSON

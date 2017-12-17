@@ -19,11 +19,12 @@ library
     Telegram.Bot.API.Stickers
     Telegram.Bot.API.Types
     Telegram.Bot.API.UpdatingMessages
-    Telegram.Bot.Handler
     Telegram.Bot.Simple
+    Telegram.Bot.Simple.UpdateParser
   build-depends:
                 base
               , aeson
+              , hashable
               , http-api-data
               , http-client
               , http-client-tls
@@ -33,14 +34,24 @@ library
               , servant
               , servant-client
               , split
+              , stm
               , text
               , time
               , transformers
+              , unordered-containers
   default-language: Haskell2010
 
 executable example-echo-bot
   ghc-options: -Wall
   main-is: examples/EchoBot.hs
+  build-depends:
+                base
+              , telegram-bot-simple
+  default-language: Haskell2010
+
+executable example-todo-bot
+  ghc-options: -Wall
+  main-is: examples/TodoBot.hs
   build-depends:
                 base
               , telegram-bot-simple
