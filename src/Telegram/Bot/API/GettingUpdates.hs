@@ -55,6 +55,19 @@ updateChatId Update{..} = do
     ]
   return (chatId messageChat)
 
+
+updateUserId :: Update -> Maybe UserId
+updateUserId Update{..} = do
+  Message{..} <- asum
+    [ updateMessage
+    , updateEditedMessage
+    , updateChannelPost
+    , updateEditedChannelPost
+    ]
+  case messageFrom of
+    Just user -> Just (userId user)
+    Nothing   -> Nothing
+
 -- ** 'getUpdates'
 
 type GetUpdates

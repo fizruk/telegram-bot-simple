@@ -36,17 +36,18 @@ data Action
   | SwitchToList Text
   | ShowAll
   | Show Text
+  | ShowChatId
   deriving (Show, Read)
 
-todoBot3 :: BotApp Model Action
+todoBot3 :: BotApp (Maybe ChatId, Model) Action
 todoBot3 = BotApp
-  { botInitialModel = initialModel
+  { botInitialModel = (Nothing, initialModel)
   , botAction = flip updateToAction
   , botHandler = handleAction
   , botJobs = []
   }
   where
-    updateToAction :: Model -> Update -> Maybe Action
+    updateToAction :: (Maybe ChatId, Model) -> Update -> Maybe Action
     updateToAction _ = parseUpdate $
           AddItem      <$> plainText
       <|> Start        <$  command "start"
@@ -55,36 +56,42 @@ todoBot3 = BotApp
       <|> SwitchToList <$> command "switch_to_list"
       <|> Show         <$> command "show"
       <|> ShowAll      <$  command "show_all"
+      <|> ShowChatId   <$  command "chat_id"
       <|> callbackQueryDataRead
 
-    handleAction :: Action -> Model -> Eff Action Model
-    handleAction action model = case action of
-      NoOp -> pure model
-      Start -> model <# do
+    handleAction :: Action -> (Maybe ChatId, Model) -> Eff Action (Maybe ChatId, Model)
+    handleAction action (chId, model) = case action of
+      NoOp -> pure (chId, model)
+      Start -> (chId, model) <# do
         reply (toReplyMessage startMessage)
           { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
         return NoOp
-      AddItem item -> addItem item model <# do
+      AddItem item -> (chId, addItem item model) <# do
         replyText "Ok, got it!"
         return NoOp
-      RemoveItem item -> removeItem item model <# do
+      RemoveItem item -> (chId, removeItem item model) <# do
         replyText "Item removed!"
         return NoOp
-      SwitchToList name -> model { currentList = name } <# do
+      SwitchToList name -> (chId, model { currentList = name }) <# do
         replyText ("Switched to list «" <> name <> "»!")
         return NoOp
-      ShowAll -> model <# do
+      ShowAll -> (chId, model) <# do
         reply (toReplyMessage "Available todo lists")
           { replyMessageReplyMarkup = Just (SomeInlineKeyboardMarkup listsKeyboard) }
         return NoOp
-      Show "" -> model <# do
+      Show "" -> (chId, model) <# do
         return (Show defaultListName)
-      Show name -> model <# do
+      Show name -> (chId, model) <# do
         let items = concat (HashMap.lookup name (todoLists model))
         if null items
           then reply (toReplyMessage ("The list «" <> name <> "» is empty. Maybe try these starter options?"))
                  { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
           else replyText (Text.unlines items)
+        return NoOp
+      ShowChatId -> (chId, model) <# do
+        replyText $ case chId of
+          Just ch -> Text.pack $ show ch
+          Nothing -> "No chat id!"
         return NoOp
 
       where

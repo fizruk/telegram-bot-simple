@@ -171,8 +171,8 @@ updateMessageText = updateMessage >=> messageText
 conversationBot
   :: (Eq conversation, Hashable conversation)
   => (Update -> Maybe conversation)
-  -> BotApp model action
-  -> BotApp (HashMap conversation model) (conversation, action)
+  -> BotApp (Maybe conversation, model) action
+  -> BotApp (HashMap conversation (Maybe conversation, model)) (conversation, action)
 conversationBot toConversation BotApp{..} = BotApp
   { botInitialModel = conversationInitialModel
   , botAction       = conversationAction
@@ -184,14 +184,14 @@ conversationBot toConversation BotApp{..} = BotApp
 
     conversationAction update conversations = do
       conversation <- toConversation update
-      let model = fromMaybe botInitialModel (HashMap.lookup conversation conversations)
-      (conversation,) <$> botAction update model
+      let (_, model) = fromMaybe botInitialModel (HashMap.lookup conversation conversations)
+      (conversation,) <$> botAction update (Just conversation, model)
 
     conversationHandler (conversation, action) conversations =
       bimap (conversation,) (\m -> HashMap.insert conversation m conversations) $
-        botHandler action model
+        botHandler action (Just conversation, model)
       where
-        model = fromMaybe botInitialModel (HashMap.lookup conversation conversations)
+        (_, model) = fromMaybe botInitialModel (HashMap.lookup conversation conversations)
 
     conversationJobs = map toConversationJob botJobs
 
