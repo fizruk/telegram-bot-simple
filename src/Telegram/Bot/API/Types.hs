@@ -35,7 +35,7 @@ data User = User
 
 -- | Unique identifier for this user or bot.
 newtype UserId = UserId Int32
-  deriving (Eq, Show, ToJSON, FromJSON)
+  deriving (Eq, Show, ToJSON, FromJSON, Hashable)
 
 -- ** Chat
 
