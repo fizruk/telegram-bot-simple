@@ -342,6 +342,9 @@ data InlineKeyboardButton = InlineKeyboardButton
   , inlineKeyboardButtonPay :: Maybe Bool -- ^ Specify True, to send a Pay button.
   } deriving (Generic, Show)
 
+instance IsString InlineKeyboardButton where
+  fromString s = InlineKeyboardButton (fromString s) Nothing Nothing Nothing Nothing Nothing
+
 labeledInlineKeyboardButton :: Text -> InlineKeyboardButton
 labeledInlineKeyboardButton label = InlineKeyboardButton label Nothing Nothing Nothing Nothing Nothing
 
