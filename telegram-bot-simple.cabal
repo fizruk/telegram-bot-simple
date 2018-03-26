@@ -16,6 +16,7 @@ library
     Telegram.Bot.API.InlineMode
     Telegram.Bot.API.MakingRequests
     Telegram.Bot.API.Methods
+    Telegram.Bot.API.MultipartFormData
     Telegram.Bot.API.Payments
     Telegram.Bot.API.Stickers
     Telegram.Bot.API.Types
@@ -25,10 +26,14 @@ library
   build-depends:
                 base
               , aeson
+              , bytestring
+              , containers
               , hashable
               , http-api-data
               , http-client
               , http-client-tls
+              , http-media
+              , http-types
               , monad-control
               , mtl
               , profunctors
@@ -36,6 +41,7 @@ library
               , servant-client
               , split
               , stm
+              , string-conversions
               , template-haskell
               , text
               , time
