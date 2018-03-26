@@ -12,6 +12,8 @@ import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
 
+import Text.Read (readMaybe)
+
 type Item = Text
 
 data Model = Model
@@ -37,7 +39,15 @@ data Action
   | ShowAll
   | Show Text
   | ShowChatId
+  | CallBack
+--  | SomeUpdate Update
   deriving (Show, Read)
+
+callbackQueryDataReadAction :: UpdateParser Action
+callbackQueryDataReadAction = mkParser $ \update -> do
+  query <- updateCallbackQuery update
+  data_ <- callbackQueryData query
+  readMaybe (Text.unpack data_)
 
 todoBot3 :: BotApp (Maybe ChatId, Model) Action
 todoBot3 = BotApp
@@ -49,15 +59,16 @@ todoBot3 = BotApp
   where
     updateToAction :: (Maybe ChatId, Model) -> Update -> Maybe Action
     updateToAction _ = parseUpdate $
-          AddItem      <$> plainText
-      <|> Start        <$  command "start"
-      <|> AddItem      <$> command "add"
-      <|> RemoveItem   <$> command "remove"
-      <|> SwitchToList <$> command "switch_to_list"
-      <|> Show         <$> command "show"
-      <|> ShowAll      <$  command "show_all"
-      <|> ShowChatId   <$  command "chat_id"
-      <|> callbackQueryDataRead
+           AddItem      <$> plainText
+       <|> Start        <$  command "start"
+       <|> AddItem      <$> command "add"
+       <|> RemoveItem   <$> command "remove"
+       <|> SwitchToList <$> command "switch_to_list"
+       <|> Show         <$> command "show"
+       <|> ShowAll      <$  command "show_all"
+       <|> ShowChatId   <$  command "chat_id"
+       <|> CallBack     <$ callbackQueryDataReadAction
+      -- <|> SomeUpdate   <$> mkParser Just
 
     handleAction :: Action -> (Maybe ChatId, Model) -> Eff Action (Maybe ChatId, Model)
     handleAction action (chId, model) = case action of
@@ -93,10 +104,17 @@ todoBot3 = BotApp
           Just ch -> Text.pack $ show ch
           Nothing -> "No chat id!"
         return NoOp
-
+      CallBack -> (chId, model) <# do
+        replyText $ case chId of
+          Just ch -> Text.pack $ show ch
+          Nothing -> "No chat id!"
+        return NoOp
+      -- SomeUpdate upd -> (chId, model) <# do
+      --   replyText (Text.pack (show upd))
+      --   return NoOp
       where
         listsKeyboard = InlineKeyboardMarkup
-          (map (\name -> [actionButton name (Show name)]) (HashMap.keys (todoLists model)))
+          (map (\name -> [actionButton name CallBack]) (HashMap.keys (todoLists model)))
 
     startMessage = Text.unlines
       [ "Hello! I am your personal TODO bot :)"
