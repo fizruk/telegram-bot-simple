@@ -12,7 +12,7 @@ import Control.Monad.Writer
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Concurrent.STM
 import Data.Bifunctor
-import qualified Data.ByteString as BS
+-- import qualified Data.ByteString as BS
 import Data.Maybe (fromMaybe)
 import Data.String
 import Data.Text (Text)
@@ -22,6 +22,7 @@ import Data.Hashable (Hashable)
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HashMap
 import GHC.Generics (Generic)
+import Network.Mime
 import Servant.Client
 
 import Telegram.Bot.API
@@ -220,8 +221,8 @@ data ReplyPhoto payload = ReplyPhoto
   } 
   deriving (Generic)
 
-toReplyPhoto :: FilePath -> Maybe BS.ByteString -> ReplyPhoto FileUpload
-toReplyPhoto path mimeType = ReplyPhoto (FileUpload mimeType (FileUploadFile path)) Nothing Nothing Nothing Nothing
+toReplyPhoto :: FilePath -> ReplyPhoto FileUpload
+toReplyPhoto path = ReplyPhoto (FileUpload (Just $ defaultMimeLookup $ Text.pack path) (FileUploadFile path)) Nothing Nothing Nothing Nothing
 
 replyPhotoToSendPhotoRequest :: SomeChatId -> ReplyPhoto FileUpload -> SendPhotoRequest FileUpload
 replyPhotoToSendPhotoRequest someChatId ReplyPhoto{..} = SendPhotoRequest
@@ -243,5 +244,5 @@ replyReplyPhoto rph = do
     Nothing -> do
       liftIO $ putStrLn "No chat to reply to"
 
-replyPhoto :: FilePath -> Maybe BS.ByteString -> BotM ()
-replyPhoto path mimeType = replyReplyPhoto $ toReplyPhoto path mimeType
+replyPhoto :: FilePath -> BotM ()
+replyPhoto path = replyReplyPhoto $ toReplyPhoto path

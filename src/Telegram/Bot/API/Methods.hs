@@ -97,12 +97,14 @@ data FileUploadContent =
     FileUploadFile FilePath
   | FileUploadBS BS.ByteString
   | FileUploadLBS LBS.ByteString
+  deriving (Show)
 
 -- | This object represents data (image, video, ...) with mime type to upload.
 data FileUpload = FileUpload
   { fileUpload_type    :: Maybe MimeType    -- ^ Mime type of the upload.
   , fileUpload_content :: FileUploadContent -- ^ The payload/source to upload.
   } 
+  deriving (Show)
 
 -- ** 'sendPhoto'
 
@@ -125,9 +127,6 @@ data SendPhotoRequest payload = SendPhotoRequest
   } 
   deriving (Generic)
 
--- instance ToJSON (SendPhotoRequest FileUpload) where toJSON = toJsonDrop 6
--- instance FromJSON (SendPhotoRequest FileUpload) where parseJSON = parseJsonDrop 6
-
 uploadPhotoRequest :: SomeChatId -> FileUpload -> SendPhotoRequest FileUpload
 uploadPhotoRequest chatId_ photo = SendPhotoRequest chatId_ photo Nothing Nothing Nothing Nothing
 
@@ -135,7 +134,8 @@ utf8Part :: Text -> Text -> Part
 utf8Part inputName = partBS inputName . T.encodeUtf8
 
 chatIdToPart :: SomeChatId -> Text
-chatIdToPart (SomeChatId integer)    = tshow integer
+chatIdToPart (SomeChatId chId)    = case chId of
+  ChatId integer -> tshow integer
 chatIdToPart (SomeChatUsername text) = tshow text
 
 fileUploadToPart :: Text -> FileUpload -> Part

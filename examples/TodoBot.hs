@@ -40,6 +40,7 @@ data Action
   | Show Text
   | ShowChatId
   | CallBack
+  | ShowPicture
 --  | SomeUpdate Update
   deriving (Show, Read)
 
@@ -67,6 +68,7 @@ todoBot3 = BotApp
        <|> Show         <$> command "show"
        <|> ShowAll      <$  command "show_all"
        <|> ShowChatId   <$  command "chat_id"
+       <|> ShowPicture  <$  command "picture"
        <|> CallBack     <$ callbackQueryDataReadAction
       -- <|> SomeUpdate   <$> mkParser Just
 
@@ -103,6 +105,9 @@ todoBot3 = BotApp
         replyText $ case chId of
           Just ch -> Text.pack $ show ch
           Nothing -> "No chat id!"
+        return NoOp
+      ShowPicture -> (chId, model) <# do
+        replyPhoto "test.jpg"
         return NoOp
       CallBack -> (chId, model) <# do
         replyText $ case chId of
