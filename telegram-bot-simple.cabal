@@ -14,6 +14,7 @@ library
     Telegram.Bot.API.Games
     Telegram.Bot.API.GettingUpdates
     Telegram.Bot.API.InlineMode
+    Telegram.Bot.API.JsonExt
     Telegram.Bot.API.MakingRequests
     Telegram.Bot.API.Methods
     Telegram.Bot.API.MultipartFormData
@@ -35,10 +36,12 @@ library
               , http-media
               , http-types
               , monad-control
+              , mime-types
               , mtl
               , profunctors
               , servant
               , servant-client
+              , servant-client-core
               , split
               , stm
               , string-conversions

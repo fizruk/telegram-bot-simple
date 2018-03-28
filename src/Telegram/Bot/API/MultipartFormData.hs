@@ -13,16 +13,13 @@ module Telegram.Bot.API.MultipartFormData
   , MultipartFormDataReqBody
   ) where
 
-import Control.Exception
 import Control.Monad
 import Control.Monad.Error.Class
 import Control.Monad.IO.Class
 import Control.Monad.Reader.Class
 import Data.ByteString.Lazy hiding (elem, filter, map, null, pack, any)
 import Data.Proxy
-import Data.Foldable (toList)
 import qualified Data.List.NonEmpty as NonEmpty
-import Data.String.Conversions
 import qualified Data.Sequence as Sequence
 import Data.Text (pack)
 import Data.Typeable (Typeable)
@@ -36,7 +33,7 @@ import qualified Network.HTTP.Types.Header as HTTP
 import Servant.API
 import Servant.Client
 import qualified Servant.Client.Core as Core
-import Servant.Client.Internal.HttpClient (catchConnectionError, clientResponseToReponse, requestToClientRequest)
+import Servant.Client.Internal.HttpClient (catchConnectionError, clientResponseToResponse, requestToClientRequest)
 
 -- | A type that can be converted to a multipart/form-data value.
 class ToMultipartFormData a where
@@ -79,7 +76,7 @@ performRequest' requestToClientRequest' reqMethod req = do
           body = Client.responseBody response
           hdrs = Client.responseHeaders response
           status_code = statusCode status
-          coreResponse = clientResponseToReponse response
+          coreResponse = clientResponseToResponse response
       ct <- case lookup "Content-Type" $ Client.responseHeaders response of
                  Nothing -> pure $ "application"//"octet-stream"
                  Just t -> case parseAccept t of
@@ -99,7 +96,7 @@ performRequestCT' requestToClientRequest' ct reqMethod req = do
   let acceptCTS = contentTypes ct
   (_status, respBody, respCT, hdrs, _response) <-
     performRequest' requestToClientRequest' reqMethod (req { Core.requestAccept = Sequence.fromList $ NonEmpty.toList acceptCTS })
-  let coreResponse = clientResponseToReponse _response
+  let coreResponse = clientResponseToResponse _response
   unless (any (matches respCT) acceptCTS) $ throwError $ UnsupportedContentType respCT coreResponse
   case mimeUnrender ct respBody of
     Left err -> throwError $ DecodeFailure (pack err) coreResponse
