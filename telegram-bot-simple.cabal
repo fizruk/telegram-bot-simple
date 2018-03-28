@@ -24,6 +24,7 @@ library
     Telegram.Bot.API.UpdatingMessages
     Telegram.Bot.Simple
     Telegram.Bot.Simple.UpdateParser
+    Telegram.Bot.Simple.ReplyDocuments
   build-depends:
                 base
               , aeson

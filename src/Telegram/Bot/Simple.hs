@@ -12,7 +12,6 @@ import Control.Monad.Writer
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Concurrent.STM
 import Data.Bifunctor
--- import qualified Data.ByteString as BS
 import Data.Maybe (fromMaybe)
 import Data.String
 import Data.Text (Text)
@@ -22,7 +21,6 @@ import Data.Hashable (Hashable)
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HashMap
 import GHC.Generics (Generic)
-import Network.Mime
 import Servant.Client
 
 import Telegram.Bot.API
@@ -210,39 +208,3 @@ callbackButton label data_ = (labeledInlineKeyboardButton label) { inlineKeyboar
 
 actionButton :: Show action => Text -> action -> InlineKeyboardButton
 actionButton label action = callbackButton label (Text.pack (show action))
-
-
-data ReplyPhoto payload = ReplyPhoto
-  { replyPhotoPhoto                :: payload -- ^ Photo to send. You can either pass a file_id as String to resend a photo that is already on the Telegram servers, or upload a new photo.
-  , replyPhotoCaption              :: Maybe Text -- ^ Photo caption (may also be used when resending photos by file_id), 0-200 characters.
-  , replyPhotoDisableNotification  :: Maybe Bool -- ^ Sends the message silently. iOS users will not receive a notification, Android users will receive a notification with no sound.
-  , replyPhotoReplyToMessageId     :: Maybe Int -- ^ If the message is a reply, ID of the original message
-  , replyPhotoReplyMarkup          :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for a custom reply keyboard, instructions to hide keyboard or to force a reply from the user.
-  } 
-  deriving (Generic)
-
-toReplyPhoto :: FilePath -> ReplyPhoto FileUpload
-toReplyPhoto path = ReplyPhoto (FileUpload (Just $ defaultMimeLookup $ Text.pack path) (FileUploadFile path)) Nothing Nothing Nothing Nothing
-
-replyPhotoToSendPhotoRequest :: SomeChatId -> ReplyPhoto FileUpload -> SendPhotoRequest FileUpload
-replyPhotoToSendPhotoRequest someChatId ReplyPhoto{..} = SendPhotoRequest
-  { sendPhotoChatId              = someChatId
-  , sendPhotoPhoto               = replyPhotoPhoto
-  , sendPhotoCaption             = replyPhotoCaption
-  , sendPhotoDisableNotification = replyPhotoDisableNotification
-  , sendPhotoReplyToMessageId    = replyPhotoReplyToMessageId
-  , sendPhotoReplyMarkup         = replyPhotoReplyMarkup
-  } 
-
-replyReplyPhoto :: ReplyPhoto FileUpload -> BotM ()
-replyReplyPhoto rph = do
-  phchatId <- currentChatId
-  case phchatId of
-    Just chatId -> do
-      let photo = replyPhotoToSendPhotoRequest (SomeChatId chatId) rph
-      void $ liftClientM $ sendPhoto photo
-    Nothing -> do
-      liftIO $ putStrLn "No chat to reply to"
-
-replyPhoto :: FilePath -> BotM ()
-replyPhoto path = replyReplyPhoto $ toReplyPhoto path
