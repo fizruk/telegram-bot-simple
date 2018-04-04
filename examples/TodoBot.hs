@@ -11,6 +11,7 @@ import qualified Data.HashMap.Strict as HashMap
 import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
+import Telegram.Bot.Simple.ReplyDocuments
 
 import Text.Read (readMaybe)
 
@@ -39,6 +40,7 @@ data Action
   | ShowAll
   | Show Text
   | ShowChatId
+  | GetFile Text
   | CallBack
 --  | SomeUpdate Update
   deriving (Show, Read)
@@ -67,6 +69,7 @@ todoBot3 = BotApp
        <|> Show         <$> command "show"
        <|> ShowAll      <$  command "show_all"
        <|> ShowChatId   <$  command "chat_id"
+       <|> GetFile      <$> command "file"
        <|> CallBack     <$ callbackQueryDataReadAction
       -- <|> SomeUpdate   <$> mkParser Just
 
@@ -104,6 +107,12 @@ todoBot3 = BotApp
           Just ch -> Text.pack $ show ch
           Nothing -> "No chat id!"
         return NoOp
+      GetFile path -> (chId, model) <# do
+        replyReplyDocument $ (toReplyDocument (Text.unpack path))
+          { replyDocumentCaption = Just "Отчёт"
+          , replyDocumentReplyMarkup = Just (SomeInlineKeyboardMarkup inlineStartKeyboard)
+          }
+        return NoOp
       CallBack -> (chId, model) <# do
         replyText $ case chId of
           Just ch -> Text.pack $ show ch
@@ -140,6 +149,18 @@ todoBot3 = BotApp
       , replyKeyboardMarkupResizeKeyboard = Just True
       , replyKeyboardMarkupOneTimeKeyboard = Just True
       , replyKeyboardMarkupSelective = Nothing
+      }
+
+    inlineStartKeyboard :: InlineKeyboardMarkup
+    inlineStartKeyboard = InlineKeyboardMarkup
+      { inlineKeyboardMarkupInlineKeyboard =
+          [ map (\name -> actionButton name CallBack) ["Show Statistic"
+            ,"Get report"
+            ]
+          , map (\name -> actionButton name Start) ["Settings"
+            ,"Help"
+            ]
+          ]
       }
 
 addItem :: Item -> Model -> Model

@@ -448,8 +448,8 @@ data ResponseParameters = ResponseParameters
 
 -- | This object represents data (image, video, ...) with mime type to upload.
 data FileUpload = FileUpload
-  { fileUpload_type    :: Maybe MimeType    -- ^ Mime type of the upload.
-  , fileUpload_content :: FileUploadContent -- ^ The payload/source to upload.
+  { fileUploadType    :: Maybe MimeType    -- ^ Mime type of the upload.
+  , fileUploadContent :: FileUploadContent -- ^ The payload/source to upload.
   } 
   deriving (Show)
 

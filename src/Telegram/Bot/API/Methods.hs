@@ -133,7 +133,7 @@ instance ToMultipartFormData (SendAudioRequest FileUpload) where
     , utf8Part "title" <$> sendAudioTitle req
     , partLBS  "disable_notification" . encode <$> sendAudioDisableNotification req
     , utf8Part "reply_to_message_id" . tshow <$> sendAudioReplyToMessageId req
-    , partLBS  "reply_markup" . encode <$> sendAudioReplyMarkup req
+    , someReplyMarkupToPart "reply_markup" <$> sendAudioReplyMarkup req
     ] ++
     [ fileUploadToPart "audio" (sendAudioAudio req) ]
 
@@ -173,7 +173,7 @@ instance ToMultipartFormData (SendDocumentRequest FileUpload) where
     , utf8Part "parse_mode" . tshow <$> sendDocumentParseMode req
     , partLBS  "disable_notification" . encode <$> sendDocumentDisableNotification req
     , utf8Part "reply_to_message_id" . tshow <$> sendDocumentReplyToMessageId req
-    , partLBS  "reply_markup" . encode <$> sendDocumentReplyMarkup req
+    , someReplyMarkupToPart  "reply_markup" <$> sendDocumentReplyMarkup req
     ] ++
     [ fileUploadToPart "document" (sendDocumentDocument req) ]
 
@@ -197,14 +197,21 @@ chatIdToPart (SomeChatId chId)    = case chId of
   ChatId integer -> tshow integer
 chatIdToPart (SomeChatUsername text) = tshow text
 
+someReplyMarkupToPart :: Text -> SomeReplyMarkup -> Part
+someReplyMarkupToPart inputName markup = case markup of
+    SomeInlineKeyboardMarkup ikb -> partLBS inputName (encode ikb)
+    SomeReplyKeyboardMarkup  rkm -> partLBS inputName (encode rkm)
+    SomeReplyKeyboardRemove  rkr -> partLBS inputName (encode rkr)
+    SomeForceReply           fr  -> partLBS inputName (encode fr)
+
 fileUploadToPart :: Text -> FileUpload -> Part
 fileUploadToPart inputName fileUpload =
   let part =
-        case fileUpload_content fileUpload of
+        case fileUploadContent fileUpload of
           FileUploadFile path -> partFileSource inputName path
           FileUploadBS bs     -> partBS inputName bs
           FileUploadLBS lbs   -> partLBS inputName lbs
-  in part { partContentType = fileUpload_type fileUpload }
+  in part { partContentType = fileUploadType fileUpload }
 
 tshow :: Show a => a -> Text
 tshow = T.pack . show
