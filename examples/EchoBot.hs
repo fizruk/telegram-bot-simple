@@ -12,6 +12,7 @@ type Model = ()
 data Action
   = NoOp
   | Echo Text
+  deriving(Show)
 
 echoBot :: BotApp (Maybe ChatId, Model) Action
 echoBot = BotApp

@@ -1,19 +1,23 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DeriveAnyClass #-}
 module Main where
 
 import Control.Applicative
+import Data.Foldable (asum)
+import Data.Hashable (Hashable)
 import Data.Monoid
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HashMap
+import GHC.Generics (Generic)
 
 import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
 import Telegram.Bot.Simple.ReplyDocuments
-
-import Text.Read (readMaybe)
 
 type Item = Text
 
@@ -21,6 +25,34 @@ data Model = Model
   { todoLists   :: HashMap Text [Item]
   , currentList :: Text
   }
+
+data Conversation = Conversation
+ { convChatId    :: ChatId
+ , convUserId    :: Maybe UserId
+ , convMessageId :: MessageId
+ }
+ deriving (Eq, Show, Generic, Hashable)
+
+updateConversations :: Update -> Maybe Conversation
+updateConversations Update{..} = do
+  Message{..} <- asum
+    [ updateMessage
+    , updateEditedMessage
+    , updateChannelPost
+    , updateEditedChannelPost
+    , callbackMessage
+    ]
+  return Conversation 
+    { convChatId = chatId messageChat
+    , convUserId = case messageFrom of
+                    Just user -> Just (userId user)
+                    Nothing   -> Nothing
+    , convMessageId = messageMessageId
+    }
+  where
+    callbackMessage = case updateCallbackQuery of
+      Just cb -> callbackQueryMessage cb
+      Nothing -> Nothing
 
 defaultListName :: Text
 defaultListName = "Default"
@@ -41,17 +73,23 @@ data Action
   | Show Text
   | ShowChatId
   | GetFile Text
-  | CallBack
---  | SomeUpdate Update
+  | Edit (MessageId, Text)
+  | CallBack Text
   deriving (Show, Read)
 
-callbackQueryDataReadAction :: UpdateParser Action
-callbackQueryDataReadAction = mkParser $ \update -> do
+testCallbackQuery :: UpdateParser CallbackQuery
+testCallbackQuery = UpdateParser (\x -> updateCallbackQuery x)
+
+mkParserUpdate :: (Update -> Maybe Update) -> UpdateParser Update
+mkParserUpdate = UpdateParser
+
+callbackQueryDataReadAction :: UpdateParser Text
+callbackQueryDataReadAction =  mkParser $ \update -> do
   query <- updateCallbackQuery update
   data_ <- callbackQueryData query
-  readMaybe (Text.unpack data_)
+  pure data_
 
-todoBot3 :: BotApp (Maybe ChatId, Model) Action
+todoBot3 :: BotApp (Maybe Conversation, Model) Action
 todoBot3 = BotApp
   { botInitialModel = (Nothing, initialModel)
   , botAction = flip updateToAction
@@ -59,9 +97,10 @@ todoBot3 = BotApp
   , botJobs = []
   }
   where
-    updateToAction :: (Maybe ChatId, Model) -> Update -> Maybe Action
+    updateToAction :: (Maybe Conversation, Model) -> Update -> Maybe Action
     updateToAction _ = parseUpdate $
-           AddItem      <$> plainText
+          AddItem      <$> plainText
+       <|> CallBack     <$> callbackQueryDataReadAction
        <|> Start        <$  command "start"
        <|> AddItem      <$> command "add"
        <|> RemoveItem   <$> command "remove"
@@ -70,60 +109,62 @@ todoBot3 = BotApp
        <|> ShowAll      <$  command "show_all"
        <|> ShowChatId   <$  command "chat_id"
        <|> GetFile      <$> command "file"
-       <|> CallBack     <$ callbackQueryDataReadAction
-      -- <|> SomeUpdate   <$> mkParser Just
+       <|> Edit         <$> editCommand "test_edit"
 
-    handleAction :: Action -> (Maybe ChatId, Model) -> Eff Action (Maybe ChatId, Model)
-    handleAction action (chId, model) = case action of
-      NoOp -> pure (chId, model)
-      Start -> (chId, model) <# do
+    handleAction :: Action -> (Maybe Conversation, Model) -> Eff Action (Maybe Conversation, Model)
+    handleAction action fullModel = case action of
+      NoOp -> pure fullModel
+      Start -> fullModel <# do
         reply (toReplyMessage startMessage)
           { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
         return NoOp
-      AddItem item -> (chId, addItem item model) <# do
-        replyText "Ok, got it!"
+      AddItem item -> (mconv, addItem item model) <# do
+        reply $ (toReplyMessage "Ok, got it!") 
+          { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
         return NoOp
-      RemoveItem item -> (chId, removeItem item model) <# do
+      RemoveItem item -> (mconv, removeItem item model) <# do
         replyText "Item removed!"
         return NoOp
-      SwitchToList name -> (chId, model { currentList = name }) <# do
+      SwitchToList name -> (mconv, model { currentList = name }) <# do
         replyText ("Switched to list «" <> name <> "»!")
         return NoOp
-      ShowAll -> (chId, model) <# do
+      ShowAll -> fullModel <# do
         reply (toReplyMessage "Available todo lists")
           { replyMessageReplyMarkup = Just (SomeInlineKeyboardMarkup listsKeyboard) }
         return NoOp
-      Show "" -> (chId, model) <# do
+      Show "" -> fullModel <# do
         return (Show defaultListName)
-      Show name -> (chId, model) <# do
+      Show name -> fullModel <# do
         let items = concat (HashMap.lookup name (todoLists model))
         if null items
           then reply (toReplyMessage ("The list «" <> name <> "» is empty. Maybe try these starter options?"))
                  { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
           else replyText (Text.unlines items)
         return NoOp
-      ShowChatId -> (chId, model) <# do
-        replyText $ case chId of
-          Just ch -> Text.pack $ show ch
+      ShowChatId -> fullModel <# do
+        replyText $ case mconv of
+          Just conv -> Text.pack $ show (convChatId conv)
           Nothing -> "No chat id!"
         return NoOp
-      GetFile path -> (chId, model) <# do
+      GetFile path -> fullModel <# do
         replyReplyDocument $ (toReplyDocument (Text.unpack path))
           { replyDocumentCaption = Just "Отчёт"
           , replyDocumentReplyMarkup = Just (SomeInlineKeyboardMarkup inlineStartKeyboard)
           }
         return NoOp
-      CallBack -> (chId, model) <# do
-        replyText $ case chId of
-          Just ch -> Text.pack $ show ch
-          Nothing -> "No chat id!"
+      Edit (mId, _) -> fullModel <# do
+        replyEditMessageText mId "Editted message"
         return NoOp
-      -- SomeUpdate upd -> (chId, model) <# do
-      --   replyText (Text.pack (show upd))
-      --   return NoOp
+      CallBack _ -> fullModel <# do
+        replyCallbackQuery (Just "CB")
+        case mconv of
+          Just conv -> replyEditMessageText (convMessageId conv) "I edited!!!"
+          Nothing   -> replyText "No conversation!"
+        return NoOp
       where
+        (mconv, model) = fullModel
         listsKeyboard = InlineKeyboardMarkup
-          (map (\name -> [actionButton name CallBack]) (HashMap.keys (todoLists model)))
+          (map (\name -> [callbackButton name "ShowAll"]) (HashMap.keys (todoLists model)))
 
     startMessage = Text.unlines
       [ "Hello! I am your personal TODO bot :)"
@@ -154,7 +195,7 @@ todoBot3 = BotApp
     inlineStartKeyboard :: InlineKeyboardMarkup
     inlineStartKeyboard = InlineKeyboardMarkup
       { inlineKeyboardMarkupInlineKeyboard =
-          [ map (\name -> actionButton name CallBack) ["Show Statistic"
+          [ map (\name -> callbackButton name ("Test buttons")) ["Show Statistic"
             ,"Get report"
             ]
           , map (\name -> actionButton name Start) ["Settings"
@@ -174,7 +215,7 @@ removeItem item model = model
 run :: Token -> IO ()
 run token = do
   env <- defaultTelegramClientEnv token
-  startBot_ (conversationBot updateChatId todoBot3) env
+  startBot_ (conversationBot updateConversations todoBot3) env
 
 main :: IO ()
 main = do

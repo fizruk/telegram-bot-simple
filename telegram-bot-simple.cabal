@@ -67,6 +67,7 @@ executable example-todo-bot
   main-is: examples/TodoBot.hs
   build-depends:
                 base
+              , hashable
               , telegram-bot-simple
               , text
               , unordered-containers

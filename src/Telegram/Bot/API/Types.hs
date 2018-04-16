@@ -140,7 +140,7 @@ data Message = Message
 
 -- | Unique message identifier inside this chat.
 newtype MessageId = MessageId Int32
-  deriving (Eq, Show, ToJSON, FromJSON)
+  deriving (Eq, Show, Read, ToJSON, FromJSON, Hashable)
 
 -- | The unique identifier of a media message group a message belongs to.
 newtype MediaGroupId = MediaGroupId Text
