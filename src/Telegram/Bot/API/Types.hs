@@ -5,12 +5,15 @@
 module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..))
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as LBS
 import Data.Int (Int32)
 import Data.Hashable (Hashable)
 import Data.String
 import Data.Text (Text)
 import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
+import Network.Mime
 
 import Telegram.Bot.API.Internal.Utils
 
@@ -61,6 +64,16 @@ data Chat = Chat
 -- | Unique identifier for this chat.
 newtype ChatId = ChatId Integer
   deriving (Eq, Show, ToJSON, FromJSON, Hashable)
+
+-- | Unique identifier for the target chat
+-- or username of the target channel (in the format @\@channelusername@).
+data SomeChatId
+  = SomeChatId ChatId       -- ^ Unique chat ID.
+  | SomeChatUsername Text   -- ^ Username of the target channel.
+  deriving (Generic)
+
+instance ToJSON   SomeChatId where toJSON = genericSomeToJSON
+instance FromJSON SomeChatId where parseJSON = genericSomeParseJSON
 
 -- | Type of chat.
 data ChatType
@@ -127,7 +140,7 @@ data Message = Message
 
 -- | Unique message identifier inside this chat.
 newtype MessageId = MessageId Int32
-  deriving (Eq, Show, ToJSON, FromJSON)
+  deriving (Eq, Show, Read, ToJSON, FromJSON, Hashable)
 
 -- | The unique identifier of a media message group a message belongs to.
 newtype MediaGroupId = MediaGroupId Text
@@ -281,6 +294,21 @@ data File = File
   , fileFilePath :: Maybe Text -- ^ File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
   } deriving (Generic, Show)
 
+-- ** 'SomeReplyMarkup'
+
+-- | Additional interface options.
+-- A JSON-serialized object for an inline keyboard, custom reply keyboard,
+-- instructions to remove reply keyboard or to force a reply from the user.
+data SomeReplyMarkup
+  = SomeInlineKeyboardMarkup InlineKeyboardMarkup
+  | SomeReplyKeyboardMarkup  ReplyKeyboardMarkup
+  | SomeReplyKeyboardRemove  ReplyKeyboardRemove
+  | SomeForceReply           ForceReply
+  deriving (Generic)
+
+instance ToJSON   SomeReplyMarkup where toJSON = genericSomeToJSON
+instance FromJSON SomeReplyMarkup where parseJSON = genericSomeParseJSON
+
 -- ** 'ReplyKeyboardMarkup'
 
 -- | This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
@@ -418,6 +446,30 @@ data ResponseParameters = ResponseParameters
   { responseParametersMigrateToChatId :: Maybe ChatId -- ^ The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
   , responseParametersRetryAfter :: Maybe Seconds -- ^ In case of exceeding flood control, the number of seconds left to wait before the request can be repeated
   } deriving (Show, Generic)
+
+-- ** 'FileUpload'
+
+-- | This object represents data (image, video, ...) with mime type to upload.
+data FileUpload = FileUpload
+  { fileUploadType    :: Maybe MimeType    -- ^ Mime type of the upload.
+  , fileUploadContent :: FileUploadContent -- ^ The payload/source to upload.
+  } 
+  deriving (Show)
+
+-- | This object represents data (image, video, ...) to upload.
+data FileUploadContent =
+    FileUploadFile FilePath
+  | FileUploadBS BS.ByteString
+  | FileUploadLBS LBS.ByteString
+  deriving (Show)
+
+data ParseMode
+  = Markdown
+  | HTML
+  deriving (Show, Generic)
+
+instance ToJSON   ParseMode
+instance FromJSON ParseMode
 
 deriveJSON' ''User
 deriveJSON' ''Chat

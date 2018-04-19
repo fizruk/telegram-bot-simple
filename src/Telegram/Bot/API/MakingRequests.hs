@@ -8,7 +8,7 @@ import Data.Monoid ((<>))
 import Data.Text (Text)
 import qualified Data.Text as Text
 import GHC.Generics (Generic)
-import Servant.Client
+import Servant.Client hiding (Response)
 import Web.HttpApiData (ToHttpApiData(..), FromHttpApiData)
 import Network.HTTP.Client (newManager)
 import Network.HTTP.Client.TLS (tlsManagerSettings)
@@ -24,6 +24,7 @@ defaultTelegramClientEnv :: Token -> IO ClientEnv
 defaultTelegramClientEnv token = ClientEnv
   <$> newManager tlsManagerSettings
   <*> pure (botBaseUrl token)
+  <*> pure Nothing
 
 defaultRunBot :: Token -> ClientM a -> IO (Either ServantError a)
 defaultRunBot token bot = do

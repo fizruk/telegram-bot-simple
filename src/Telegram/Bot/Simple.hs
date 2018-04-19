@@ -12,6 +12,7 @@ import Control.Monad.Writer
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Concurrent.STM
 import Data.Bifunctor
+import Data.Foldable (asum)
 import Data.Maybe (fromMaybe)
 import Data.String
 import Data.Text (Text)
@@ -42,9 +43,30 @@ currentChatId :: BotM (Maybe ChatId)
 currentChatId = do
   mupdate <- ask
   pure $ do
-    update <- mupdate
-    message <- updateMessage update
-    pure $ chatId (messageChat message)
+    Update{..} <- mupdate
+    Message{..} <- asum
+      [ updateMessage
+      , updateEditedMessage
+      , updateChannelPost
+      , updateEditedChannelPost
+      , callbackMessage updateCallbackQuery
+      ]
+    pure $ chatId messageChat
+  where
+    callbackMessage mupdateCallbackQuery = case mupdateCallbackQuery of
+      Just cb -> callbackQueryMessage cb
+      Nothing -> Nothing
+
+currentCallbackQueryId :: BotM (Maybe CallbackQueryId)
+currentCallbackQueryId = do
+  mupdate <- ask
+  pure $ do
+    Update{..} <- mupdate
+    callbackQID updateCallbackQuery
+  where
+    callbackQID mupdateCallbackQuery = case mupdateCallbackQuery of
+      Just cb -> Just (callbackQueryId cb)
+      Nothing -> Nothing
 
 newtype Eff action model = Eff { _runEff :: Writer [BotM action] model }
   deriving (Functor, Applicative, Monad)
@@ -73,7 +95,7 @@ data BotJob model action = BotJob
   , botJobTask     :: model -> ClientM model
   }
 
-startBotAsync :: BotApp model action -> ClientEnv -> IO (action -> IO ())
+startBotAsync :: Show action => BotApp model action -> ClientEnv -> IO (action -> IO ())
 startBotAsync bot env = do
   modelVar <- newTVarIO (botInitialModel bot)
   fork_ $ startBotPolling bot modelVar
@@ -81,18 +103,18 @@ startBotAsync bot env = do
   where
     fork_ = void . forkIO . void . flip runClientM env
 
-startBotAsync_ :: BotApp model action -> ClientEnv -> IO ()
+startBotAsync_ :: Show action => BotApp model action -> ClientEnv -> IO ()
 startBotAsync_ bot env = void (startBot bot env)
 
-startBot :: BotApp model action -> ClientEnv -> IO (Either ServantError ())
+startBot :: Show action => BotApp model action -> ClientEnv -> IO (Either ServantError ())
 startBot bot env = do
   modelVar <- newTVarIO (botInitialModel bot)
   runClientM (startBotPolling bot modelVar) env
 
-startBot_ :: BotApp model action -> ClientEnv -> IO ()
+startBot_ :: Show action => BotApp model action -> ClientEnv -> IO ()
 startBot_ bot = void . startBot bot
 
-startBotPolling :: BotApp model action -> TVar model -> ClientM ()
+startBotPolling :: Show action => BotApp model action -> TVar model -> ClientM ()
 startBotPolling BotApp{..} = startPolling . handleUpdate
   where
     handleUpdate modelVar update = void . liftBaseDiscard forkIO $
@@ -108,6 +130,10 @@ startBotPolling BotApp{..} = startPolling . handleUpdate
               writeTVar modelVar newModel
               return actions
           Nothing -> return []
+      acts <- liftIO $ atomically $ do
+        model <- readTVar modelVar
+        return $ toAction model
+      liftIO $ putStrLn $ show acts
       mapM_ ((>>= handleAction' modelVar update . const . Just) . runBotM update) actions
 
 startPolling :: (Update -> ClientM ()) -> ClientM ()
@@ -165,8 +191,84 @@ reply rmsg = do
 replyText :: Text -> BotM ()
 replyText = reply . toReplyMessage
 
+-- | Reply editMessage parameters.
+-- This is just like 'EditMessageTextRequest' but without 'SomeChatId' specified.
+data ReplyEditMessageText = ReplyEditMessageText
+  { replyEditMessageTextMessageId             :: Maybe MessageId       -- ^ Required if inline_message_id is not specified. Identifier of the sent message
+  , replyEditMessageTextInlineMessageId       :: Maybe Text            -- ^ Required if chat_id and message_id are not specified. Identifier of the inline message
+  , replyEditMessageTextText                  :: Text                  -- ^ New text of the message
+  , replyEditMessageTextParseMode             :: Maybe ParseMode       -- ^ Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
+  , replyEditMessageTextDisableWebPagePreview :: Maybe Bool            -- ^ Disables link previews for links in this message
+  , replyEditMessageTextReplyMarkup           :: Maybe SomeReplyMarkup -- ^ A JSON-serialized object for an inline keyboard
+  } deriving (Generic)
+
+toReplyEditMessageText :: MessageId -> Text -> Maybe SomeReplyMarkup -> ReplyEditMessageText
+toReplyEditMessageText mId text srm = ReplyEditMessageText (Just mId) Nothing text Nothing Nothing srm
+
+replyEditMessageTextToEditMessageTextRequest :: Maybe SomeChatId -> ReplyEditMessageText -> EditMessageTextRequest
+replyEditMessageTextToEditMessageTextRequest someChatId ReplyEditMessageText{..} = EditMessageTextRequest
+  { editMessageTextChatId                = someChatId
+  , editMessageTextMessageId             = replyEditMessageTextMessageId
+  , editMessageTextInlineMessageId       = replyEditMessageTextInlineMessageId
+  , editMessageTextText                  = replyEditMessageTextText
+  , editMessageTextParseMode             = replyEditMessageTextParseMode
+  , editMessageTextDisableWebPagePreview = replyEditMessageTextDisableWebPagePreview
+  , editMessageTextReplyMarkup           = replyEditMessageTextReplyMarkup
+  }
+
+replyEdit :: ReplyEditMessageText -> BotM ()
+replyEdit rmsg = do
+  mchatId <- currentChatId
+  case mchatId of
+    Just chatId -> do
+      let msg = replyEditMessageTextToEditMessageTextRequest (Just (SomeChatId chatId)) rmsg
+      void $ liftClientM $ editMessageText msg
+    Nothing -> do
+      liftIO $ putStrLn "No chat to reply to"
+
+
+replyEditMessageText :: MessageId -> Text -> Maybe SomeReplyMarkup -> BotM()
+replyEditMessageText mId text srm = replyEdit $ toReplyEditMessageText mId text srm
+
 updateMessageText :: Update -> Maybe Text
 updateMessageText = updateMessage >=> messageText
+
+
+-- | Reply answerCallbackQuery parameters.
+-- This is just like 'AnswerCallbackQueryRequest' but without 'CallbackQueryId' specified.
+data ReplyAnswerCallbackQuery = ReplyAnswerCallbackQuery
+  { replyAnswerCallbackQueryText            :: Maybe Text -- | ^ Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters
+  , replyAnswerCallbackQueryShowAlert       :: Maybe Bool -- | ^ If true, an alert will be shown by the client instead of a notification at the top of the chat screen. Defaults to false.
+  , replyAnswerCallbackQueryUrl             :: Maybe Text -- | ^ URL that will be opened by the user's client. If you have created a Game and accepted the conditions via @Botfather, specify the URL that opens your game – note that this will only work if the query comes from a callback_game button. Otherwise, you may use links like t.me/your_bot?start=XXXX that open your bot with a parameter.
+  , replyAnswerCallbackQueryCacheTime       :: Maybe Int  -- | ^ The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0.
+  } deriving (Generic)
+
+toReplyAnswerCallbackQuery :: Maybe Text -> ReplyAnswerCallbackQuery
+toReplyAnswerCallbackQuery text = ReplyAnswerCallbackQuery text Nothing Nothing Nothing
+
+replyAnswerCBQToAnswerCBQRequest :: CallbackQueryId -> ReplyAnswerCallbackQuery -> AnswerCallbackQueryRequest
+replyAnswerCBQToAnswerCBQRequest callbackQueryId ReplyAnswerCallbackQuery{..} = AnswerCallbackQueryRequest
+  { answerCallbackQueryCallbackQueryId = callbackQueryId
+  , answerCallbackQueryText            = replyAnswerCallbackQueryText
+  , answerCallbackQueryShowAlert       = replyAnswerCallbackQueryShowAlert
+  , answerCallbackQueryUrl             = replyAnswerCallbackQueryUrl
+  , answerCallbackQueryCacheTime       = replyAnswerCallbackQueryCacheTime
+  }
+
+replyCallbackQueryRequest :: ReplyAnswerCallbackQuery -> BotM ()
+replyCallbackQueryRequest racb = do
+  mcbId <- currentCallbackQueryId
+  case mcbId of
+    Just cbId -> do
+      let cBQ = replyAnswerCBQToAnswerCBQRequest cbId racb
+      void $ liftClientM $ answerCallbackQuery cBQ
+    Nothing -> do
+      liftIO $ putStrLn "No chat to reply to"
+
+
+replyCallbackQuery :: Maybe Text -> BotM()
+replyCallbackQuery text = replyCallbackQueryRequest $ toReplyAnswerCallbackQuery text 
+
 
 conversationBot
   :: (Eq conversation, Hashable conversation)
