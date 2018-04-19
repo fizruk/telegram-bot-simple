@@ -52,8 +52,31 @@ updateChatId Update{..} = do
     , updateEditedMessage
     , updateChannelPost
     , updateEditedChannelPost
+    , callbackMessage
     ]
   return (chatId messageChat)
+  where
+    callbackMessage = case updateCallbackQuery of
+      Just cb -> callbackQueryMessage cb
+      Nothing -> Nothing
+
+
+updateUserId :: Update -> Maybe UserId
+updateUserId Update{..} = do
+  Message{..} <- asum
+    [ updateMessage
+    , updateEditedMessage
+    , updateChannelPost
+    , updateEditedChannelPost
+    , callbackMessage
+    ]
+  case messageFrom of
+    Just user -> Just (userId user)
+    Nothing   -> Nothing
+  where
+    callbackMessage = case updateCallbackQuery of
+      Just cb -> callbackQueryMessage cb
+      Nothing -> Nothing
 
 -- ** 'getUpdates'
 

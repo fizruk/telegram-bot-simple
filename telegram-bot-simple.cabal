@@ -14,28 +14,38 @@ library
     Telegram.Bot.API.Games
     Telegram.Bot.API.GettingUpdates
     Telegram.Bot.API.InlineMode
+    Telegram.Bot.API.JsonExt
     Telegram.Bot.API.MakingRequests
     Telegram.Bot.API.Methods
+    Telegram.Bot.API.MultipartFormData
     Telegram.Bot.API.Payments
     Telegram.Bot.API.Stickers
     Telegram.Bot.API.Types
     Telegram.Bot.API.UpdatingMessages
     Telegram.Bot.Simple
     Telegram.Bot.Simple.UpdateParser
+    Telegram.Bot.Simple.ReplyDocuments
   build-depends:
                 base
               , aeson
+              , bytestring
+              , containers
               , hashable
               , http-api-data
               , http-client
               , http-client-tls
+              , http-media
+              , http-types
               , monad-control
+              , mime-types
               , mtl
               , profunctors
               , servant
               , servant-client
+              , servant-client-core
               , split
               , stm
+              , string-conversions
               , template-haskell
               , text
               , time
@@ -57,6 +67,7 @@ executable example-todo-bot
   main-is: examples/TodoBot.hs
   build-depends:
                 base
+              , hashable
               , telegram-bot-simple
               , text
               , unordered-containers
