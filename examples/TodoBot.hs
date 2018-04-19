@@ -6,18 +6,16 @@ module Main where
 
 import Control.Applicative
 import Data.Foldable (asum)
-import Data.Hashable (Hashable)
+import Data.Hashable (Hashable, hashWithSalt)
 import Data.Monoid
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HashMap
-import GHC.Generics (Generic)
 
 import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
-import Telegram.Bot.Simple.ReplyDocuments
 
 type Item = Text
 
@@ -25,13 +23,22 @@ data Model = Model
   { todoLists   :: HashMap Text [Item]
   , currentList :: Text
   }
+  deriving (Show)
+
 
 data Conversation = Conversation
  { convChatId    :: ChatId
  , convUserId    :: Maybe UserId
  , convMessageId :: MessageId
  }
- deriving (Eq, Show, Generic, Hashable)
+ deriving (Show)
+
+instance Eq Conversation where
+  (==) x y = (convChatId x) == (convChatId y)
+
+instance Hashable Conversation where
+  hashWithSalt _ c = let ChatId chId = convChatId c in fromInteger chId
+       
 
 updateConversations :: Update -> Maybe Conversation
 updateConversations Update{..} = do
@@ -72,22 +79,8 @@ data Action
   | ShowAll
   | Show Text
   | ShowChatId
-  | GetFile Text
-  | Edit (MessageId, Text)
   | CallBack Text
   deriving (Show, Read)
-
-testCallbackQuery :: UpdateParser CallbackQuery
-testCallbackQuery = UpdateParser (\x -> updateCallbackQuery x)
-
-mkParserUpdate :: (Update -> Maybe Update) -> UpdateParser Update
-mkParserUpdate = UpdateParser
-
-callbackQueryDataReadAction :: UpdateParser Text
-callbackQueryDataReadAction =  mkParser $ \update -> do
-  query <- updateCallbackQuery update
-  data_ <- callbackQueryData query
-  pure data_
 
 todoBot3 :: BotApp (Maybe Conversation, Model) Action
 todoBot3 = BotApp
@@ -99,8 +92,8 @@ todoBot3 = BotApp
   where
     updateToAction :: (Maybe Conversation, Model) -> Update -> Maybe Action
     updateToAction _ = parseUpdate $
-          AddItem      <$> plainText
-       <|> CallBack     <$> callbackQueryDataReadAction
+           AddItem      <$> plainText
+       <|> CallBack     <$> callbackQueryDataRead
        <|> Start        <$  command "start"
        <|> AddItem      <$> command "add"
        <|> RemoveItem   <$> command "remove"
@@ -108,18 +101,16 @@ todoBot3 = BotApp
        <|> Show         <$> command "show"
        <|> ShowAll      <$  command "show_all"
        <|> ShowChatId   <$  command "chat_id"
-       <|> GetFile      <$> command "file"
-       <|> Edit         <$> editCommand "test_edit"
 
     handleAction :: Action -> (Maybe Conversation, Model) -> Eff Action (Maybe Conversation, Model)
-    handleAction action fullModel = case action of
+    handleAction action fullModel@(mconv, model) = case action of
       NoOp -> pure fullModel
       Start -> fullModel <# do
         reply (toReplyMessage startMessage)
           { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
         return NoOp
       AddItem item -> (mconv, addItem item model) <# do
-        reply $ (toReplyMessage "Ok, got it!") 
+        reply (toReplyMessage "Ok, got it!")
           { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
         return NoOp
       RemoveItem item -> (mconv, removeItem item model) <# do
@@ -136,35 +127,31 @@ todoBot3 = BotApp
         return (Show defaultListName)
       Show name -> fullModel <# do
         let items = concat (HashMap.lookup name (todoLists model))
-        if null items
-          then reply (toReplyMessage ("The list «" <> name <> "» is empty. Maybe try these starter options?"))
-                 { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
-          else replyText (Text.unlines items)
+        if null items 
+        then reply (toReplyMessage (emptyList name)) 
+          { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard)}
+        else reply (toReplyMessage (Text.unlines items))
+          { replyMessageReplyMarkup = Just (SomeInlineKeyboardMarkup (InlineKeyboardMarkup [[callbackButton "Refresh" ("Refresh " <> name)]]))}
         return NoOp
       ShowChatId -> fullModel <# do
-        replyText $ case mconv of
-          Just conv -> Text.pack $ show (convChatId conv)
-          Nothing -> "No chat id!"
+        replyText $ Text.pack $ show (convChatId conv)
         return NoOp
-      GetFile path -> fullModel <# do
-        replyReplyDocument $ (toReplyDocument (Text.unpack path))
-          { replyDocumentCaption = Just "Отчёт"
-          , replyDocumentReplyMarkup = Just (SomeInlineKeyboardMarkup inlineStartKeyboard)
-          }
-        return NoOp
-      Edit (mId, _) -> fullModel <# do
-        replyEditMessageText mId "Editted message"
-        return NoOp
-      CallBack _ -> fullModel <# do
-        replyCallbackQuery (Just "CB")
-        case mconv of
-          Just conv -> replyEditMessageText (convMessageId conv) "I edited!!!"
-          Nothing   -> replyText "No conversation!"
-        return NoOp
+      CallBack txt -> fullModel <# do
+        replyCallbackQuery Nothing
+        case Text.words txt of
+          ("Refresh":xs) -> do
+            let items = concat (HashMap.lookup (head xs) (todoLists model))
+            if null items 
+              then replyEditMessageText (convMessageId conv) (emptyList (head xs)) (Just (SomeReplyKeyboardMarkup startKeyboard))
+              else replyEditMessageText (convMessageId conv) (Text.unlines items) (
+                Just (SomeInlineKeyboardMarkup (InlineKeyboardMarkup [[callbackButton "Refresh" ("Refresh " <> (head xs))]])))
+            return NoOp
+          _ -> return (Show txt)
       where
-        (mconv, model) = fullModel
+        Just conv = mconv
+        emptyList n = "The list «" <> n <> "» is empty. Maybe try these starter options?"
         listsKeyboard = InlineKeyboardMarkup
-          (map (\name -> [callbackButton name "ShowAll"]) (HashMap.keys (todoLists model)))
+          (map (\name -> [callbackButton name name]) (HashMap.keys (todoLists model)))
 
     startMessage = Text.unlines
       [ "Hello! I am your personal TODO bot :)"
@@ -190,18 +177,6 @@ todoBot3 = BotApp
       , replyKeyboardMarkupResizeKeyboard = Just True
       , replyKeyboardMarkupOneTimeKeyboard = Just True
       , replyKeyboardMarkupSelective = Nothing
-      }
-
-    inlineStartKeyboard :: InlineKeyboardMarkup
-    inlineStartKeyboard = InlineKeyboardMarkup
-      { inlineKeyboardMarkupInlineKeyboard =
-          [ map (\name -> callbackButton name ("Test buttons")) ["Show Statistic"
-            ,"Get report"
-            ]
-          , map (\name -> actionButton name Start) ["Settings"
-            ,"Help"
-            ]
-          ]
       }
 
 addItem :: Item -> Model -> Model

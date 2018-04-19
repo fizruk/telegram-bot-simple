@@ -306,6 +306,9 @@ data SomeReplyMarkup
   | SomeForceReply           ForceReply
   deriving (Generic)
 
+instance ToJSON   SomeReplyMarkup where toJSON = genericSomeToJSON
+instance FromJSON SomeReplyMarkup where parseJSON = genericSomeParseJSON
+
 -- ** 'ReplyKeyboardMarkup'
 
 -- | This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
@@ -483,7 +486,6 @@ deriveJSON' ''Location
 deriveJSON' ''Venue
 deriveJSON' ''UserProfilePhotos
 deriveJSON' ''File
-deriveJSON' ''SomeReplyMarkup
 deriveJSON' ''ReplyKeyboardMarkup
 deriveJSON' ''KeyboardButton
 deriveJSON' ''ReplyKeyboardRemove

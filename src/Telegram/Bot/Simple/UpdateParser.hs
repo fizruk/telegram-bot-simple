@@ -7,8 +7,6 @@ import Control.Monad.Reader
 import Data.Monoid
 import Data.Text (Text)
 import qualified Data.Text as Text
-import GHC.Int
-import Text.Read (readMaybe)
 
 import Telegram.Bot.API
 
@@ -45,29 +43,6 @@ plainText = do
     then fail "command"
     else pure t
 
-editMessageId :: UpdateParser MessageId
-editMessageId = UpdateParser (\x -> 
-  case updateMessage x of 
-    Just mess -> Just (messageMessageId mess)
-    Nothing   -> Nothing)
-
-messCommand :: Text -> UpdateParser Text
-messCommand name = do
-  m <- editMessageId
-  t <- text
-  case Text.words t of
-    (w:_) | w == "/" <> name -> pure $ Text.pack $ show m
-    _ -> fail "not that command"
-
-editCommand :: Text -> UpdateParser (MessageId, Text)
-editCommand name = do
-  m <- editMessageId
-  t <- text
-  case Text.words t of
-    (w:ws) | w == "/" <> name
-      -> pure (MessageId (read $ Text.unpack $ defHead "0" ws :: GHC.Int.Int32), Text.unwords ws)
-    _ -> fail "not that command"
-
 defHead :: a -> [a] -> a
 defHead def [] = def
 defHead _ list = head list
@@ -80,8 +55,8 @@ command name = do
       -> pure (Text.unwords ws)
     _ -> fail "not that command"
 
-callbackQueryDataRead :: Read a => UpdateParser a
-callbackQueryDataRead = mkParser $ \update -> do
+callbackQueryDataRead :: UpdateParser Text
+callbackQueryDataRead =  mkParser $ \update -> do
   query <- updateCallbackQuery update
   data_ <- callbackQueryData query
-  readMaybe (Text.unpack data_)
+  pure data_

@@ -202,8 +202,8 @@ data ReplyEditMessageText = ReplyEditMessageText
   , replyEditMessageTextReplyMarkup           :: Maybe SomeReplyMarkup -- ^ A JSON-serialized object for an inline keyboard
   } deriving (Generic)
 
-toReplyEditMessageText :: MessageId -> Text -> ReplyEditMessageText
-toReplyEditMessageText mId text = ReplyEditMessageText (Just mId) Nothing text Nothing Nothing Nothing
+toReplyEditMessageText :: MessageId -> Text -> Maybe SomeReplyMarkup -> ReplyEditMessageText
+toReplyEditMessageText mId text srm = ReplyEditMessageText (Just mId) Nothing text Nothing Nothing srm
 
 replyEditMessageTextToEditMessageTextRequest :: Maybe SomeChatId -> ReplyEditMessageText -> EditMessageTextRequest
 replyEditMessageTextToEditMessageTextRequest someChatId ReplyEditMessageText{..} = EditMessageTextRequest
@@ -227,8 +227,8 @@ replyEdit rmsg = do
       liftIO $ putStrLn "No chat to reply to"
 
 
-replyEditMessageText :: MessageId -> Text -> BotM()
-replyEditMessageText mId text = replyEdit $ toReplyEditMessageText mId text 
+replyEditMessageText :: MessageId -> Text -> Maybe SomeReplyMarkup -> BotM()
+replyEditMessageText mId text srm = replyEdit $ toReplyEditMessageText mId text srm
 
 updateMessageText :: Update -> Maybe Text
 updateMessageText = updateMessage >=> messageText
