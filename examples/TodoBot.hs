@@ -12,6 +12,7 @@ import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.HashMap.Strict (HashMap)
 import qualified Data.HashMap.Strict as HashMap
+import Network.Socket (HostName, PortNumber)
 
 import Telegram.Bot.API
 import Telegram.Bot.Simple
@@ -187,14 +188,16 @@ removeItem :: Item -> Model -> Model
 removeItem item model = model
   { todoLists = HashMap.adjust (filter (/= item)) (currentList model) (todoLists model)}
 
-run :: Token -> IO ()
-run token = do
-  env <- defaultTelegramClientEnv token
+run :: Maybe (HostName, PortNumber) -> Token -> IO ()
+run mproxy token = do
+  env <- case mproxy of
+    Just proxy -> defaultTelegramClientEnvWithProxy proxy token
+    Nothing -> defaultTelegramClientEnv token
   startBot_ (conversationBot updateConversations todoBot3) env
 
 main :: IO ()
 main = do
   putStrLn "Please, enter Telegram bot's API token:"
   token <- Token . Text.pack <$> getLine
-  run token
+  run (Just ("127.0.0.1", 9050)) token
   return ()
