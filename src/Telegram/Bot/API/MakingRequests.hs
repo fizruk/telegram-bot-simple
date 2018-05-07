@@ -4,14 +4,17 @@
 module Telegram.Bot.API.MakingRequests where
 
 import Data.Aeson (ToJSON(..), FromJSON(..))
+import Data.ByteString.Char8 ()
 import Data.Monoid ((<>))
 import Data.Text (Text)
 import qualified Data.Text as Text
 import GHC.Generics (Generic)
 import Servant.Client hiding (Response)
 import Web.HttpApiData (ToHttpApiData(..), FromHttpApiData)
-import Network.HTTP.Client (newManager)
-import Network.HTTP.Client.TLS (tlsManagerSettings)
+import Network.Connection
+import Network.HTTP.Client hiding (Response)
+import Network.HTTP.Client.TLS (tlsManagerSettings, mkManagerSettings)
+import Network.Socket (HostName, PortNumber)
 
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.Types
@@ -23,6 +26,12 @@ botBaseUrl token = BaseUrl Https "api.telegram.org" 443
 defaultTelegramClientEnv :: Token -> IO ClientEnv
 defaultTelegramClientEnv token = ClientEnv
   <$> newManager tlsManagerSettings
+  <*> pure (botBaseUrl token)
+  <*> pure Nothing
+
+defaultTelegramClientEnvWithProxy :: (HostName, PortNumber) -> Token -> IO ClientEnv
+defaultTelegramClientEnvWithProxy (sockHost,sockPort) token = ClientEnv
+  <$> newManager (mkManagerSettings (TLSSettingsSimple False False False) (Just (SockSettingsSimple sockHost sockPort)))
   <*> pure (botBaseUrl token)
   <*> pure Nothing
 

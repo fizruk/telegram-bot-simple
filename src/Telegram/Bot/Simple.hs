@@ -112,7 +112,11 @@ startBot bot env = do
   runClientM (startBotPolling bot modelVar) env
 
 startBot_ :: Show action => BotApp model action -> ClientEnv -> IO ()
-startBot_ bot = void . startBot bot
+startBot_ bot env = do 
+  res <- startBot bot env
+  case res of
+    Right _  -> return ()
+    Left err -> putStrLn (show err)
 
 startBotPolling :: Show action => BotApp model action -> TVar model -> ClientM ()
 startBotPolling BotApp{..} = startPolling . handleUpdate
