@@ -30,6 +30,7 @@ library
               , aeson
               , bytestring
               , containers
+              , connection
               , hashable
               , http-api-data
               , http-client
@@ -39,6 +40,7 @@ library
               , monad-control
               , mime-types
               , mtl
+              , network
               , profunctors
               , servant
               , servant-client
@@ -68,6 +70,7 @@ executable example-todo-bot
   build-depends:
                 base
               , hashable
+              , network
               , telegram-bot-simple
               , text
               , unordered-containers
