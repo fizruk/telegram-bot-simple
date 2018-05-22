@@ -82,7 +82,7 @@ startBotAsync bot env = do
     fork_ = void . forkIO . void . flip runClientM env
 
 startBotAsync_ :: BotApp model action -> ClientEnv -> IO ()
-startBotAsync_ bot env = void (startBot bot env)
+startBotAsync_ bot env = void (startBotAsync bot env)
 
 startBot :: BotApp model action -> ClientEnv -> IO (Either ServantError ())
 startBot bot env = do
