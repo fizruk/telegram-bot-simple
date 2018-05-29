@@ -4,6 +4,7 @@
 {-# LANGUAGE TupleSections #-}
 module Telegram.Bot.Simple where
 
+import Control.Monad.Base
 import Control.Monad.Reader
 import Control.Monad.Error.Class
 import Control.Monad.Trans (liftIO)
@@ -30,7 +31,7 @@ import Telegram.Bot.API
 --
 -- The context may include an 'Update' the bot is handling at the moment.
 newtype BotM a = BotM { _runBotM :: ReaderT (Maybe Update) ClientM a }
-  deriving (Functor, Applicative, Monad, MonadReader (Maybe Update), MonadIO)
+  deriving (Functor, Applicative, Monad, MonadBase IO, MonadReader (Maybe Update), MonadIO)
 
 liftClientM :: ClientM a -> BotM a
 liftClientM = BotM . lift
