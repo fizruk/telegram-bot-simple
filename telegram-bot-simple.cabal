@@ -1,63 +1,126 @@
-name:                telegram-bot-simple
-version:             0.1
-synopsis:            Easy to use library for building Telegram bots.
-category:            Web
-build-type:          Simple
-cabal-version:       >=1.10
+-- This file has been generated from package.yaml by hpack version 0.28.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 712f94b66fa220dcd84341f2a4f326069b68a7fd8bac8c4fc72ee8351a6f27c8
+
+name:           telegram-bot-simple
+version:        0.1.0
+synopsis:       Easy to use library for building Telegram bots.
+description:    Please see the README on Github at <https://github.com/fizruk/arangodb#readme>
+category:       Web
+homepage:       https://github.com/fizruk/telegram-bot-simple#readme
+bug-reports:    https://github.com/fizruk/telegram-bot-simple/issues
+author:         Nickolay Kudasov
+maintainer:     nickolay.kudasov@gmail.com
+copyright:      Nickolay Kudasov
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+extra-source-files:
+    CHANGELOG.md
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/fizruk/telegram-bot-simple
 
 library
-  ghc-options: -Wall
-  hs-source-dirs:      src/
   exposed-modules:
-    Telegram.Bot.API
-    Telegram.Bot.API.Internal.Utils
-    Telegram.Bot.API.Games
-    Telegram.Bot.API.GettingUpdates
-    Telegram.Bot.API.InlineMode
-    Telegram.Bot.API.MakingRequests
-    Telegram.Bot.API.Methods
-    Telegram.Bot.API.Payments
-    Telegram.Bot.API.Stickers
-    Telegram.Bot.API.Types
-    Telegram.Bot.API.UpdatingMessages
-    Telegram.Bot.Simple
-    Telegram.Bot.Simple.UpdateParser
+      Telegram.Bot.API
+      Telegram.Bot.API.Games
+      Telegram.Bot.API.GettingUpdates
+      Telegram.Bot.API.InlineMode
+      Telegram.Bot.API.Internal.Utils
+      Telegram.Bot.API.MakingRequests
+      Telegram.Bot.API.Methods
+      Telegram.Bot.API.Payments
+      Telegram.Bot.API.Stickers
+      Telegram.Bot.API.Types
+      Telegram.Bot.API.UpdatingMessages
+      Telegram.Bot.Pure
+      Telegram.Bot.Simple
+      Telegram.Bot.Simple.UpdateParser
+  other-modules:
+      Paths_telegram_bot_simple
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
   build-depends:
-                base
-              , aeson
-              , hashable
-              , http-api-data
-              , http-client
-              , http-client-tls
-              , monad-control
-              , mtl
-              , profunctors
-              , servant
-              , servant-client
-              , split
-              , stm
-              , template-haskell
-              , text
-              , time
-              , transformers
-              , unordered-containers
+      aeson
+    , base
+    , hashable
+    , http-api-data
+    , http-client
+    , http-client-tls
+    , lifted-base
+    , monad-control
+    , mtl
+    , profunctors
+    , servant
+    , servant-client
+    , split
+    , stm
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , unordered-containers
   default-language: Haskell2010
 
 executable example-echo-bot
-  ghc-options: -Wall
   main-is: examples/EchoBot.hs
+  other-modules:
+      Paths_telegram_bot_simple
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-                base
-              , telegram-bot-simple
-              , text
+      aeson
+    , base
+    , hashable
+    , http-api-data
+    , http-client
+    , http-client-tls
+    , lifted-base
+    , monad-control
+    , mtl
+    , profunctors
+    , servant
+    , servant-client
+    , split
+    , stm
+    , telegram-bot-simple
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , unordered-containers
   default-language: Haskell2010
 
 executable example-todo-bot
-  ghc-options: -Wall
-  main-is: examples/TodoBot.hs
+  main-is: examples/EchoBot.hs
+  other-modules:
+      Paths_telegram_bot_simple
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-                base
-              , telegram-bot-simple
-              , text
-              , unordered-containers
+      aeson
+    , base
+    , hashable
+    , http-api-data
+    , http-client
+    , http-client-tls
+    , lifted-base
+    , monad-control
+    , mtl
+    , profunctors
+    , servant
+    , servant-client
+    , split
+    , stm
+    , telegram-bot-simple
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , unordered-containers
   default-language: Haskell2010

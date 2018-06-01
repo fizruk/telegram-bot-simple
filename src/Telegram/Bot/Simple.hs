@@ -1,29 +1,32 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE TupleSections              #-}
 module Telegram.Bot.Simple where
 
-import Control.Monad.Reader
-import Control.Monad.Error.Class
-import Control.Monad.Trans (liftIO)
-import Control.Monad.Trans.Control
-import Control.Monad.Writer
-import Control.Concurrent (forkIO, threadDelay)
-import Control.Concurrent.STM
-import Data.Bifunctor
-import Data.Maybe (fromMaybe)
-import Data.String
-import Data.Text (Text)
-import qualified Data.Text as Text
-import Data.Traversable (traverse)
-import Data.Hashable (Hashable)
-import Data.HashMap.Strict (HashMap)
-import qualified Data.HashMap.Strict as HashMap
-import GHC.Generics (Generic)
-import Servant.Client
+import           Control.Concurrent          (forkIO, threadDelay)
+import           Control.Concurrent.STM
+import           Control.Exception.Lifted    (SomeException, try)
+import           Control.Monad.Error.Class
+import           Control.Monad.Reader
+import           Control.Monad.Trans         (liftIO)
+import           Control.Monad.Trans.Control
+import           Control.Monad.Writer
+import           Data.Bifunctor
+import           Data.Hashable               (Hashable)
+import           Data.HashMap.Strict         (HashMap)
+import qualified Data.HashMap.Strict         as HashMap
+import           Data.Maybe                  (fromMaybe)
+import           Data.String
+import           Data.Text                   (Text)
+import qualified Data.Text                   as Text
+import           Data.Traversable            (traverse)
+import           GHC.Generics                (Generic)
+import           Servant.Client
 
-import Telegram.Bot.API
+import           Telegram.Bot.API
 
 -- | Bot handler context.
 --
@@ -116,13 +119,19 @@ startPolling handleUpdate = go Nothing
     go lastUpdateId = do
       let inc (UpdateId n) = UpdateId (n + 1)
           offset = fmap inc lastUpdateId
-      res <- getUpdates (GetUpdatesRequest offset Nothing Nothing Nothing)
-      let updates = responseResult res
-          updateIds = map updateUpdateId updates
-          maxUpdateId = maximum (Nothing : map Just updateIds)
-      mapM_ handleUpdate updates
+      res <- try $ getUpdates (GetUpdatesRequest offset Nothing Nothing Nothing)
+      nextUpdateId <- case res of
+        Left (ex :: SomeException) -> do
+          liftIO (print ex)
+          pure lastUpdateId
+        Right result -> do
+          let updates = responseResult result
+              updateIds = map updateUpdateId updates
+              maxUpdateId = maximum (Nothing : map Just updateIds)
+          mapM_ handleUpdate updates
+          pure maxUpdateId
       liftIO $ threadDelay 1000000
-      go maxUpdateId
+      go nextUpdateId
 
 -- | Reply message parameters.
 -- This is just like 'SendMessageRequest' but without 'SomeChatId' specified.
