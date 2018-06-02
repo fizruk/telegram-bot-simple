@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 712f94b66fa220dcd84341f2a4f326069b68a7fd8bac8c4fc72ee8351a6f27c8
+-- hash: 452b646210801cfc4096fd6ebf57b2bd7ce336d82c818fd06bf5cd815fcf44f2
 
 name:           telegram-bot-simple
 version:        0.1.0
@@ -41,6 +41,7 @@ library
       Telegram.Bot.API.UpdatingMessages
       Telegram.Bot.Pure
       Telegram.Bot.Simple
+      Telegram.Bot.Simple.Debug
       Telegram.Bot.Simple.UpdateParser
   other-modules:
       Paths_telegram_bot_simple
@@ -49,7 +50,9 @@ library
   ghc-options: -Wall
   build-depends:
       aeson
+    , aeson-pretty
     , base
+    , bytestring
     , hashable
     , http-api-data
     , http-client
@@ -76,7 +79,9 @@ executable example-echo-bot
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , aeson-pretty
     , base
+    , bytestring
     , hashable
     , http-api-data
     , http-client
@@ -104,7 +109,9 @@ executable example-todo-bot
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson
+    , aeson-pretty
     , base
+    , bytestring
     , hashable
     , http-api-data
     , http-client
