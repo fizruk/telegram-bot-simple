@@ -116,12 +116,19 @@ startPolling handleUpdate = go Nothing
     go lastUpdateId = do
       let inc (UpdateId n) = UpdateId (n + 1)
           offset = fmap inc lastUpdateId
-      res <- try $ getUpdates (GetUpdatesRequest offset Nothing Nothing Nothing)
+      res <- try $
+        (Right <$> getUpdates
+          (GetUpdatesRequest offset Nothing Nothing Nothing))
+        `catchError` (pure . Left)
+
       nextUpdateId <- case res of
         Left (ex :: SomeException) -> do
           liftIO (print ex)
           pure lastUpdateId
-        Right result -> do
+        Right (Left servantErr) -> do
+          liftIO (print servantErr)
+          pure lastUpdateId
+        Right (Right result) -> do
           let updates = responseResult result
               updateIds = map updateUpdateId updates
               maxUpdateId = maximum (Nothing : map Just updateIds)
