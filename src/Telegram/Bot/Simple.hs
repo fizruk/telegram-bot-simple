@@ -44,10 +44,7 @@ runBotM update = flip runReaderT update . _runBotM
 currentChatId :: BotM (Maybe ChatId)
 currentChatId = do
   mupdate <- ask
-  pure $ do
-    update <- mupdate
-    message <- updateMessage update
-    pure $ chatId (messageChat message)
+  pure $ updateChatId =<< mupdate
 
 newtype Eff action model = Eff { _runEff :: Writer [BotM action] model }
   deriving (Functor, Applicative, Monad)
