@@ -30,6 +30,7 @@ data ReplyMessage = ReplyMessage
 instance IsString ReplyMessage where
   fromString = toReplyMessage . fromString
 
+-- | Create a 'ReplyMessage' with just some 'Text' message.
 toReplyMessage :: Text -> ReplyMessage
 toReplyMessage text = ReplyMessage text Nothing Nothing Nothing Nothing Nothing
 
@@ -44,6 +45,7 @@ replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageReques
   , sendMessageReplyMarkup = replyMessageReplyMarkup
   }
 
+-- | Reply in the current chat (if possible).
 reply :: ReplyMessage -> BotM ()
 reply rmsg = do
   mchatId <- currentChatId
@@ -54,6 +56,7 @@ reply rmsg = do
     Nothing -> do
       liftIO $ putStrLn "No chat to reply to"
 
+-- | Reply with a text.
 replyText :: Text -> BotM ()
 replyText = reply . toReplyMessage
 
