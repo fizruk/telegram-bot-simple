@@ -9,6 +9,7 @@ import           Data.Monoid                ((<>))
 import qualified Data.Text.Lazy             as Text
 import qualified Data.Text.Lazy.Encoding    as Text
 import           Debug.Trace                (trace)
+import           Text.Show.Pretty           (ppShow)
 
 import qualified Telegram.Bot.API           as Telegram
 import           Telegram.Bot.Simple.BotApp
@@ -47,7 +48,7 @@ traceTelegramUpdatesJSON = traceTelegramUpdatesWith ppAsJSON
 
 -- | Trace (debug print) every update using 'Show' instance.
 traceTelegramUpdatesShow :: BotApp model action -> BotApp model action
-traceTelegramUpdatesShow = traceTelegramUpdatesWith show
+traceTelegramUpdatesShow = traceTelegramUpdatesWith ppShow
 
 -- ** Trace bot actions
 
@@ -59,8 +60,8 @@ data TracedAction action
 
 -- | Pretty print 'TraceActionType'.
 ppTracedAction :: Show action => TracedAction action -> String
-ppTracedAction (TracedIncomingAction action) = "Incoming: " <> show action
-ppTracedAction (TracedIssuedAction   action) = "Issued:   " <> show action
+ppTracedAction (TracedIncomingAction action) = "Incoming: " <> ppShow action
+ppTracedAction (TracedIssuedAction   action) = "Issued:   " <> ppShow action
 
 -- | Trace (debug print) every incoming and issued action.
 traceBotActionsWith
@@ -94,18 +95,18 @@ traceBotModelWith
   -> BotApp model action
   -> BotApp model action
 traceBotModelWith f botApp = botApp
-  { botInitialModel = traceModel (botInitialModel botApp)
+  { botInitialModel = newInitialModel
   , botHandler = newHandler
   }
     where
+      !newInitialModel = traceModel (botInitialModel botApp)
+      newHandler action !model = traceModel <$> botHandler botApp action model
       traceModel = trace <$> f <*> id
-
-      newHandler action model = traceModel <$> botHandler botApp action model
 
 -- | Trace (debug print) bot model using 'Show' instance.
 traceBotModelShow
   :: Show model => BotApp model action -> BotApp model action
-traceBotModelShow = traceBotModelWith show
+traceBotModelShow = traceBotModelWith ppShow
 
 -- | Trace (debug print) bot model using 'Show' instance.
 traceBotModelJSON

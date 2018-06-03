@@ -31,6 +31,7 @@ dependencies:
 - monad-control
 - mtl
 - profunctors
+- pretty-show
 - servant
 - servant-client
 - split
