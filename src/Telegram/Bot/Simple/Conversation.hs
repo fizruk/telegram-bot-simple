@@ -57,7 +57,7 @@ conversationBot toConversation BotApp{..} = BotApp
 -- This enables jobs to easily send notifications.
 useLatestUpdateInJobs
   :: BotApp model action
-  -> BotApp (Maybe Telegram.Update, model) (Either Telegram.Update action)
+  -> BotApp (Maybe Telegram.Update, model) (Maybe Telegram.Update, action)
 useLatestUpdateInJobs BotApp{..} = BotApp
   { botInitialModel = (Nothing, botInitialModel)
   , botAction       = newAction
@@ -65,19 +65,17 @@ useLatestUpdateInJobs BotApp{..} = BotApp
   , botJobs         = newJobs
   }
     where
-      newAction update _ = Just (Left update)
-      newHandler (Left update) (_, model) = do
-        case botAction update model of
-          Nothing     -> pure ()
-          Just action -> eff (pure (Right action))
-        pure (Just update, model)
-      newHandler (Right action) (update, model) =
-        bimap Right (update,) (botHandler action model)
+      newAction update (_, model) = (Just update,) <$> botAction update model
+
+      newHandler (update, action) (_update, model) =
+        bimap (update,) (update,) $
+          -- re-enforcing update here is needed for actions issued in jobs
+          setEffUpdate update (botHandler action model)
 
       newJobs = map addUpdateToJob botJobs
 
       addUpdateToJob BotJob{..} = BotJob
         { botJobSchedule = botJobSchedule
         , botJobTask = \(update, model) ->
-            bimap Right (update,) (setEffUpdate update (botJobTask model))
+            bimap (update,) (update,) (setEffUpdate update (botJobTask model))
         }
