@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 452b646210801cfc4096fd6ebf57b2bd7ce336d82c818fd06bf5cd815fcf44f2
+-- hash: cce902ba528c5bfb69d1ce9b4442c7dec99f0eb200f84f6b4f49794eba564c37
 
 name:           telegram-bot-simple
 version:        0.1.0
@@ -39,9 +39,13 @@ library
       Telegram.Bot.API.Stickers
       Telegram.Bot.API.Types
       Telegram.Bot.API.UpdatingMessages
-      Telegram.Bot.Pure
       Telegram.Bot.Simple
+      Telegram.Bot.Simple.BotApp
+      Telegram.Bot.Simple.Conversation
       Telegram.Bot.Simple.Debug
+      Telegram.Bot.Simple.Eff
+      Telegram.Bot.Simple.InlineKeyboard
+      Telegram.Bot.Simple.Reply
       Telegram.Bot.Simple.UpdateParser
   other-modules:
       Paths_telegram_bot_simple

@@ -7,8 +7,10 @@ import qualified Data.Aeson.Encode.Pretty   as Aeson
 import qualified Data.ByteString.Lazy.Char8 as BSL8
 import           Data.Monoid                ((<>))
 import           Debug.Trace                (trace)
+
 import qualified Telegram.Bot.API           as Telegram
-import           Telegram.Bot.Simple
+import           Telegram.Bot.Simple.BotApp
+import           Telegram.Bot.Simple.Eff
 
 -- * Trace 'Telegram.Update's
 
