@@ -15,7 +15,7 @@ conversationBot
   :: (Eq conversation, Hashable conversation)
   => (Update -> Maybe conversation)
   -> BotApp model action
-  -> BotApp (HashMap conversation model) (conversation, action)
+  -> BotApp (HashMap (Maybe conversation) model) (Maybe conversation, action)
 conversationBot toConversation BotApp{..} = BotApp
   { botInitialModel = conversationInitialModel
   , botAction       = conversationAction
@@ -27,8 +27,8 @@ conversationBot toConversation BotApp{..} = BotApp
 
     conversationAction update conversations = do
       conversation <- toConversation update
-      let model = fromMaybe botInitialModel (HashMap.lookup conversation conversations)
-      (conversation,) <$> botAction update model
+      let model = fromMaybe botInitialModel (HashMap.lookup (Just conversation) conversations)
+      (Just conversation,) <$> botAction update model
 
     conversationHandler (conversation, action) conversations =
       bimap (conversation,) (\m -> HashMap.insert conversation m conversations) $
@@ -40,6 +40,6 @@ conversationBot toConversation BotApp{..} = BotApp
 
     toConversationJob BotJob{..} = BotJob
       { botJobSchedule = botJobSchedule
-      , botJobTask = traverse botJobTask
+      , botJobTask = first (Nothing,) <$> traverse botJobTask
       }
 

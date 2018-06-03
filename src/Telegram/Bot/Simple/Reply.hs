@@ -45,16 +45,19 @@ replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageReques
   , sendMessageReplyMarkup = replyMessageReplyMarkup
   }
 
+-- | Reply in a chat with a given 'SomeChatId'.
+replyTo :: SomeChatId -> ReplyMessage -> BotM ()
+replyTo someChatId rmsg = do
+  let msg = replyMessageToSendMessageRequest someChatId rmsg
+  void $ liftClientM $ sendMessage msg
+
 -- | Reply in the current chat (if possible).
 reply :: ReplyMessage -> BotM ()
 reply rmsg = do
   mchatId <- currentChatId
   case mchatId of
-    Just chatId -> do
-      let msg = replyMessageToSendMessageRequest (SomeChatId chatId) rmsg
-      void $ liftClientM $ sendMessage msg
-    Nothing -> do
-      liftIO $ putStrLn "No chat to reply to"
+    Just chatId -> replyTo (SomeChatId chatId) rmsg
+    Nothing     -> liftIO $ putStrLn "No chat to reply to"
 
 -- | Reply with a text.
 replyText :: Text -> BotM ()

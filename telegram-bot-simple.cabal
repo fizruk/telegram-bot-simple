@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4f2c1b80f5351f2590eeea8c2dc55bf2cc16442fd9da17e54e1467081d5bdcc5
+-- hash: b421e66b7872c5848ac588e02214821a7795e703e12e6939017579d9ebed711d
 
 name:           telegram-bot-simple
 version:        0.1.0
@@ -57,6 +57,7 @@ library
     , aeson-pretty
     , base
     , bytestring
+    , cron
     , hashable
     , http-api-data
     , http-client
@@ -86,6 +87,7 @@ executable example-echo-bot
     , aeson-pretty
     , base
     , bytestring
+    , cron
     , hashable
     , http-api-data
     , http-client
@@ -116,6 +118,7 @@ executable example-todo-bot
     , aeson-pretty
     , base
     , bytestring
+    , cron
     , hashable
     , http-api-data
     , http-client

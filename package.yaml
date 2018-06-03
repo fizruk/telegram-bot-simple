@@ -24,6 +24,7 @@ dependencies:
 - aeson
 - aeson-pretty
 - bytestring
+- cron
 - hashable
 - http-api-data
 - http-client

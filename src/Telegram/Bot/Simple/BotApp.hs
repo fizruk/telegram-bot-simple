@@ -1,16 +1,20 @@
+{-# LANGUAGE DeriveFunctor       #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Telegram.Bot.Simple.BotApp where
 
-import           Control.Concurrent          (forkIO, threadDelay)
+import           Control.Concurrent          (ThreadId, forkIO, threadDelay)
 import           Control.Concurrent.STM
 import           Control.Monad               (void)
 import           Control.Monad.Except        (catchError)
 import           Control.Monad.Trans         (liftIO)
 import           Control.Monad.Trans.Control (liftBaseDiscard)
+import           Data.Bifunctor              (first)
 import           Data.String                 (fromString)
+import           Data.Text                   (Text)
 import           Servant.Client              (ClientEnv, ClientM, ServantError,
                                               runClientM)
+import qualified System.Cron                 as Cron
 import           System.Environment          (getEnv)
 
 import qualified Telegram.Bot.API            as Telegram
@@ -24,13 +28,39 @@ data BotApp model action = BotApp
   }
 
 data BotJob model action = BotJob
-  { botJobSchedule :: Int
-  , botJobTask     :: model -> ClientM model
+  { botJobSchedule :: Text                       -- ^ Cron schedule for the job.
+  , botJobTask     :: model -> Eff action model  -- ^ Job function.
   }
+
+instance Functor (BotJob model) where
+  fmap f BotJob{..} = BotJob{ botJobTask = first f . botJobTask, .. }
+
+runJobTask :: TVar model -> ClientEnv -> (model -> Eff action model) -> IO ()
+runJobTask modelVar env task = do
+  actions <- liftIO $ atomically $ do
+    model <- readTVar modelVar
+    case runEff (task model) of
+      (newModel, actions) -> do
+        writeTVar modelVar newModel
+        return actions
+  res <- flip runClientM env $
+    mapM_ (runBotM Nothing) actions -- TODO: handle issued actions
+  case res of
+    Left err     -> print err
+    Right result -> return ()
+
+scheduleBotJob :: TVar model -> ClientEnv -> BotJob model action -> IO [ThreadId]
+scheduleBotJob modelVar env BotJob{..} = Cron.execSchedule $ do
+  Cron.addJob (runJobTask modelVar env botJobTask) botJobSchedule
+
+scheduleBotJobs :: TVar model -> ClientEnv -> [BotJob model action] -> IO [ThreadId]
+scheduleBotJobs modelVar env jobs = concat
+  <$> traverse (scheduleBotJob modelVar env) jobs
 
 startBotAsync :: BotApp model action -> ClientEnv -> IO (action -> IO ())
 startBotAsync bot env = do
   modelVar <- newTVarIO (botInitialModel bot)
+  jobThreadIds <- scheduleBotJobs modelVar env (botJobs bot)
   fork_ $ startBotPolling bot modelVar
   return undefined
   where
@@ -42,6 +72,7 @@ startBotAsync_ bot env = void (startBotAsync bot env)
 startBot :: BotApp model action -> ClientEnv -> IO (Either ServantError ())
 startBot bot env = do
   modelVar <- newTVarIO (botInitialModel bot)
+  jobThreadIds <- scheduleBotJobs modelVar env (botJobs bot)
   runClientM (startBotPolling bot modelVar) env
 
 startBot_ :: BotApp model action -> ClientEnv -> IO ()
