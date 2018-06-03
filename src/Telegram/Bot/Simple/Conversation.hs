@@ -40,6 +40,7 @@ conversationBot toConversation BotApp{..} = BotApp
 
     toConversationJob BotJob{..} = BotJob
       { botJobSchedule = botJobSchedule
-      , botJobTask = first (Nothing,) <$> traverse botJobTask
+      , botJobTask = HashMap.traverseWithKey $
+          \conversation -> first (conversation,) . botJobTask
       }
 
