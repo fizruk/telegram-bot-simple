@@ -4,7 +4,6 @@ module Telegram.Bot.Simple.BotApp where
 
 import           Control.Concurrent          (forkIO, threadDelay)
 import           Control.Concurrent.STM
-import           Control.Exception.Lifted
 import           Control.Monad.Except
 import           Control.Monad.Trans.Control
 import           Servant.Client
@@ -67,19 +66,16 @@ startPolling handleUpdate = go Nothing
     go lastUpdateId = do
       let inc (UpdateId n) = UpdateId (n + 1)
           offset = fmap inc lastUpdateId
-      res <- try $
+      res <-
         (Right <$> getUpdates
           (GetUpdatesRequest offset Nothing Nothing Nothing))
         `catchError` (pure . Left)
 
       nextUpdateId <- case res of
-        Left (ex :: SomeException) -> do
-          liftIO (print ex)
-          pure lastUpdateId
-        Right (Left servantErr) -> do
+        Left servantErr -> do
           liftIO (print servantErr)
           pure lastUpdateId
-        Right (Right result) -> do
+        Right result -> do
           let updates = responseResult result
               updateIds = map updateUpdateId updates
               maxUpdateId = maximum (Nothing : map Just updateIds)

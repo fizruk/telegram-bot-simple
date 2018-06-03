@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cce902ba528c5bfb69d1ce9b4442c7dec99f0eb200f84f6b4f49794eba564c37
+-- hash: 2383791691460423691f656814b763382f34aa7b27e58d0417e8c3544729c884
 
 name:           telegram-bot-simple
 version:        0.1.0
@@ -61,7 +61,6 @@ library
     , http-api-data
     , http-client
     , http-client-tls
-    , lifted-base
     , monad-control
     , mtl
     , profunctors
@@ -90,7 +89,6 @@ executable example-echo-bot
     , http-api-data
     , http-client
     , http-client-tls
-    , lifted-base
     , monad-control
     , mtl
     , profunctors
@@ -120,7 +118,6 @@ executable example-todo-bot
     , http-api-data
     , http-client
     , http-client-tls
-    , lifted-base
     , monad-control
     , mtl
     , profunctors
