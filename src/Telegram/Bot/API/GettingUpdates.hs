@@ -52,6 +52,7 @@ updateChatId Update{..} = do
     , updateEditedMessage
     , updateChannelPost
     , updateEditedChannelPost
+    , updateCallbackQuery >>= callbackQueryMessage
     ]
   return (chatId messageChat)
 
