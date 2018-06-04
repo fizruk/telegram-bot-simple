@@ -38,8 +38,11 @@ runEff = runWriter . _runEff
 eff :: BotM a -> Eff a ()
 eff e = Eff (tell [e])
 
+withEffect :: BotM action -> model -> Eff action model
+withEffect effect model = eff effect >> pure model
+
 (<#) :: model -> BotM action -> Eff action model
-m <# a = eff a >> pure m
+(<#) = flip withEffect
 
 -- | Set a specific 'Telegram.Update' in a 'BotM' context.
 setBotMUpdate :: Maybe Telegram.Update -> BotM a -> BotM a
