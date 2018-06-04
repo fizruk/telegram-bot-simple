@@ -20,7 +20,7 @@ category:            Web
 description:         Please see the README on Github at <https://github.com/fizruk/arangodb#readme>
 
 dependencies:
-- base
+- base >= 4.9 && <5
 - aeson
 - aeson-pretty
 - bytestring
