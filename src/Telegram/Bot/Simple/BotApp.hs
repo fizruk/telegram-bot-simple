@@ -34,42 +34,46 @@ data BotJob model action = BotJob
 data BotEnv model action = BotEnv
   { botModelVar     :: TVar model
   , botActionsQueue :: TQueue (Maybe Telegram.Update, action)
+  , botClientEnv    :: ClientEnv
+  , botUser         :: Telegram.User
   }
 
 instance Functor (BotJob model) where
   fmap f BotJob{..} = BotJob{ botJobTask = first f . botJobTask, .. }
 
-runJobTask :: BotEnv model action -> ClientEnv -> (model -> Eff action model) -> IO ()
-runJobTask botEnv@BotEnv{..} env task = do
+runJobTask :: BotEnv model action -> (model -> Eff action model) -> IO ()
+runJobTask botEnv@BotEnv{..} task = do
   effects <- liftIO $ atomically $ do
     model <- readTVar botModelVar
     case runEff (task model) of
       (newModel, effects) -> do
         writeTVar botModelVar newModel
         return effects
-  res <- flip runClientM env $
-    mapM_ ((>>= liftIO . issueAction botEnv Nothing) . runBotM Nothing) effects
+  res <- flip runClientM botClientEnv $
+    mapM_ ((>>= liftIO . issueAction botEnv Nothing) . runBotM (BotContext botUser Nothing)) effects
   case res of
     Left err -> print err
     Right _  -> return ()
 
-scheduleBotJob :: BotEnv model action -> ClientEnv -> BotJob model action -> IO [ThreadId]
-scheduleBotJob botEnv env BotJob{..} = Cron.execSchedule $ do
-  Cron.addJob (runJobTask botEnv env botJobTask) botJobSchedule
+scheduleBotJob :: BotEnv model action -> BotJob model action -> IO [ThreadId]
+scheduleBotJob botEnv BotJob{..} = Cron.execSchedule $ do
+  Cron.addJob (runJobTask botEnv botJobTask) botJobSchedule
 
-scheduleBotJobs :: BotEnv model action -> ClientEnv -> [BotJob model action] -> IO [ThreadId]
-scheduleBotJobs botEnv env jobs = concat
-  <$> traverse (scheduleBotJob botEnv env) jobs
+scheduleBotJobs :: BotEnv model action -> [BotJob model action] -> IO [ThreadId]
+scheduleBotJobs botEnv jobs = concat
+  <$> traverse (scheduleBotJob botEnv) jobs
 
-defaultBotEnv :: BotApp model action -> IO (BotEnv model action)
-defaultBotEnv BotApp{..} = BotEnv
+defaultBotEnv :: BotApp model action -> ClientEnv -> IO (BotEnv model action)
+defaultBotEnv BotApp{..} env = BotEnv
   <$> newTVarIO botInitialModel
   <*> newTQueueIO
+  <*> pure env
+  <*> (either (error . show) Telegram.responseResult <$> runClientM Telegram.getMe env)
 
 startBotAsync :: BotApp model action -> ClientEnv -> IO (action -> IO ())
 startBotAsync bot env = do
-  botEnv <- defaultBotEnv bot
-  jobThreadIds <- scheduleBotJobs botEnv env (botJobs bot)
+  botEnv <- defaultBotEnv bot env
+  jobThreadIds <- scheduleBotJobs botEnv (botJobs bot)
   fork_ $ startBotPolling bot botEnv
   return undefined
   where
@@ -80,10 +84,11 @@ startBotAsync_ bot env = void (startBotAsync bot env)
 
 startBot :: BotApp model action -> ClientEnv -> IO (Either ServantError ())
 startBot bot env = do
-  botEnv <- defaultBotEnv bot
-  jobThreadIds <- scheduleBotJobs botEnv env (botJobs bot)
-  _actionsThreadId <- processActionsIndefinitely bot botEnv env
+  botEnv <- defaultBotEnv bot env
+  jobThreadIds <- scheduleBotJobs botEnv (botJobs bot)
+  _actionsThreadId <- processActionsIndefinitely bot botEnv
   runClientM (startBotPolling bot botEnv) env
+
 startBot_ :: BotApp model action -> ClientEnv -> IO ()
 startBot_ bot = void . startBot bot
 
@@ -104,7 +109,7 @@ processAction BotApp{..} botEnv@BotEnv{..} update action = do
       (newModel, effects) -> do
         writeTVar botModelVar newModel
         return effects
-  mapM_ ((>>= liftIO . issueAction botEnv update) . runBotM update) effects
+  mapM_ ((>>= liftIO . issueAction botEnv update) . runBotM (BotContext botUser update)) effects
 
 processActionJob :: BotApp model action -> BotEnv model action -> ClientM ()
 processActionJob botApp botEnv@BotEnv{..} = do
@@ -112,9 +117,9 @@ processActionJob botApp botEnv@BotEnv{..} = do
   processAction botApp botEnv update action
 
 processActionsIndefinitely
-  :: BotApp model action -> BotEnv model action -> ClientEnv -> IO ThreadId
-processActionsIndefinitely botApp botEnv env = forkIO . forever $ do
-  runClientM (processActionJob botApp botEnv) env
+  :: BotApp model action -> BotEnv model action -> IO ThreadId
+processActionsIndefinitely botApp botEnv = forkIO . forever $ do
+  runClientM (processActionJob botApp botEnv) (botClientEnv botEnv)
 
 startBotPolling :: BotApp model action -> BotEnv model action -> ClientM ()
 startBotPolling BotApp{..} botEnv@BotEnv{..} = startPolling handleUpdate

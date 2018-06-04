@@ -12,13 +12,18 @@ import qualified Telegram.Bot.API     as Telegram
 -- | Bot handler context.
 --
 -- The context may include an 'Update' the bot is handling at the moment.
-newtype BotM a = BotM { _runBotM :: ReaderT (Maybe Telegram.Update) ClientM a }
-  deriving (Functor, Applicative, Monad, MonadReader (Maybe Telegram.Update), MonadIO)
+newtype BotM a = BotM { _runBotM :: ReaderT BotContext ClientM a }
+  deriving (Functor, Applicative, Monad, MonadReader BotContext, MonadIO)
+
+data BotContext = BotContext
+  { botContextUser   :: Telegram.User
+  , botContextUpdate :: Maybe Telegram.Update
+  }
 
 liftClientM :: ClientM a -> BotM a
 liftClientM = BotM . lift
 
-runBotM :: Maybe Telegram.Update -> BotM a -> ClientM a
+runBotM :: BotContext -> BotM a -> ClientM a
 runBotM update = flip runReaderT update . _runBotM
 
 newtype Eff action model = Eff { _runEff :: Writer [BotM action] model }
@@ -38,7 +43,9 @@ m <# a = eff a >> pure m
 
 -- | Set a specific 'Telegram.Update' in a 'BotM' context.
 setBotMUpdate :: Maybe Telegram.Update -> BotM a -> BotM a
-setBotMUpdate update (BotM m) = BotM (local (const update) m)
+setBotMUpdate update (BotM m) = BotM (local f m)
+  where
+    f botContext = botContext { botContextUpdate = update }
 
 -- | Set a specific 'Telegram.Update' in every effect of 'Eff' context.
 setEffUpdate :: Maybe Telegram.Update -> Eff action model -> Eff action model

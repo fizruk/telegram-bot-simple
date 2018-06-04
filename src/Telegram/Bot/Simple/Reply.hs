@@ -14,12 +14,12 @@ import           Telegram.Bot.Simple.Eff
 -- | Get current 'ChatId' if possible.
 currentChatId :: BotM (Maybe ChatId)
 currentChatId = do
-  mupdate <- ask
+  mupdate <- asks botContextUpdate
   pure $ updateChatId =<< mupdate
 
 getEditMessageId :: BotM (Maybe EditMessageId)
 getEditMessageId = do
-  mupdate <- ask
+  mupdate <- asks botContextUpdate
   pure $ updateEditMessageId =<< mupdate
 
 updateEditMessageId :: Update -> Maybe EditMessageId
@@ -133,7 +133,15 @@ editUpdateMessage emsg = do
   mEditMessageId <- getEditMessageId
   case mEditMessageId of
     Just editMessageId -> editMessage editMessageId emsg
-    Nothing            -> liftIO $ putStrLn "No chat to reply to"
+    Nothing            -> liftIO $ putStrLn "Can't find message to edit!"
 
 editUpdateMessageText :: Text -> BotM ()
 editUpdateMessageText = editUpdateMessage . toEditMessage
+
+replyOrEdit :: EditMessage -> BotM ()
+replyOrEdit emsg = do
+  uid <- asks (fmap userId . (messageFrom =<<) . (extractUpdateMessage =<<) . botContextUpdate)
+  botUserId <- asks (userId . botContextUser)
+  if uid == Just botUserId
+     then editUpdateMessage emsg
+     else reply (editMessageToReplyMessage emsg)
