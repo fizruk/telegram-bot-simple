@@ -2,12 +2,12 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d8f2328778c4e17813548e356d0be0a0e484b3ad988c4fc1bf2a141041476e30
+-- hash: 4280984aa13d278dcdd078adc9dbae36453194881344c26a0dc1fb8e4f46ee35
 
 name:           telegram-bot-simple
 version:        0.2.0
 synopsis:       Easy to use library for building Telegram bots.
-description:    Please see the README on Github at <https://github.com/fizruk/arangodb#readme>
+description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
 category:       Web
 homepage:       https://github.com/fizruk/telegram-bot-simple#readme
 bug-reports:    https://github.com/fizruk/telegram-bot-simple/issues
