@@ -2,12 +2,13 @@
 {-# LANGUAGE RecordWildCards #-}
 module Telegram.Bot.Simple.Reply where
 
+import           Control.Applicative     ((<|>))
 import           Control.Monad.Reader
 import           Data.String
 import           Data.Text               (Text)
 import           GHC.Generics            (Generic)
 
-import           Telegram.Bot.API
+import           Telegram.Bot.API        as Telegram
 import           Telegram.Bot.Simple.Eff
 
 -- | Get current 'ChatId' if possible.
@@ -15,6 +16,21 @@ currentChatId :: BotM (Maybe ChatId)
 currentChatId = do
   mupdate <- ask
   pure $ updateChatId =<< mupdate
+
+getEditMessageId :: BotM (Maybe EditMessageId)
+getEditMessageId = do
+  mupdate <- ask
+  pure $ updateEditMessageId =<< mupdate
+
+updateEditMessageId :: Update -> Maybe EditMessageId
+updateEditMessageId update
+    = EditInlineMessageId
+      <$> (callbackQueryInlineMessageId =<< updateCallbackQuery update)
+  <|> EditChatMessageId
+      <$> (SomeChatId . chatId . messageChat <$> message)
+      <*> (messageMessageId <$> message)
+  where
+    message = extractUpdateMessage update
 
 -- | Reply message parameters.
 -- This is just like 'SendMessageRequest' but without 'SomeChatId' specified.
@@ -63,3 +79,61 @@ reply rmsg = do
 replyText :: Text -> BotM ()
 replyText = reply . toReplyMessage
 
+data EditMessage = EditMessage
+  { editMessageText                  :: Text
+  , editMessageParseMode             :: Maybe ParseMode
+  , editMessageDisableWebPagePreview :: Maybe Bool
+  , editMessageReplyMarkup           :: Maybe SomeReplyMarkup
+  }
+
+instance IsString EditMessage where
+  fromString = toEditMessage . fromString
+
+data EditMessageId
+  = EditChatMessageId SomeChatId MessageId
+  | EditInlineMessageId MessageId
+
+toEditMessage :: Text -> EditMessage
+toEditMessage msg = EditMessage msg Nothing Nothing Nothing
+
+editMessageToEditMessageTextRequest
+  :: EditMessageId -> EditMessage -> EditMessageTextRequest
+editMessageToEditMessageTextRequest editMessageId EditMessage{..}
+  = EditMessageTextRequest
+    { editMessageTextText = editMessageText
+    , editMessageTextParseMode = editMessageParseMode
+    , editMessageTextDisableWebPagePreview = editMessageDisableWebPagePreview
+    , editMessageTextReplyMarkup = editMessageReplyMarkup
+    , ..
+    }
+  where
+    ( editMessageTextChatId,
+      editMessageTextMessageId,
+      editMessageTextInlineMessageId )
+      = case editMessageId of
+          EditChatMessageId chatId messageId
+            -> (Just chatId, Just messageId, Nothing)
+          EditInlineMessageId messageId
+            -> (Nothing, Nothing, Just messageId)
+
+editMessageToReplyMessage :: EditMessage -> ReplyMessage
+editMessageToReplyMessage EditMessage{..} = (toReplyMessage editMessageText)
+  { replyMessageParseMode = editMessageParseMode
+  , replyMessageDisableWebPagePreview = editMessageDisableWebPagePreview
+  , replyMessageReplyMarkup = editMessageReplyMarkup
+  }
+
+editMessage :: EditMessageId -> EditMessage -> BotM ()
+editMessage editMessageId emsg = do
+  let msg = editMessageToEditMessageTextRequest editMessageId emsg
+  void $ liftClientM $ Telegram.editMessageText msg
+
+editUpdateMessage :: EditMessage -> BotM ()
+editUpdateMessage emsg = do
+  mEditMessageId <- getEditMessageId
+  case mEditMessageId of
+    Just editMessageId -> editMessage editMessageId emsg
+    Nothing            -> liftIO $ putStrLn "No chat to reply to"
+
+editUpdateMessageText :: Text -> BotM ()
+editUpdateMessageText = editUpdateMessage . toEditMessage
