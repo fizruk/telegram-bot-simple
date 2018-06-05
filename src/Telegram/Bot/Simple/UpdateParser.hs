@@ -1,14 +1,15 @@
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFunctor     #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Telegram.Bot.Simple.UpdateParser where
 
-import Control.Applicative
-import Control.Monad.Reader
-import Data.Monoid
-import Data.Text (Text)
-import qualified Data.Text as Text
+import           Control.Applicative
+import           Control.Monad.Reader
+import           Data.Monoid          ((<>))
+import           Data.Text            (Text)
+import qualified Data.Text            as Text
+import           Text.Read            (readMaybe)
 
-import Telegram.Bot.API
+import           Telegram.Bot.API
 
 newtype UpdateParser a = UpdateParser
   { runUpdateParser :: Update -> Maybe a
@@ -59,4 +60,7 @@ callbackQueryDataRead :: UpdateParser Text
 callbackQueryDataRead =  mkParser $ \update -> do
   query <- updateCallbackQuery update
   data_ <- callbackQueryData query
-  pure data_
+  readMaybe (Text.unpack data_)
+
+updateMessageText :: Update -> Maybe Text
+updateMessageText = updateMessage >=> messageText

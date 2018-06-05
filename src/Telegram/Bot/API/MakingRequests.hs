@@ -1,23 +1,22 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings          #-}
 module Telegram.Bot.API.MakingRequests where
 
-import Data.Aeson (ToJSON(..), FromJSON(..))
-import Data.ByteString.Char8 ()
-import Data.Monoid ((<>))
-import Data.Text (Text)
-import qualified Data.Text as Text
-import GHC.Generics (Generic)
-import Servant.Client hiding (Response)
-import Web.HttpApiData (ToHttpApiData(..), FromHttpApiData)
-import Network.Connection
-import Network.HTTP.Client hiding (Response)
-import Network.HTTP.Client.TLS (tlsManagerSettings, mkManagerSettings)
-import Network.Socket (HostName, PortNumber)
+import           Data.Aeson                      (FromJSON (..), ToJSON (..))
+import           Data.Monoid                     ((<>))
+import           Data.String                     (IsString)
+import           Data.Text                       (Text)
+import qualified Data.Text                       as Text
+import           GHC.Generics                    (Generic)
+import           Network.HTTP.Client             (newManager)
+import           Network.HTTP.Client.TLS         (tlsManagerSettings)
+import           Servant.Client                  hiding (Response)
+import           Web.HttpApiData                 (FromHttpApiData,
+                                                  ToHttpApiData (..))
 
-import Telegram.Bot.API.Internal.Utils
-import Telegram.Bot.API.Types
+import           Telegram.Bot.API.Internal.Utils
+import           Telegram.Bot.API.Types
 
 botBaseUrl :: Token -> BaseUrl
 botBaseUrl token = BaseUrl Https "api.telegram.org" 443
@@ -34,6 +33,7 @@ defaultTelegramClientEnvWithProxy (sockHost,sockPort) token = ClientEnv
   <$> newManager (mkManagerSettings (TLSSettingsSimple False False False) (Just (SockSettingsSimple sockHost sockPort)))
   <*> pure (botBaseUrl token)
   <*> pure Nothing
+
 
 defaultRunBot :: Token -> ClientM a -> IO (Either ServantError a)
 defaultRunBot token bot = do
@@ -52,4 +52,4 @@ instance ToJSON   a => ToJSON   (Response a) where toJSON = gtoJSON
 instance FromJSON a => FromJSON (Response a) where parseJSON = gparseJSON
 
 newtype Token = Token Text
-  deriving (Eq, Show, ToHttpApiData, FromHttpApiData, ToJSON, FromJSON)
+  deriving (Eq, Show, ToHttpApiData, FromHttpApiData, ToJSON, FromJSON, IsString)
