@@ -1,5 +1,11 @@
 # telegram-bot-simple
 
+[![Build Status](https://travis-ci.org/fizruk/telegram-bot-simple.svg?branch=master)](https://travis-ci.org/fizruk/telegram-bot-simple)
+
+[![Hackage](https://img.shields.io/hackage/v/telegram-bot-simple.svg)](http://hackage.haskell.org/package/telegram-bot-simple)
+[![Stackage LTS](http://stackage.org/package/telegram-bot-simple/badge/lts)](http://stackage.org/lts/package/telegram-bot-simple)
+[![Stackage Nightly](http://stackage.org/package/telegram-bot-simple/badge/nightly)](http://stackage.org/nightly/package/telegram-bot-simple)
+
 Easy to use library for building Telegram bots in Haskell.
 
 _**Disclaimer:** this library is under development.
