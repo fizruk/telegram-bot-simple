@@ -12,7 +12,8 @@ import GHC.Generics (Generic)
 import Network.Mime
 
 import Telegram.Bot.API
-import Telegram.Bot.Simple
+import Telegram.Bot.Simple.Eff
+import Telegram.Bot.Simple.Reply
 
 -- ** 'ReplyPhoto'
 

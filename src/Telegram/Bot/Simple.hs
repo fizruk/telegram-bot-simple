@@ -11,3 +11,4 @@ import           Telegram.Bot.Simple.Conversation
 import           Telegram.Bot.Simple.Eff
 import           Telegram.Bot.Simple.InlineKeyboard
 import           Telegram.Bot.Simple.Reply
+import           Telegram.Bot.Simple.ReplyDocuments

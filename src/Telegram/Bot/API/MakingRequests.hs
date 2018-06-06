@@ -10,10 +10,12 @@ import           Data.Text                       (Text)
 import qualified Data.Text                       as Text
 import           GHC.Generics                    (Generic)
 import           Network.HTTP.Client             (newManager)
-import           Network.HTTP.Client.TLS         (tlsManagerSettings)
+import           Network.HTTP.Client.TLS         (tlsManagerSettings, mkManagerSettings)
 import           Servant.Client                  hiding (Response)
 import           Web.HttpApiData                 (FromHttpApiData,
                                                   ToHttpApiData (..))
+import           Network.Connection
+import           Network.Socket                  (HostName, PortNumber)
 
 import           Telegram.Bot.API.Internal.Utils
 import           Telegram.Bot.API.Types
