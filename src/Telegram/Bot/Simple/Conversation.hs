@@ -22,8 +22,8 @@ import           Telegram.Bot.Simple.Eff
 conversationBot
   :: (Eq conversation, Hashable conversation)
   => (Telegram.Update -> Maybe conversation)   -- ^ How to disambiguate conversations.
-  -> BotApp model action
-  -> BotApp (HashMap (Maybe conversation) model) (Maybe conversation, action)
+  -> BotApp (Maybe conversation, model) action
+  -> BotApp (HashMap (Maybe conversation) (Maybe conversation, model)) (Maybe conversation, action)
 conversationBot toConversation BotApp{..} = BotApp
   { botInitialModel = conversationInitialModel
   , botAction       = conversationAction
@@ -35,14 +35,14 @@ conversationBot toConversation BotApp{..} = BotApp
 
     conversationAction update conversations = do
       conversation <- toConversation update
-      let model = fromMaybe botInitialModel (HashMap.lookup (Just conversation) conversations)
-      (Just conversation,) <$> botAction update model
+      let (_, model) = fromMaybe botInitialModel (HashMap.lookup (Just conversation) conversations)
+      (Just conversation,) <$> botAction update (Just conversation, model)
 
     conversationHandler (conversation, action) conversations =
       bimap (conversation,) (\m -> HashMap.insert conversation m conversations) $
-        botHandler action model
+        botHandler action (conversation, model)
       where
-        model = fromMaybe botInitialModel (HashMap.lookup conversation conversations)
+        (_, model) = fromMaybe botInitialModel (HashMap.lookup conversation conversations)
 
     conversationJobs = map toConversationJob botJobs
 
