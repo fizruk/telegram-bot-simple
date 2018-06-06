@@ -56,8 +56,14 @@ command name = do
       -> pure (Text.unwords ws)
     _ -> fail "not that command"
 
-callbackQueryDataRead :: UpdateParser Text
-callbackQueryDataRead =  mkParser $ \update -> do
+-- callbackQueryDataRead :: UpdateParser Text
+-- callbackQueryDataRead =  mkParser $ \update -> do
+--   query <- updateCallbackQuery update
+--   data_ <- callbackQueryData query
+--   readMaybe (Text.unpack data_)
+
+callbackQueryDataRead :: Read a => UpdateParser a
+callbackQueryDataRead = mkParser $ \update -> do
   query <- updateCallbackQuery update
   data_ <- callbackQueryData query
   readMaybe (Text.unpack data_)
