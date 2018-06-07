@@ -145,3 +145,41 @@ replyOrEdit emsg = do
   if uid == Just botUserId
      then editUpdateMessage emsg
      else reply (editMessageToReplyMessage emsg)
+
+
+
+-- | Reply answerCallbackQuery parameters.
+-- This is just like 'AnswerCallbackQueryRequest' but without 'CallbackQueryId' specified.
+data ReplyAnswerCallbackQuery = ReplyAnswerCallbackQuery
+  { replyAnswerCallbackQueryText            :: Maybe Text -- | ^ Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters
+  , replyAnswerCallbackQueryShowAlert       :: Maybe Bool -- | ^ If true, an alert will be shown by the client instead of a notification at the top of the chat screen. Defaults to false.
+  , replyAnswerCallbackQueryUrl             :: Maybe Text -- | ^ URL that will be opened by the user's client. If you have created a Game and accepted the conditions via @Botfather, specify the URL that opens your game – note that this will only work if the query comes from a callback_game button. Otherwise, you may use links like t.me/your_bot?start=XXXX that open your bot with a parameter.
+  , replyAnswerCallbackQueryCacheTime       :: Maybe Int  -- | ^ The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0.
+  } deriving (Generic)
+
+toReplyAnswerCallbackQuery :: Maybe Text -> ReplyAnswerCallbackQuery
+toReplyAnswerCallbackQuery text = ReplyAnswerCallbackQuery text Nothing Nothing Nothing
+
+replyAnswerCBQToAnswerCBQRequest :: CallbackQueryId -> ReplyAnswerCallbackQuery -> AnswerCallbackQueryRequest
+replyAnswerCBQToAnswerCBQRequest callbackQueryId ReplyAnswerCallbackQuery{..} = AnswerCallbackQueryRequest
+  { answerCallbackQueryCallbackQueryId = callbackQueryId
+  , answerCallbackQueryText            = replyAnswerCallbackQueryText
+  , answerCallbackQueryShowAlert       = replyAnswerCallbackQueryShowAlert
+  , answerCallbackQueryUrl             = replyAnswerCallbackQueryUrl
+  , answerCallbackQueryCacheTime       = replyAnswerCallbackQueryCacheTime
+  }
+
+replyCallbackQueryRequest :: ReplyAnswerCallbackQuery -> BotM ()
+replyCallbackQueryRequest racb = do
+  mcbId <- currentCallbackQueryId
+  case mcbId of
+    Just cbId -> do
+      let cBQ = replyAnswerCBQToAnswerCBQRequest cbId racb
+      void $ liftClientM $ answerCallbackQuery cBQ
+    Nothing -> do
+      liftIO $ putStrLn "No chat to reply to"
+
+
+replyCallbackQuery :: Maybe Text -> BotM()
+replyCallbackQuery text = replyCallbackQueryRequest $ toReplyAnswerCallbackQuery text 
+
