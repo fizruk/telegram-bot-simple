@@ -4,6 +4,7 @@ module Telegram.Bot.Simple (
   module Telegram.Bot.Simple.Eff,
   module Telegram.Bot.Simple.InlineKeyboard,
   module Telegram.Bot.Simple.Reply,
+  module Telegram.Bot.Simple.ReplyDocuments,
 ) where
 
 import           Telegram.Bot.Simple.BotApp

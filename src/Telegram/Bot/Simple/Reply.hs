@@ -17,6 +17,17 @@ currentChatId = do
   mupdate <- asks botContextUpdate
   pure $ updateChatId =<< mupdate
 
+currentCallbackQueryId :: BotM (Maybe CallbackQueryId)
+currentCallbackQueryId = do
+  mupdate <- asks botContextUpdate
+  pure $ do
+    Update{..} <- mupdate
+    callbackQID updateCallbackQuery
+  where
+    callbackQID mupdateCallbackQuery = case mupdateCallbackQuery of
+      Just cb -> Just (callbackQueryId cb)
+      Nothing -> Nothing
+
 getEditMessageId :: BotM (Maybe EditMessageId)
 getEditMessageId = do
   mupdate <- asks botContextUpdate
