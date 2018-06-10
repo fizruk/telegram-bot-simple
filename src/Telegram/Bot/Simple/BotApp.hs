@@ -25,8 +25,7 @@ import           Telegram.Bot.Simple.BotApp.Internal
 -- directly to the bot.
 startBotAsync :: BotApp model action -> ClientEnv -> IO (action -> IO ())
 startBotAsync bot env = do
-  botEnv <- defaultBotEnv bot env
-  jobThreadIds <- scheduleBotJobs botEnv (botJobs bot)
+  botEnv <- startBotEnv bot env
   fork_ $ startBotPolling bot botEnv
   return (issueAction botEnv Nothing)
   where
@@ -39,9 +38,7 @@ startBotAsync_ bot env = void (startBotAsync bot env)
 -- | Start bot with update polling in the main thread.
 startBot :: BotApp model action -> ClientEnv -> IO (Either ServantError ())
 startBot bot env = do
-  botEnv <- defaultBotEnv bot env
-  jobThreadIds <- scheduleBotJobs botEnv (botJobs bot)
-  _actionsThreadId <- processActionsIndefinitely bot botEnv
+  botEnv <- startBotEnv bot env
   runClientM (startBotPolling bot botEnv) env
 
 -- | Like 'startBot', but ignores result.
@@ -57,3 +54,10 @@ startBot_ bot = void . startBot bot
 -- @
 getEnvToken :: String -> IO Telegram.Token
 getEnvToken varName = fromString <$> getEnv varName
+
+startBotEnv :: BotApp model action -> ClientEnv -> IO (BotEnv model action)
+startBotEnv bot env = do
+  botEnv <- defaultBotEnv bot env
+  _jobThreadIds <- scheduleBotJobs botEnv (botJobs bot)
+  _actionsThreadId <- processActionsIndefinitely bot botEnv
+  return botEnv
