@@ -35,6 +35,7 @@ library
       Telegram.Bot.API.Internal.Utils
       Telegram.Bot.API.MakingRequests
       Telegram.Bot.API.Methods
+      Telegram.Bot.API.MultipartFormData
       Telegram.Bot.API.Payments
       Telegram.Bot.API.Stickers
       Telegram.Bot.API.Types
@@ -47,6 +48,7 @@ library
       Telegram.Bot.Simple.Eff
       Telegram.Bot.Simple.InlineKeyboard
       Telegram.Bot.Simple.Reply
+      Telegram.Bot.Simple.ReplyDocuments
       Telegram.Bot.Simple.UpdateParser
   other-modules:
       Paths_telegram_bot_simple
@@ -58,17 +60,24 @@ library
     , aeson-pretty
     , base >=4.9 && <5
     , bytestring
+    , containers
+    , connection
     , cron
     , hashable
     , http-api-data
     , http-client
     , http-client-tls
+    , http-media
+    , http-types
+    , mime-types
     , monad-control
     , mtl
+    , network
     , pretty-show
     , profunctors
     , servant
     , servant-client
+    , servant-client-core
     , split
     , stm
     , template-haskell
@@ -99,6 +108,7 @@ executable example-echo-bot
     , profunctors
     , servant
     , servant-client
+    , servant-client-core
     , split
     , stm
     , telegram-bot-simple
@@ -130,6 +140,7 @@ executable example-todo-bot
     , profunctors
     , servant
     , servant-client
+    , servant-client-core
     , split
     , stm
     , telegram-bot-simple

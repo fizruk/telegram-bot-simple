@@ -44,6 +44,10 @@ plainText = do
     then fail "command"
     else pure t
 
+defHead :: a -> [a] -> a
+defHead def [] = def
+defHead _ list = head list
+
 command :: Text -> UpdateParser Text
 command name = do
   t <- text
@@ -51,6 +55,12 @@ command name = do
     (w:ws) | w == "/" <> name
       -> pure (Text.unwords ws)
     _ -> fail "not that command"
+
+-- callbackQueryDataRead :: UpdateParser Text
+-- callbackQueryDataRead =  mkParser $ \update -> do
+--   query <- updateCallbackQuery update
+--   data_ <- callbackQueryData query
+--   readMaybe (Text.unpack data_)
 
 callbackQueryDataRead :: Read a => UpdateParser a
 callbackQueryDataRead = mkParser $ \update -> do

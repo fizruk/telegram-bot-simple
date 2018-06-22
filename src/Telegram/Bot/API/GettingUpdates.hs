@@ -12,6 +12,7 @@ import           Data.Int                        (Int32)
 import           Data.Proxy
 import           GHC.Generics                    (Generic)
 
+
 import           Servant.API
 import           Servant.Client                  hiding (Response)
 

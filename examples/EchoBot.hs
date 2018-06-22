@@ -13,22 +13,23 @@ type Model = ()
 data Action
   = NoOp
   | Echo Text
+  deriving(Show)
 
-echoBot :: BotApp Model Action
+echoBot :: BotApp (Maybe ChatId, Model) Action
 echoBot = BotApp
-  { botInitialModel = ()
+  { botInitialModel = (Nothing, ())
   , botAction = updateToAction
   , botHandler = handleAction
   , botJobs = []
   }
 
-updateToAction :: Update -> Model -> Maybe Action
+updateToAction :: Update -> (Maybe ChatId, Model) -> Maybe Action
 updateToAction update _ =
   case updateMessageText update of
     Just text -> Just (Echo text)
     Nothing   -> Nothing
 
-handleAction :: Action -> Model -> Eff Action Model
+handleAction :: Action -> (Maybe ChatId, Model) -> Eff Action (Maybe ChatId, Model)
 handleAction action model = case action of
   NoOp -> pure model
   Echo msg -> model <# do
