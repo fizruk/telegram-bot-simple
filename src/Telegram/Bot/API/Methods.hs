@@ -5,19 +5,15 @@
 module Telegram.Bot.API.Methods where
 
 import Data.Aeson
-import Data.Coerce (coerce)
 import Data.Proxy
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import GHC.Generics (Generic)
-import GHC.Int (Int32)
 import Servant.API
 import Servant.Client hiding (Response)
 
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
-
-type RequiredQueryParam = QueryParam' '[Required, Strict]
 
 -- * Available methods
 
@@ -43,9 +39,6 @@ type DeleteMessage = "deleteMessage"
 -- On success, the sent Bool is returned.
 deleteMessage :: ChatId -> MessageId -> ClientM (Response Bool)
 deleteMessage = client (Proxy @DeleteMessage)
-
-instance ToHttpApiData ChatId where toUrlPiece a = pack . show @Integer $ coerce a
-instance ToHttpApiData MessageId where toUrlPiece a = pack . show @Int32 $ coerce a
 
 -- ** 'sendMessage'
 

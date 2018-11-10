@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4280984aa13d278dcdd078adc9dbae36453194881344c26a0dc1fb8e4f46ee35
+-- hash: b0f1a9c9eb60eb7bbec81ed3a356f6fbdb1c0eded979812657501e07cdebc427
 
 name:           telegram-bot-simple
 version:        0.2.0
@@ -29,6 +29,7 @@ source-repository head
 library
   exposed-modules:
       Telegram.Bot.API
+      Telegram.Bot.API.Chat
       Telegram.Bot.API.Games
       Telegram.Bot.API.GettingUpdates
       Telegram.Bot.API.InlineMode
