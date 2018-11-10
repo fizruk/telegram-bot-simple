@@ -5,7 +5,7 @@
 module Telegram.Bot.API.Methods where
 
 import Data.Aeson
-import Data.Coerce (coerce, Coercible)
+import Data.Coerce (coerce)
 import Data.Proxy
 import Data.Text (Text, pack)
 import GHC.Generics (Generic)
