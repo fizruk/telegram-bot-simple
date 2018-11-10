@@ -5,9 +5,9 @@
 module Telegram.Bot.API.Methods where
 
 import Data.Aeson
-import Data.Coerce (coerce)
+import Data.Coerce (coerce, Coercible)
 import Data.Proxy
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import GHC.Generics (Generic)
 import GHC.Int (Int32)
 import Servant.API
@@ -35,17 +35,17 @@ getMe = client (Proxy @GetMe)
 
 -- | Notice that deleting by POST method was bugged, so we use GET
 type DeleteMessage = "deleteMessage"
-  :> RequiredQueryParam "chat_id" Integer
-  :> RequiredQueryParam "message_id" Int32
+  :> RequiredQueryParam "chat_id" ChatId
+  :> RequiredQueryParam "message_id" MessageId
   :> Get '[JSON] (Response Bool)
 
 -- | Use this method to delete message in chat.
 -- On success, the sent Bool is returned.
 deleteMessage :: ChatId -> MessageId -> ClientM (Response Bool)
-deleteMessage chatId messageId = client (Proxy @DeleteMessage) chatId' messageId'
-  where
-    chatId' = coerce chatId
-    messageId' = coerce messageId
+deleteMessage = client (Proxy @DeleteMessage)
+
+instance ToHttpApiData ChatId where toUrlPiece a = pack . show @Integer $ coerce a
+instance ToHttpApiData MessageId where toUrlPiece a = pack . show @Int32 $ coerce a
 
 -- ** 'sendMessage'
 
