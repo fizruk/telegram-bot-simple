@@ -1,18 +1,24 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..))
+import Data.Coerce (coerce)
 import Data.Int (Int32)
 import Data.Hashable (Hashable)
 import Data.String
-import Data.Text (Text)
+import Data.Text (Text, pack)
 import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
+import Servant.API
 
 import Telegram.Bot.API.Internal.Utils
+
+type RequiredQueryParam = QueryParam' '[Required, Strict]
 
 newtype Seconds = Seconds Int32
   deriving (Eq, Show, Num, ToJSON, FromJSON)
@@ -36,6 +42,8 @@ data User = User
 -- | Unique identifier for this user or bot.
 newtype UserId = UserId Int32
   deriving (Eq, Show, ToJSON, FromJSON)
+
+instance ToHttpApiData UserId where toUrlPiece = pack . show @Int32 . coerce
 
 -- ** Chat
 
@@ -61,6 +69,8 @@ data Chat = Chat
 -- | Unique identifier for this chat.
 newtype ChatId = ChatId Integer
   deriving (Eq, Show, ToJSON, FromJSON, Hashable)
+
+instance ToHttpApiData ChatId where toUrlPiece a = pack . show @Integer $ coerce a
 
 -- | Type of chat.
 data ChatType
@@ -128,6 +138,8 @@ data Message = Message
 -- | Unique message identifier inside this chat.
 newtype MessageId = MessageId Int32
   deriving (Eq, Show, ToJSON, FromJSON)
+
+instance ToHttpApiData MessageId where toUrlPiece a = pack . show @Int32 $ coerce a
 
 -- | The unique identifier of a media message group a message belongs to.
 newtype MediaGroupId = MediaGroupId Text
