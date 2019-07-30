@@ -169,6 +169,7 @@ data MessageEntityType
   | MessageEntityPre
   | MessageEntityTextLink
   | MessageEntityTextMention
+  | MessageEntityCashtag
   deriving (Eq, Show, Generic)
 
 instance ToJSON   MessageEntityType where toJSON = gtoJSON
