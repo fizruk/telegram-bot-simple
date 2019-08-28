@@ -1,8 +1,10 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b0f1a9c9eb60eb7bbec81ed3a356f6fbdb1c0eded979812657501e07cdebc427
+-- hash: 35836d4811270baa748cbe4854f38e1889bd220b28fe7b029ee6d3e07a6f1d7b
 
 name:           telegram-bot-simple
 version:        0.2.0
@@ -17,10 +19,9 @@ copyright:      Nickolay Kudasov
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-cabal-version:  >= 1.10
 extra-source-files:
-    CHANGELOG.md
     README.md
+    CHANGELOG.md
 
 source-repository head
   type: git
