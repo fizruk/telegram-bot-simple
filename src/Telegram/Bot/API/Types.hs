@@ -156,7 +156,7 @@ data MessageEntity = MessageEntity
   , messageEntityUser :: Maybe User -- ^ For “text_mention” only, the mentioned user
   } deriving (Generic, Show)
 
--- | Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames), cashtag.
+-- | Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames), cashtag, phone_number
 data MessageEntityType
   = MessageEntityMention
   | MessageEntityHashtag
@@ -170,7 +170,7 @@ data MessageEntityType
   | MessageEntityTextLink
   | MessageEntityTextMention
   | MessageEntityCashtag -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_cashtag.html>. 
-  | MessageEntityPhoneNumber
+  | MessageEntityPhoneNumber -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_phone_number.html>.
   deriving (Eq, Show, Generic)
 
 instance ToJSON   MessageEntityType where toJSON = gtoJSON
