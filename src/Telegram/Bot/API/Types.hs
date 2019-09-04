@@ -170,6 +170,7 @@ data MessageEntityType
   | MessageEntityTextLink
   | MessageEntityTextMention
   | MessageEntityCashtag -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_cashtag.html>. 
+  | MessageEntityPhoneNumber
   deriving (Eq, Show, Generic)
 
 instance ToJSON   MessageEntityType where toJSON = gtoJSON
