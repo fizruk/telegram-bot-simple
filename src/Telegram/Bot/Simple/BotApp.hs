@@ -36,7 +36,7 @@ startBotAsync_ :: BotApp model action -> ClientEnv -> IO ()
 startBotAsync_ bot env = void (startBotAsync bot env)
 
 -- | Start bot with update polling in the main thread.
-startBot :: BotApp model action -> ClientEnv -> IO (Either ServantError ())
+startBot :: BotApp model action -> ClientEnv -> IO (Either ClientError ())
 startBot bot env = do
   botEnv <- startBotEnv bot env
   runClientM (startBotPolling bot botEnv) env
