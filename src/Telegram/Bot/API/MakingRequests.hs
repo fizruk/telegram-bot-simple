@@ -28,7 +28,7 @@ defaultTelegramClientEnv token = ClientEnv
   <*> pure (botBaseUrl token)
   <*> pure Nothing
 
-defaultRunBot :: Token -> ClientM a -> IO (Either ServantError a)
+defaultRunBot :: Token -> ClientM a -> IO (Either ClientError a)
 defaultRunBot token bot = do
   env <- defaultTelegramClientEnv token
   runClientM bot env
