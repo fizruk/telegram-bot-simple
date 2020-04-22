@@ -165,8 +165,8 @@ data MessageEntityType
   | MessageEntityEmail
   | MessageEntityBold
   | MessageEntityItalic
-  | MessageEntityUnderline
-  | MessageEntityStrikethrough
+  | MessageEntityUnderline -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_underline.html>
+  | MessageEntityStrikethrough -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_strikethrough.html>
   | MessageEntityCode
   | MessageEntityPre
   | MessageEntityTextLink
