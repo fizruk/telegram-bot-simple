@@ -149,14 +149,14 @@ newtype MediaGroupId = MediaGroupId Text
 
 -- | This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
 data MessageEntity = MessageEntity
-  { messageEntityType :: MessageEntityType -- ^ Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), underline (underlined text), code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames)
+  { messageEntityType :: MessageEntityType -- ^ Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), underline (underlined text), strikethrough, code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames)
   , messageEntityOffset :: Int32 -- ^ Offset in UTF-16 code units to the start of the entity
   , messageEntityLength :: Int32 -- ^ Length of the entity in UTF-16 code units
   , messageEntityUrl :: Maybe Text -- ^ For “text_link” only, url that will be opened after user taps on the text
   , messageEntityUser :: Maybe User -- ^ For “text_mention” only, the mentioned user
   } deriving (Generic, Show)
 
--- | Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), underline (underlined text), code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames), cashtag, phone_number
+-- | Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), underline (underlined text), strikethrough, code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames), cashtag, phone_number
 data MessageEntityType
   = MessageEntityMention
   | MessageEntityHashtag
@@ -166,6 +166,7 @@ data MessageEntityType
   | MessageEntityBold
   | MessageEntityItalic
   | MessageEntityUnderline
+  | MessageEntityStrikethrough
   | MessageEntityCode
   | MessageEntityPre
   | MessageEntityTextLink
