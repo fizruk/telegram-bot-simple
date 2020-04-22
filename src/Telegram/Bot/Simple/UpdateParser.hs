@@ -26,6 +26,8 @@ instance Alternative UpdateParser where
 instance Monad UpdateParser where
   return = pure
   UpdateParser x >>= f = UpdateParser (\u -> x u >>= flip runUpdateParser u . f)
+
+instance MonadFail UpdateParser where
   fail _ = empty
 
 mkParser :: (Update -> Maybe a) -> UpdateParser a
