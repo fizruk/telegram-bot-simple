@@ -1,3 +1,19 @@
+0.3.0
+---
+
+- Add `underline` and `strikethrough` `MessageEntityTypes` (see [#25]( https://github.com/fizruk/telegram-bot-simple/pull/25 ));
+- Fix for Stack 15 (see [#24]( https://github.com/fizruk/telegram-bot-simple/pull/24 ));
+- Fix installation after breaking change in `servant-0.16` (see [#21]( https://github.com/fizruk/telegram-bot-simple/pull/21 ));
+- Add `phonenumber` type (see [#23]( https://github.com/fizruk/telegram-bot-simple/pull/23 ));
+- Add `cashtag` message entity type (close #19) (see [#20]( https://github.com/fizruk/telegram-bot-simple/pull/20 ));
+- Feat/kick chat member (see [#17]( https://github.com/fizruk/telegram-bot-simple/pull/17 ));
+- Feat/delete message method (see [#16]( https://github.com/fizruk/telegram-bot-simple/pull/16 ));
+- Fix `startBotAsync`, add `processActionsIndefinitely` (see [#12]( https://github.com/fizruk/telegram-bot-simple/pull/12 ));
+- Add some badges to README (Hackage/Stackage/Travis) (see [11f13f3]( https://github.com/fizruk/telegram-bot-simple/commit/11f13f3 ));
+- Remove temporary `files/scripts` from repo (see [6bc9f48]( https://github.com/fizruk/telegram-bot-simple/commit/6bc9f48 ));
+- Add info about LambdaConf 2018 workshop and contributing (see [1ba4d95]( https://github.com/fizruk/telegram-bot-simple/commit/1ba4d95 ));
+- Add `Data.Monoid` import to fix builds on GHC 8.2 (see [c798001]( https://github.com/fizruk/telegram-bot-simple/commit/c798001 ));
+
 0.2.0
 ---
 

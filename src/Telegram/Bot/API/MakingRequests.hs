@@ -23,10 +23,9 @@ botBaseUrl token = BaseUrl Https "api.telegram.org" 443
   (Text.unpack ("/bot" <> toUrlPiece token))
 
 defaultTelegramClientEnv :: Token -> IO ClientEnv
-defaultTelegramClientEnv token = ClientEnv
+defaultTelegramClientEnv token = mkClientEnv
   <$> newManager tlsManagerSettings
   <*> pure (botBaseUrl token)
-  <*> pure Nothing
 
 defaultRunBot :: Token -> ClientM a -> IO (Either ClientError a)
 defaultRunBot token bot = do

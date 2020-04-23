@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.1.
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 35836d4811270baa748cbe4854f38e1889bd220b28fe7b029ee6d3e07a6f1d7b
+-- hash: 815631caa1274f24031eaa1ec3c4ea08c75d46b660a0b266eeea28b0f123c325
 
 name:           telegram-bot-simple
-version:        0.2.0
+version:        0.3.0
 synopsis:       Easy to use library for building Telegram bots.
 description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
 category:       Web
