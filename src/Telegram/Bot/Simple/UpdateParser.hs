@@ -30,7 +30,7 @@ instance Monad UpdateParser where
 
 #if MIN_VERSION_base(4,13,0)
 instance MonadFail UpdateParser where
-  fail = errorWithoutStackTrace
+  fail _ = empty
 #endif
 
 mkParser :: (Update -> Maybe a) -> UpdateParser a
