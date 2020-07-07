@@ -61,6 +61,7 @@ library
     , base >=4.9 && <5
     , bytestring
     , cron
+    , filepath
     , hashable
     , http-api-data
     , http-client
@@ -71,6 +72,7 @@ library
     , profunctors
     , servant
     , servant-client
+    , servant-multipart
     , split
     , stm
     , template-haskell
