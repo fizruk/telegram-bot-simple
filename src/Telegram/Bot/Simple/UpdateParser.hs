@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveFunctor     #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP #-}
 module Telegram.Bot.Simple.UpdateParser where
 
 import           Control.Applicative
@@ -26,6 +27,11 @@ instance Alternative UpdateParser where
 instance Monad UpdateParser where
   return = pure
   UpdateParser x >>= f = UpdateParser (\u -> x u >>= flip runUpdateParser u . f)
+
+#if MIN_VERSION_base(4,13,0)
+instance MonadFail UpdateParser where
+  fail _ = empty
+#endif
 
 mkParser :: (Update -> Maybe a) -> UpdateParser a
 mkParser = UpdateParser
