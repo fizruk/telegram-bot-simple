@@ -1,3 +1,9 @@
+0.3.1
+---
+
+- Implement sendDocument function support. (see [#31]( https://github.com/fizruk/telegram-bot-simple/pull/31 ));
+- Add Travis CI (see [#32]( https://github.com/fizruk/telegram-bot-simple/pull/32 ));
+- Add MonadFail instance for UpdateParser (see [#27]( https://github.com/fizruk/telegram-bot-simple/pull/27 ));
 0.3.0
 ---
 
