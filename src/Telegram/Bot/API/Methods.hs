@@ -86,6 +86,7 @@ instance FromJSON SomeReplyMarkup where parseJSON = genericSomeParseJSON
 data ParseMode
   = Markdown
   | HTML
+  | MarkdownV2
   deriving (Generic)
 
 instance ToJSON   ParseMode
