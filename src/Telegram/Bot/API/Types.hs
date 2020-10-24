@@ -137,7 +137,7 @@ data Message = Message
 
 -- | Unique message identifier inside this chat.
 newtype MessageId = MessageId Int32
-  deriving (Eq, Show, ToJSON, FromJSON)
+  deriving (Eq, Show, ToJSON, FromJSON, Hashable)
 
 instance ToHttpApiData MessageId where toUrlPiece a = pack . show @Int32 $ coerce a
 
