@@ -1,3 +1,8 @@
+0.3.2
+---
+
+- Implement forwardMessage API method (see [#35]( https://github.com/fizruk/telegram-bot-simple/pull/35 ));
+- Add MarkdownV2 parse mode (see [#33]( https://github.com/fizruk/telegram-bot-simple/pull/33 ));
 0.3.1
 ---
 
