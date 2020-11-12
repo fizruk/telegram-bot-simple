@@ -36,6 +36,7 @@ dependencies:
 - pretty-show
 - servant
 - servant-client
+- servant-multipart
 - split
 - stm
 - template-haskell

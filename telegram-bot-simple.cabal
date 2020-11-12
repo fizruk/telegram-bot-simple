@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 815631caa1274f24031eaa1ec3c4ea08c75d46b660a0b266eeea28b0f123c325
+-- hash: 6d52edc3fb6015df0405b5a83558655525a8de69bd624202d18729eacbb353a1
 
 name:           telegram-bot-simple
 version:        0.3.3
@@ -19,7 +19,6 @@ copyright:      Nickolay Kudasov
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-Tested-with:    GHC ==8.4.4 || ==8.6.5 || ==8.8.3 || ==8.10.1
 extra-source-files:
     README.md
     CHANGELOG.md
@@ -61,7 +60,7 @@ library
     , aeson-pretty
     , base >=4.9 && <5
     , bytestring
-    , cron
+    , cron >=0.7.0
     , filepath
     , hashable
     , http-api-data
@@ -93,7 +92,8 @@ executable example-echo-bot
     , aeson-pretty
     , base >=4.9 && <5
     , bytestring
-    , cron
+    , cron >=0.7.0
+    , filepath
     , hashable
     , http-api-data
     , http-client
@@ -104,6 +104,7 @@ executable example-echo-bot
     , profunctors
     , servant
     , servant-client
+    , servant-multipart
     , split
     , stm
     , telegram-bot-simple
@@ -124,7 +125,8 @@ executable example-todo-bot
     , aeson-pretty
     , base >=4.9 && <5
     , bytestring
-    , cron
+    , cron >=0.7.0
+    , filepath
     , hashable
     , http-api-data
     , http-client
@@ -135,6 +137,7 @@ executable example-todo-bot
     , profunctors
     , servant
     , servant-client
+    , servant-multipart
     , split
     , stm
     , telegram-bot-simple
