@@ -3,3 +3,4 @@ packages:
   - '.'
 extra-deps:
   - servant-multipart-0.11.5@sha256:1633f715b5b53d648a1da69839bdc5046599f4f7244944d4bbf852dba38d8f4b,2319
+  - cron-0.7.0 # See https://github.com/fizruk/telegram-bot-simple/issues/37 for more details

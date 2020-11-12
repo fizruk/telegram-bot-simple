@@ -11,6 +11,13 @@ packages:
       sha256: b3e1fd2ad2e654475be000c2f0ac6f717b5499436fa73eec50ceccddf352dcec
   original:
     hackage: servant-multipart-0.11.5@sha256:1633f715b5b53d648a1da69839bdc5046599f4f7244944d4bbf852dba38d8f4b,2319
+- completed:
+    hackage: cron-0.7.0@sha256:2a9e5637d4ebfd8db34444d340be8bd7f1968aa8b1078cc0bc7bef47a8b5af8e,3878
+    pantry-tree:
+      size: 1680
+      sha256: bcc8ad18105b96d09caf8bb6fcbe09d69145d8486cc7c67ecafb7524a47f047f
+  original:
+    hackage: cron-0.7.0
 snapshots:
 - completed:
     size: 492015
