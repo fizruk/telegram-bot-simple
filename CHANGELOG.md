@@ -1,3 +1,8 @@
+0.3.4
+---
+
+- Fix cron job, restrict dependency on cron (see [#38](https://github.com/fizruk/telegram-bot-simple/pull/38), [#39](https://github.com/fizruk/telegram-bot-simple/pull/39));
+
 0.3.3
 ---
 

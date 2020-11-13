@@ -7,7 +7,7 @@ cabal-version: 1.12
 -- hash: 6d52edc3fb6015df0405b5a83558655525a8de69bd624202d18729eacbb353a1
 
 name:           telegram-bot-simple
-version:        0.3.3
+version:        0.3.4
 synopsis:       Easy to use library for building Telegram bots.
 description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
 category:       Web
