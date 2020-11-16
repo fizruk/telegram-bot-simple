@@ -27,6 +27,9 @@ instance Alternative UpdateParser where
 instance Monad UpdateParser where
   return = pure
   UpdateParser x >>= f = UpdateParser (\u -> x u >>= flip runUpdateParser u . f)
+#if !MIN_VERSION_base(4,13,0)
+  fail _ = empty
+#endif
 
 #if MIN_VERSION_base(4,13,0)
 instance MonadFail UpdateParser where
