@@ -1,3 +1,8 @@
+0.3.5
+---
+
+- Restore backward compatibility with older GHCs (see [#40](https://github.com/fizruk/telegram-bot-simple/pull/40));
+
 0.3.4
 ---
 
