@@ -35,6 +35,8 @@ library
       Telegram.Bot.API.Games
       Telegram.Bot.API.GettingUpdates
       Telegram.Bot.API.InlineMode
+      Telegram.Bot.API.InlineMode.InlineQueryResult
+      Telegram.Bot.API.InlineMode.InputMessageContent
       Telegram.Bot.API.Internal.Utils
       Telegram.Bot.API.MakingRequests
       Telegram.Bot.API.Methods
