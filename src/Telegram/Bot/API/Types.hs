@@ -192,6 +192,8 @@ data PhotoSize = PhotoSize
 newtype FileId = FileId Text
   deriving (Eq, Show, ToJSON, FromJSON)
 
+instance ToHttpApiData FileId where toUrlPiece = coerce
+
 -- ** 'Audio'
 
 -- | This object represents an audio file to be treated as music by the Telegram clients.

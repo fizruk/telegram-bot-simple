@@ -213,3 +213,12 @@ toSendDocument ch df = SendDocumentRequest
   , sendDocumentReplyToMessageId = Nothing
   , sendDocumentReplyMarkup = Nothing
   }
+
+-- ** 'getFile'
+type GetFile
+  = "getFile"
+  :> RequiredQueryParam "file_id" FileId
+  :> Get '[JSON] (Response File)
+
+getFile :: FileId -> ClientM (Response File)
+getFile = client (Proxy @GetFile)
