@@ -5,8 +5,8 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE CPP #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Telegram.Bot.API.Internal.Utils where
 
 import Control.Applicative ((<|>))
@@ -99,14 +99,7 @@ instance (GSomeJSON f, GSomeJSON g) => GSomeJSON (f :+: g) where
       = L1 <$> gsomeParseJSON js
     <|> R1 <$> gsomeParseJSON js
 
-
-
-
-
-
-
--- Instance Monoid for TH of ghc 8.6
-
+-- Instance Monoid for TH of ghc < 8.6
 #if !MIN_VERSION_template_haskell(2,17,0)
 
 instance Semigroup a => Semigroup (Q a) where
