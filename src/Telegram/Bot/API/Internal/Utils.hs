@@ -17,6 +17,7 @@ import Data.Char (isUpper, toUpper, toLower)
 import Data.List (intercalate)
 import GHC.Generics
 import Language.Haskell.TH
+import Control.Applicative (liftA2)
 
 deriveJSON' :: Name -> Q [Dec]
 deriveJSON' name = deriveJSON (jsonOptions (nameBase name)) name
