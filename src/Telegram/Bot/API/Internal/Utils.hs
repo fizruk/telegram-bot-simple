@@ -106,7 +106,7 @@ instance (GSomeJSON f, GSomeJSON g) => GSomeJSON (f :+: g) where
 
 -- Instance Monoid for TH of ghc 8.6
 
-#if MIN_VERSION_template_haskell(2,17,0)
+#if !MIN_VERSION_template_haskell(2,17,0)
 
 instance Semigroup a => Semigroup (Q a) where
   (<>) = liftA2 (<>)
