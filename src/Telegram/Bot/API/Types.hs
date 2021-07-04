@@ -432,28 +432,31 @@ data ResponseParameters = ResponseParameters
   , responseParametersRetryAfter :: Maybe Seconds -- ^ In case of exceeding flood control, the number of seconds left to wait before the request can be repeated
   } deriving (Show, Generic)
 
-deriveJSON' ''User
-deriveJSON' ''Chat
-deriveJSON' ''Message
-deriveJSON' ''MessageEntity
-deriveJSON' ''PhotoSize
-deriveJSON' ''Audio
-deriveJSON' ''Document
-deriveJSON' ''Video
-deriveJSON' ''Voice
-deriveJSON' ''VideoNote
-deriveJSON' ''Contact
-deriveJSON' ''Location
-deriveJSON' ''Venue
-deriveJSON' ''UserProfilePhotos
-deriveJSON' ''File
-deriveJSON' ''ReplyKeyboardMarkup
-deriveJSON' ''KeyboardButton
-deriveJSON' ''ReplyKeyboardRemove
-deriveJSON' ''InlineKeyboardMarkup
-deriveJSON' ''InlineKeyboardButton
-deriveJSON' ''CallbackQuery
-deriveJSON' ''ForceReply
-deriveJSON' ''ChatPhoto
-deriveJSON' ''ChatMember
-deriveJSON' ''ResponseParameters
+
+foldMap deriveJSON' 
+  [ ''User
+  , ''Chat
+  , ''Message
+  , ''MessageEntity
+  , ''PhotoSize
+  , ''Audio
+  , ''Document
+  , ''Video
+  , ''Voice
+  , ''VideoNote
+  , ''Contact
+  , ''Location
+  , ''Venue
+  , ''UserProfilePhotos
+  , ''File
+  , ''ReplyKeyboardMarkup
+  , ''KeyboardButton
+  , ''ReplyKeyboardRemove
+  , ''InlineKeyboardMarkup
+  , ''InlineKeyboardButton
+  , ''CallbackQuery
+  , ''ForceReply
+  , ''ChatPhoto
+  , ''ChatMember
+  , ''ResponseParameters
+  ]
