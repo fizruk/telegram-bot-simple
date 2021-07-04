@@ -1,6 +1,6 @@
-resolver: lts-15.8
+resolver: nightly-2021-07-02
 packages:
-  - '.'
+- .
 extra-deps:
-  - servant-multipart-0.11.5@sha256:1633f715b5b53d648a1da69839bdc5046599f4f7244944d4bbf852dba38d8f4b,2319
-  - cron-0.7.0 # See https://github.com/fizruk/telegram-bot-simple/issues/37 for more details
+- servant-client-0.18.3@sha256:570145df5209b245a141eec6841fbca6785cd88e073e85eecbeff4438ca34784,4602
+- servant-multipart-client-0.12.1@sha256:d043063e2f33eab86840f87c4bdb16eb3fe4a5847a0b118e4f4265cf3ba4c9b3,1892

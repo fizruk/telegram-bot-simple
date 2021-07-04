@@ -19,6 +19,8 @@ import GHC.Generics (Generic)
 import Servant.API
 import Servant.Client hiding (Response)
 import Servant.Multipart
+import Servant.Multipart.Client
+import Servant.Multipart.API
 import System.FilePath
 
 import Telegram.Bot.API.Internal.Utils

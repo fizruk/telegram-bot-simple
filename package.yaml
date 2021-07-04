@@ -37,6 +37,8 @@ dependencies:
 - servant
 - servant-client
 - servant-multipart
+- servant-multipart-client
+- servant-multipart-api
 - split
 - stm
 - template-haskell
