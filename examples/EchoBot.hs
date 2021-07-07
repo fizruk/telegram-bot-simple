@@ -30,9 +30,9 @@ updateToAction :: Update -> Model -> Maybe Action
 updateToAction update _
   | isJust $ updateInlineQuery update =  do
       query <- updateInlineQuery update
-      let id = inlineQueryId query
+      let queryId = inlineQueryId query
       let msg =  inlineQueryQuery query
-      Just $ InlineEcho id msg
+      Just $ InlineEcho queryId msg
   | otherwise = case updateMessageText update of
       Just text -> Just (Echo text)
       Nothing   -> Nothing
@@ -40,11 +40,11 @@ updateToAction update _
 handleAction :: Action -> Model -> Eff Action Model
 handleAction action model = case action of
   NoOp -> pure model
-  InlineEcho id msg -> model <# do
-    liftClientM (
+  InlineEcho queryId msg -> model <# do
+    _ <- liftClientM (
       answerInlineQuery (
           AnswerInlineQueryRequest
-            id
+            queryId
             [
               InlineQueryResult InlineQueryResultArticle (InlineQueryResultId msg) (Just msg) (Just (defaultInputTextMessageContent msg))
             ]

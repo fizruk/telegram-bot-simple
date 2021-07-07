@@ -15,13 +15,12 @@ import           GHC.Generics                    (Generic)
 
 import           Servant.API
 import           Servant.Client                  hiding (Response)
-import           Servant.Multipart
 
 import           Telegram.Bot.API.Internal.Utils
 import           Telegram.Bot.API.MakingRequests
 import           Telegram.Bot.API.Types
 import           Telegram.Bot.API.InlineMode.InlineQueryResult
-import           Telegram.Bot.API.InlineMode.InputMessageContent
+
 -- * Available types
 -- ** User
 --
@@ -39,7 +38,6 @@ data InlineQuery = InlineQuery
 -- | Unique identifier for this query
 newtype InlineQueryId = InlineQueryId Text
   deriving (Eq, Show, ToJSON, FromJSON, Hashable, Generic)
-
 
 -- * Available methods
 

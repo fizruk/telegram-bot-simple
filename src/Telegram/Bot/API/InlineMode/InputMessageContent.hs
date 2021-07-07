@@ -7,7 +7,6 @@ import           GHC.Generics                    (Generic)
 
 import           Telegram.Bot.API.Internal.Utils
 
-
 -- | Represents the content of a text message to be sent as the result of an inline query.
 data InputMessageContent =
   InputTextMessageContent -- ^ Represents the [content](https://core.telegram.org/bots/api#inputmessagecontent) of a text message to be sent as the result of an inline query.
@@ -39,7 +38,6 @@ data InputMessageContent =
   , inputMessageContentSecondName :: Maybe Text -- ^ Contact's last name
   , inputMessageContentVcard :: Maybe Text      -- ^ Additional data about the contact in the form of a [vCard](https://en.wikipedia.org/wiki/VCard), 0-2048 bytes
   } deriving (Generic, Show)
-
 
 -- ** Helper functions to easily construct 'InputMessageContent'
 

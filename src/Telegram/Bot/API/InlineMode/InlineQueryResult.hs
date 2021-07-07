@@ -11,8 +11,6 @@ import           GHC.Generics                    (Generic)
 import           Telegram.Bot.API.Internal.Utils
 import           Telegram.Bot.API.InlineMode.InputMessageContent
 
-
-
 -- | This object represents one result of an inline query
 data InlineQueryResult = InlineQueryResult
   { inlineQueryResultType     :: InlineQueryResultType -- ^ Type of the result
@@ -27,9 +25,6 @@ newtype InlineQueryResultId = InlineQueryResultId Text
 
 instance ToJSON InlineQueryResult where toJSON = gtoJSON
 instance FromJSON InlineQueryResult where parseJSON = gparseJSON
-
-
-
 
 -- | Type of inline query result
 data InlineQueryResultType
@@ -77,11 +72,7 @@ getType InlineQueryResultVenue = "venue"
 getType InlineQueryResultVideo = "video"
 getType InlineQueryResultVoice = "voice"
 
-
 instance ToJSON InlineQueryResultType where
   toJSON = String . getType
 
 instance FromJSON InlineQueryResultType where parseJSON = gparseJSON
-
-
-
