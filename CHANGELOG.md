@@ -1,8 +1,14 @@
+0.3.7
+---
+
+- Add inline mode support (see [#45](https://github.com/fizruk/telegram-bot-simple/pull/45));
+
 0.3.6
 ---
 
-- Remove extra spaces, restore Tested-with (see [#48]( https://github.com/fizruk/telegram-bot-simple/pull/48 ));
+- Remove extra spaces, restore Tested-with (see [#48](https://github.com/fizruk/telegram-bot-simple/pull/48));
 - Add support of ghc 9 (see [#47]( https://github.com/fizruk/telegram-bot-simple/pull/47 ));
+
 0.3.5
 ---
 
