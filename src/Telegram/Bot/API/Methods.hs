@@ -188,7 +188,7 @@ instance ToMultipart Tmp SendDocumentRequest where
       (   (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendDocumentThumb)
         $ (maybe id (\t -> ((Input "caption" t):)) sendDocumentCaption)
         $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentParseMode)
-        $ (maybe id (\t -> ((Input "disable_notifications" (bool "false" "true" t)):)) sendDocumentDisableNotification)
+        $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendDocumentDisableNotification)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyToMessageId)
         $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyMarkup)
         [])
