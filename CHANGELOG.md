@@ -1,3 +1,9 @@
+0.3.8
+---
+
+- Fix notification disable mechanism in `sendDocument` function (see [#54]( https://github.com/fizruk/telegram-bot-simple/pull/54 ));
+- Implement `getFile` and `sendPhoto` API methods (see [#49]( https://github.com/fizruk/telegram-bot-simple/pull/49 ));
+
 0.3.7
 ---
 
