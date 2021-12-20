@@ -8,7 +8,7 @@ module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..))
 import Data.Coerce (coerce)
-import Data.Int (Int32)
+import Data.Int (Int32, Int64)
 import Data.Hashable (Hashable)
 import Data.String
 import Data.Text (Text, pack)
@@ -40,10 +40,10 @@ data User = User
   } deriving (Show, Generic)
 
 -- | Unique identifier for this user or bot.
-newtype UserId = UserId Int32
+newtype UserId = UserId Int64
   deriving (Eq, Show, ToJSON, FromJSON)
 
-instance ToHttpApiData UserId where toUrlPiece = pack . show @Int32 . coerce
+instance ToHttpApiData UserId where toUrlPiece = pack . show @Int64 . coerce
 
 -- ** Chat
 
