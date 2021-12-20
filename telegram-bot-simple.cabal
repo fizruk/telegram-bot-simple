@@ -1,13 +1,11 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 6d52edc3fb6015df0405b5a83558655525a8de69bd624202d18729eacbb353a1
 
 name:           telegram-bot-simple
-version:        0.3.4
+version:        0.3.8
 synopsis:       Easy to use library for building Telegram bots.
 description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
 category:       Web
@@ -19,7 +17,6 @@ copyright:      Nickolay Kudasov
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
-Tested-with:    GHC ==8.4.4 || ==8.6.5 || ==8.8.3 || ==8.10.1
 extra-source-files:
     README.md
     CHANGELOG.md
@@ -35,6 +32,8 @@ library
       Telegram.Bot.API.Games
       Telegram.Bot.API.GettingUpdates
       Telegram.Bot.API.InlineMode
+      Telegram.Bot.API.InlineMode.InlineQueryResult
+      Telegram.Bot.API.InlineMode.InputMessageContent
       Telegram.Bot.API.Internal.Utils
       Telegram.Bot.API.MakingRequests
       Telegram.Bot.API.Methods
@@ -74,6 +73,8 @@ library
     , servant
     , servant-client
     , servant-multipart
+    , servant-multipart-api
+    , servant-multipart-client
     , split
     , stm
     , template-haskell
@@ -106,6 +107,8 @@ executable example-echo-bot
     , servant
     , servant-client
     , servant-multipart
+    , servant-multipart-api
+    , servant-multipart-client
     , split
     , stm
     , telegram-bot-simple
@@ -139,6 +142,8 @@ executable example-todo-bot
     , servant
     , servant-client
     , servant-multipart
+    , servant-multipart-api
+    , servant-multipart-client
     , split
     , stm
     , telegram-bot-simple

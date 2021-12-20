@@ -1,3 +1,25 @@
+0.3.8
+---
+
+- Fix notification disable mechanism in `sendDocument` function (see [#54]( https://github.com/fizruk/telegram-bot-simple/pull/54 ));
+- Implement `getFile` and `sendPhoto` API methods (see [#49]( https://github.com/fizruk/telegram-bot-simple/pull/49 ));
+
+0.3.7
+---
+
+- Add inline mode support (see [#45](https://github.com/fizruk/telegram-bot-simple/pull/45));
+
+0.3.6
+---
+
+- Remove extra spaces, restore Tested-with (see [#48](https://github.com/fizruk/telegram-bot-simple/pull/48));
+- Add support of ghc 9 (see [#47]( https://github.com/fizruk/telegram-bot-simple/pull/47 ));
+
+0.3.5
+---
+
+- Restore backward compatibility with older GHCs (see [#40](https://github.com/fizruk/telegram-bot-simple/pull/40));
+
 0.3.4
 ---
 

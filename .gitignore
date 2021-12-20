@@ -16,6 +16,10 @@ cabal.sandbox.config
 *.hp
 *.eventlog
 .stack-work/
+.vscode
 cabal.project.local
 .HTF/
 TAGS
+
+# Emacs backup files
+*~

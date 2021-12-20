@@ -5,6 +5,8 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE CPP #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Telegram.Bot.API.Internal.Utils where
 
 import Control.Applicative ((<|>))
@@ -15,6 +17,7 @@ import Data.Char (isUpper, toUpper, toLower)
 import Data.List (intercalate)
 import GHC.Generics
 import Language.Haskell.TH
+import Control.Applicative (liftA2)
 
 deriveJSON' :: Name -> Q [Dec]
 deriveJSON' name = deriveJSON (jsonOptions (nameBase name)) name
@@ -95,3 +98,14 @@ instance (GSomeJSON f, GSomeJSON g) => GSomeJSON (f :+: g) where
   gsomeParseJSON js
       = L1 <$> gsomeParseJSON js
     <|> R1 <$> gsomeParseJSON js
+
+-- Instance Monoid for TH of ghc < 8.6
+#if !MIN_VERSION_template_haskell(2,17,0)
+
+instance Semigroup a => Semigroup (Q a) where
+  (<>) = liftA2 (<>)
+
+instance Monoid a => Monoid (Q a) where
+  mempty = pure mempty
+
+#endif
