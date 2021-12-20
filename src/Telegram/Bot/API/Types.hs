@@ -165,11 +165,11 @@ data Message = Message
   deriving (Generic, Show)
 
 -- | Unique message identifier inside this chat.
-newtype MessageId = MessageId Int32
+newtype MessageId = MessageId Integer
   deriving (Eq, Show, ToJSON, FromJSON, Hashable)
 
 instance ToHttpApiData MessageId where
-  toUrlPiece a = pack . show @Int32 $ coerce a
+  toUrlPiece a = pack . show @Integer $ coerce a
 
 -- | The unique identifier of a media message group a message belongs to.
 newtype MediaGroupId = MediaGroupId Text
