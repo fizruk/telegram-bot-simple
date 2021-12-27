@@ -15,6 +15,7 @@ import Data.Text (Text, pack)
 import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
 import Servant.API
+import System.FilePath
 
 import Telegram.Bot.API.Internal.Utils
 
@@ -474,6 +475,18 @@ data File = File
   , fileFilePath     :: Maybe Text  -- ^ File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
   }
   deriving (Generic, Show)
+
+type ContentType = Text
+
+data InputFile
+  = InputFileId Int
+  | FileUrl Text
+  | InputFile FilePath ContentType
+
+instance ToJSON InputFile where
+  toJSON (InputFileId i) = toJSON (show i)
+  toJSON (FileUrl t) = toJSON t
+  toJSON (InputFile f _) = toJSON ("attach://" <> pack (takeFileName f))
 
 -- ** 'ReplyKeyboardMarkup'
 
