@@ -5,6 +5,9 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Telegram.Bot.API.Methods where
 
 import Control.Monad.IO.Class
@@ -164,17 +167,19 @@ data SendDocumentRequest = SendDocumentRequest
   }
   deriving Generic
 
-data DocumentFile
-  = DocumentFileId Int
-  | DocumentUrl Text
-  | DocumentFile FilePath ContentType
 
-instance ToJSON DocumentFile where
-  toJSON (DocumentFileId i) = toJSON (show i)
-  toJSON (DocumentUrl t) = toJSON t
-  toJSON (DocumentFile f _) = toJSON ("attach://" <> T.pack (takeFileName f))
+newtype DocumentFile = MakeDocumentFile InputFile
+  deriving newtype ToJSON
 
-type ContentType = Text
+pattern DocumentFileId :: Int -> DocumentFile
+pattern DocumentFileId x = MakeDocumentFile (InputFileId x)
+
+pattern DocumentUrl :: Text -> DocumentFile
+pattern DocumentUrl x = MakeDocumentFile (FileUrl x)
+
+pattern DocumentFile :: FilePath -> ContentType -> DocumentFile
+pattern DocumentFile x y = MakeDocumentFile (InputFile x y)
+
 
 instance ToMultipart Tmp SendDocumentRequest where
   toMultipart SendDocumentRequest{..} = MultipartData fields files where
@@ -233,15 +238,20 @@ type SendPhotoLink
   :> ReqBody '[JSON] SendPhotoRequest
   :> Post '[JSON] (Response Message)
 
-data PhotoFile
-  = PhotoFileId Int
-  | PhotoUrl Text
-  | PhotoFile FilePath ContentType
 
-instance ToJSON PhotoFile where
-  toJSON (PhotoFileId i) = toJSON (show i)
-  toJSON (PhotoUrl t) = toJSON t
-  toJSON (PhotoFile f _) = toJSON ("attach://" <> T.pack (takeFileName f))
+
+newtype PhotoFile = MakePhotoFile InputFile
+  deriving newtype ToJSON
+
+pattern PhotoFileId :: Int -> PhotoFile
+pattern PhotoFileId x = MakePhotoFile (InputFileId x)
+
+pattern PhotoUrl :: Text -> PhotoFile
+pattern PhotoUrl x = MakePhotoFile (FileUrl x)
+
+pattern PhotoFile :: FilePath -> ContentType -> PhotoFile
+pattern PhotoFile x y = MakePhotoFile (InputFile x y)
+
 
 -- | Request parameters for 'sendPhoto'
 data SendPhotoRequest = SendPhotoRequest
