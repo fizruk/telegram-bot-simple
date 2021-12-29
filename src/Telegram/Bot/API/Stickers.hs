@@ -78,15 +78,15 @@ sendSticker r =
     _ -> client (Proxy @SendStickerLink) r
 
 
-data UploadNewStickerFileRequest = UploadNewStickerFileRequest
-  { uploadNewStickerFileUserId :: UserId
-  , uploadNewStickerFilePngSticker :: InputFile
+data UploadStickerFileRequest = UploadStickerFileRequest
+  { uploadStickerFileUserId :: UserId
+  , uploadStickerFilePngSticker :: InputFile
   } deriving Generic
 
-instance ToJSON UploadNewStickerFileRequest where toJSON = gtoJSON
+instance ToJSON UploadStickerFileRequest where toJSON = gtoJSON
 
-instance ToMultipart Tmp UploadNewStickerFileRequest where
-  toMultipart UploadNewStickerFileRequest{..} = MultipartData fields files where
+instance ToMultipart Tmp UploadStickerFileRequest where
+  toMultipart UploadStickerFileRequest{..} = MultipartData fields files where
     fields =
       [ Input "png_sticker" $ T.pack $ "attach://file"
       , Input "user_id" $ T.pack . show $ userId
@@ -94,26 +94,26 @@ instance ToMultipart Tmp UploadNewStickerFileRequest where
     files
       = [FileData "file" (T.pack $ takeFileName path) ct path]
 
-    UserId userId     = uploadNewStickerFileUserId
-    InputFile path ct = uploadNewStickerFilePngSticker
+    UserId userId     = uploadStickerFileUserId
+    InputFile path ct = uploadStickerFilePngSticker
 
-type UploadNewStickerFileContent
-  = "uploadNewStickerFile"
-  :> MultipartForm Tmp UploadNewStickerFileRequest
+type UploadStickerFileContent
+  = "uploadStickerFile"
+  :> MultipartForm Tmp UploadStickerFileRequest
   :> Post '[JSON] (Response File)
 
-type UploadNewStickerFileLink
-  = "uploadNewStickerFile"
-  :> ReqBody '[JSON] UploadNewStickerFileRequest
+type UploadStickerFileLink
+  = "uploadStickerFile"
+  :> ReqBody '[JSON] UploadStickerFileRequest
   :> Post '[JSON] (Response File)
 
-uploadNewStickerFile :: UploadNewStickerFileRequest -> ClientM (Response File)
+uploadNewStickerFile :: UploadStickerFileRequest -> ClientM (Response File)
 uploadNewStickerFile r =
-  case uploadNewStickerFilePngSticker r of
+  case uploadStickerFilePngSticker r of
     InputFile{} -> do
       boundary <- liftIO genBoundary
-      client (Proxy @UploadNewStickerFileContent) (boundary, r)
-    _ -> client (Proxy @UploadNewStickerFileLink) r
+      client (Proxy @UploadStickerFileContent) (boundary, r)
+    _ -> client (Proxy @UploadStickerFileLink) r
 
 
 data CreateNewStickerSetRequest = CreateNewStickerSetRequest
