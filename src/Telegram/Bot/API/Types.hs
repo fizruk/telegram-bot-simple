@@ -1072,4 +1072,5 @@ foldMap deriveJSON'
   , ''VoiceChatParticipantsInvited
   , ''ChatPermissions
   , ''ChatLocation
+  , ''StickerSet
   ]
