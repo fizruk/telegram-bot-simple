@@ -107,8 +107,8 @@ type UploadStickerFileLink
   :> ReqBody '[JSON] UploadStickerFileRequest
   :> Post '[JSON] (Response File)
 
-uploadNewStickerFile :: UploadStickerFileRequest -> ClientM (Response File)
-uploadNewStickerFile r =
+uploadStickerFile :: UploadStickerFileRequest -> ClientM (Response File)
+uploadStickerFile r =
   case uploadStickerFilePngSticker r of
     InputFile{} -> do
       boundary <- liftIO genBoundary
