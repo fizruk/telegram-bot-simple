@@ -29,13 +29,14 @@ import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Methods
 
+-- | Request parameters for 'sendSticker'.
 data SendStickerRequest = SendStickerRequest
-  { sendStickerChatId                   :: SomeChatId
-  , sendStickerSticker                  :: InputFile
-  , sendStickerDisableNotification      :: Maybe Bool
-  , sendStickerReplyToMessageId         :: Maybe MessageId
-  , sendStickerAllowSendingWithoutReply :: Maybe Bool
-  , sendStickerReplyMarkup              :: Maybe InlineKeyboardMarkup
+  { sendStickerChatId                   :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  , sendStickerSticker                  :: InputFile -- ^ Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a .WEBP file from the Internet, or upload a new one using multipart/form-data. 
+  , sendStickerDisableNotification      :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
+  , sendStickerReplyToMessageId         :: Maybe MessageId -- ^	If the message is a reply, ID of the original message
+  , sendStickerAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found
+  , sendStickerReplyMarkup              :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
 
@@ -69,6 +70,8 @@ type SendStickerLink
   :> ReqBody '[JSON] SendStickerRequest
   :> Post '[JSON] (Response Message)
 
+-- | Use this method to send static .WEBP or animated .TGS stickers. 
+--   On success, the sent Message is returned.
 sendSticker :: SendStickerRequest -> ClientM (Response Message)
 sendSticker r =
   case sendStickerSticker r of
@@ -78,9 +81,10 @@ sendSticker r =
     _ -> client (Proxy @SendStickerLink) r
 
 
+-- | Request parameters for 'uploadStickerFile'.
 data UploadStickerFileRequest = UploadStickerFileRequest
-  { uploadStickerFileUserId :: UserId
-  , uploadStickerFilePngSticker :: InputFile
+  { uploadStickerFileUserId :: UserId -- ^ User identifier of sticker file owner
+  , uploadStickerFilePngSticker :: InputFile -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. 
   } deriving Generic
 
 instance ToJSON UploadStickerFileRequest where toJSON = gtoJSON
@@ -107,6 +111,10 @@ type UploadStickerFileLink
   :> ReqBody '[JSON] UploadStickerFileRequest
   :> Post '[JSON] (Response File)
 
+-- | Use this method to upload a .PNG file 
+--   with a sticker for later use in createNewStickerSet 
+--   and addStickerToSet methods (can be used multiple times). 
+--   Returns the uploaded File on success.
 uploadStickerFile :: UploadStickerFileRequest -> ClientM (Response File)
 uploadStickerFile r =
   case uploadStickerFilePngSticker r of
@@ -116,14 +124,15 @@ uploadStickerFile r =
     _ -> client (Proxy @UploadStickerFileLink) r
 
 
+-- | Request parameters for 'createNewStickerSet'.
 data CreateNewStickerSetRequest = CreateNewStickerSetRequest
-  { createNewStickerSetUserId :: UserId
-  , createNewStickerSetName :: T.Text
-  , createNewStickerSetTitle :: T.Text
-  , createNewStickerSetPngSticker :: InputFile
-  , createNewStickerSetEmojis :: T.Text
-  , createNewStickerSetContainsMasks :: Maybe Bool
-  , createNewStickerSetMaskPosition :: Maybe MaskPosition
+  { createNewStickerSetUserId :: UserId -- ^ User identifier of created sticker set owner
+  , createNewStickerSetName :: T.Text -- ^ Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals). Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in “_by_<bot username>”. <bot_username> is case insensitive. 1-64 characters.
+  , createNewStickerSetTitle :: T.Text -- ^ Sticker set title, 1-64 characters
+  , createNewStickerSetPngSticker :: InputFile -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+  , createNewStickerSetEmojis :: T.Text -- ^ One or more emoji corresponding to the sticker
+  , createNewStickerSetContainsMasks :: Maybe Bool -- ^ Pass True, if a set of mask stickers should be created
+  , createNewStickerSetMaskPosition :: Maybe MaskPosition -- ^ A JSON-serialized object for position where the mask should be placed on faces
   } deriving Generic
 
 instance ToJSON CreateNewStickerSetRequest where toJSON = gtoJSON
@@ -156,6 +165,11 @@ type CreateNewStickerSetLink
   :> ReqBody '[JSON] CreateNewStickerSetRequest
   :> Post '[JSON] (Response Bool)
 
+-- | Use this method to create a new sticker 
+--   set owned by a user. The bot will be able 
+--   to edit the sticker set thus created. You 
+--   must use exactly one of the fields png_sticker or tgs_sticker. 
+--   Returns True on success.
 createNewStickerSet :: CreateNewStickerSetRequest -> ClientM (Response Bool)
 createNewStickerSet r =
   case createNewStickerSetPngSticker r of
@@ -164,12 +178,13 @@ createNewStickerSet r =
       client (Proxy @CreateNewStickerSetContent) (boundary, r)
     _ -> client (Proxy @CreateNewStickerSetLink) r
 
+-- | Request parameters for 'addStickerToSet'.
 data AddStickerToSetRequest = AddStickerToSetRequest
-  { addStickerToSetUserId :: UserId
-  , addStickerToSetName :: T.Text
-  , addStickerToSetPngSticker :: InputFile
-  , addStickerToSetEmojis :: T.Text
-  , addStickerToSetMaskPosition :: Maybe MaskPosition
+  { addStickerToSetUserId :: UserId -- ^ User identifier of sticker set owner
+  , addStickerToSetName :: T.Text -- ^ Sticker set name
+  , addStickerToSetPngSticker :: InputFile -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. 
+  , addStickerToSetEmojis :: T.Text -- ^ One or more emoji corresponding to the sticker
+  , addStickerToSetMaskPosition :: Maybe MaskPosition -- ^ A JSON-serialized object for position where the mask should be placed on faces
   } deriving Generic
 
 instance ToJSON AddStickerToSetRequest where toJSON = gtoJSON
@@ -200,6 +215,13 @@ type AddStickerToSetLink
   :> ReqBody '[JSON] AddStickerToSetRequest
   :> Post '[JSON] (Response Bool)
 
+-- | Use this method to add a new sticker to a set 
+--   created by the bot. You must use exactly one of 
+--   the fields png_sticker or tgs_sticker. Animated 
+--   stickers can be added to animated sticker sets and 
+--   only to them. Animated sticker sets can have up to 50 
+--   stickers. Static sticker sets can have up to 120 stickers. 
+--   Returns True on success.
 addStickerToSet :: AddStickerToSetRequest -> ClientM (Response Bool)
 addStickerToSet r =
   case addStickerToSetPngSticker r of
@@ -214,7 +236,9 @@ type GetStickerSet
   :> RequiredQueryParam "name" T.Text
   :> Get '[JSON] (Response StickerSet)
 
-getStickerSet :: T.Text -> ClientM (Response StickerSet)
+-- | Use this method to get a sticker set. On success, a StickerSet object is returned.
+getStickerSet :: T.Text -- ^ Name of the sticker set
+  -> ClientM (Response StickerSet)
 getStickerSet = client (Proxy @GetStickerSet)
 
 
@@ -224,7 +248,11 @@ type SetStickerPositionInSet
   :> RequiredQueryParam "position" Integer
   :> Post '[JSON] (Response Bool)
 
-setStickerPositionInSet :: T.Text -> Integer -> ClientM (Response Bool)
+-- | Use this method to move a sticker in a set created by the bot to a specific position. 
+--   Returns True on success.
+setStickerPositionInSet :: T.Text -- ^ File identifier of the sticker
+  -> Integer -- ^ New sticker position in the set, zero-based
+  -> ClientM (Response Bool)
 setStickerPositionInSet = client (Proxy @SetStickerPositionInSet)
 
 
@@ -233,6 +261,52 @@ type DeleteStickerFromSet
   :> RequiredQueryParam "sticker" T.Text
   :> Post '[JSON] (Response Bool)
 
-deleteStickerFromSet ::  T.Text -> ClientM (Response Bool)
+-- | Use this method to delete a sticker from a set created by the bot. 
+--   Returns True on success.
+deleteStickerFromSet :: T.Text -- ^ File identifier of the sticker
+  -> ClientM (Response Bool)
 deleteStickerFromSet = client (Proxy @DeleteStickerFromSet)
+
+-- | Request parameters for 'setStickerSetThumb'.
+data SetStickerSetThumbRequest = SetStickerSetThumbRequest 
+  { setStickerSetThumbName :: T.Text -- ^ Sticker set name
+  , setStickerSetThumbUserId :: UserId -- ^ User identifier of the sticker set owner
+  , setStickerSetThumbThumb :: InputFile -- ^ A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size; see <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for animated sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated sticker set thumbnail can't be uploaded via HTTP URL.
+  } deriving Generic
+
+instance ToJSON SetStickerSetThumbRequest where toJSON = gtoJSON
+
+instance ToMultipart Tmp SetStickerSetThumbRequest where
+  toMultipart SetStickerSetThumbRequest{..} = MultipartData fields files where
+    fields =
+      [ Input "png_sticker" $ T.pack "attach://file"
+      , Input "user_id" $ T.pack . show $ userId
+      , Input "name" setStickerSetThumbName
+      ]        
+    files
+      = [FileData "file" (T.pack $ takeFileName path) ct path]
+
+    UserId userId     = setStickerSetThumbUserId
+    InputFile path ct = setStickerSetThumbThumb
+
+type SetStickerSetThumbContent
+  = "setStickerSetThumb"
+  :> MultipartForm Tmp SetStickerSetThumbRequest
+  :> Post '[JSON] (Response Bool)
+
+type SetStickerSetThumbLink
+  = "setStickerSetThumb"
+  :> ReqBody '[JSON] SetStickerSetThumbRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to set the thumbnail of a sticker set. 
+--   Animated thumbnails can be set for animated sticker sets only. 
+--   Returns True on success.
+setStickerSetThumb :: SetStickerSetThumbRequest -> ClientM (Response Bool)
+setStickerSetThumb r =
+  case setStickerSetThumbThumb r of
+    InputFile{} -> do
+      boundary <- liftIO genBoundary
+      client (Proxy @SetStickerSetThumbContent) (boundary, r)
+    _ -> client (Proxy @SetStickerSetThumbLink) r
 
