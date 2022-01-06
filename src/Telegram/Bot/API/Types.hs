@@ -479,12 +479,12 @@ data File = File
 type ContentType = Text
 
 data InputFile
-  = InputFileId Int
+  = InputFileId FileId
   | FileUrl Text
   | InputFile FilePath ContentType
 
 instance ToJSON InputFile where
-  toJSON (InputFileId i) = toJSON (show i)
+  toJSON (InputFileId i) = toJSON i
   toJSON (FileUrl t) = toJSON t
   toJSON (InputFile f _) = toJSON ("attach://" <> pack (takeFileName f))
 

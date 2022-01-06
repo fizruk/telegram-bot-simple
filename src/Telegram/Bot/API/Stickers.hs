@@ -7,6 +7,7 @@
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Telegram.Bot.API.Stickers where
 
@@ -22,12 +23,28 @@ import Servant.API
 import Servant.Client hiding (Response)
 import Servant.Multipart
 import Servant.Multipart.Client
-import System.FilePath
 
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Methods
+import Data.Maybe (catMaybes, maybeToList)
+import Data.Functor
+import Telegram.Bot.API.Internal.Multipart
+
+
+-- | Type of uploaded sticker file. Static or animated.
+data StickerType
+  = PngSticker -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+  | TgsSticker -- ^ TGS animation with the sticker, uploaded using multipart/form-data. See <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for technical requirements
+
+stickerLabel :: StickerType -> T.Text
+stickerLabel = \case
+  PngSticker -> "png_sticker"
+  TgsSticker -> "tgs_sticker"
+
+-- | Sticker file with static/animated label.
+data StickerFile = StickerFile {stickerFileSticker :: InputFile, stickerFileLabel :: StickerType}
 
 -- | Request parameters for 'sendSticker'.
 data SendStickerRequest = SendStickerRequest
@@ -45,20 +62,21 @@ instance ToJSON SendStickerRequest where toJSON = gtoJSON
 instance ToMultipart Tmp SendStickerRequest where
   toMultipart SendStickerRequest{..} = MultipartData fields files where
     fields =
-      [ Input "sticker" $ T.pack "attach://file"
+      [ Input "sticker" "attach://file"
       , Input "chat_id" $ case sendStickerChatId of
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
-      ] <>
-          maybe id (\t -> (Input "disable_notification" (bool "false" "true" t):)) sendStickerDisableNotification
-        ( maybe id (\t -> (Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t):)) sendStickerReplyToMessageId
-        $ maybe id (\t -> (Input "allow_sending_without_reply" (bool "false" "true" t):)) sendStickerAllowSendingWithoutReply
-        $ maybe id (\t -> (Input "reply_markup" (TL.toStrict $ encodeToLazyText t):)) sendStickerReplyMarkup
-        [])
-    files
-      = [FileData "file" (T.pack $ takeFileName path) ct path]
-
-    InputFile path ct = sendStickerSticker
+      ] <> catMaybes
+      [ sendStickerDisableNotification <&>
+        \t -> Input "disable_notification" (bool "false" "true" t)
+      , sendStickerReplyToMessageId <&>
+        \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
+      , sendStickerAllowSendingWithoutReply <&>
+        \t -> Input "allow_sending_without_reply" (bool "false" "true" t)
+      , sendStickerReplyMarkup <&>
+        \t -> Input "reply_markup" (TL.toStrict $ encodeToLazyText t)
+      ]
+    files = [makeFile "file" sendStickerSticker]
 
 type SendStickerContent
   = "sendSticker"
@@ -92,14 +110,10 @@ instance ToJSON UploadStickerFileRequest where toJSON = gtoJSON
 instance ToMultipart Tmp UploadStickerFileRequest where
   toMultipart UploadStickerFileRequest{..} = MultipartData fields files where
     fields =
-      [ Input "png_sticker" $ T.pack $ "attach://file"
-      , Input "user_id" $ T.pack . show $ userId
+      [ Input "png_sticker" "attach://file"
+      , Input "user_id" $ T.pack . show $ uploadStickerFileUserId
       ]
-    files
-      = [FileData "file" (T.pack $ takeFileName path) ct path]
-
-    UserId userId     = uploadStickerFileUserId
-    InputFile path ct = uploadStickerFilePngSticker
+    files = [makeFile "file" uploadStickerFilePngSticker]
 
 type UploadStickerFileContent
   = "uploadStickerFile"
@@ -129,31 +143,41 @@ data CreateNewStickerSetRequest = CreateNewStickerSetRequest
   { createNewStickerSetUserId :: UserId -- ^ User identifier of created sticker set owner
   , createNewStickerSetName :: T.Text -- ^ Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals). Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in “_by_<bot username>”. <bot_username> is case insensitive. 1-64 characters.
   , createNewStickerSetTitle :: T.Text -- ^ Sticker set title, 1-64 characters
-  , createNewStickerSetPngSticker :: InputFile -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+  , createNewStickerSetSticker :: StickerFile -- ^ Sticker file to upload
   , createNewStickerSetEmojis :: T.Text -- ^ One or more emoji corresponding to the sticker
   , createNewStickerSetContainsMasks :: Maybe Bool -- ^ Pass True, if a set of mask stickers should be created
   , createNewStickerSetMaskPosition :: Maybe MaskPosition -- ^ A JSON-serialized object for position where the mask should be placed on faces
   } deriving Generic
 
-instance ToJSON CreateNewStickerSetRequest where toJSON = gtoJSON
+instance ToJSON CreateNewStickerSetRequest where 
+  toJSON CreateNewStickerSetRequest{..} = object
+    [ "user_id" .= createNewStickerSetUserId
+    , "name" .= createNewStickerSetName
+    , "title" .= createNewStickerSetTitle
+    , stickerLabel stickerFileLabel .= stickerFileSticker
+    , "emojis" .= createNewStickerSetEmojis
+    , "contains_mask" .= createNewStickerSetContainsMasks
+    , "mask_position" .= createNewStickerSetMaskPosition
+    ]
+    where
+      StickerFile{..} = createNewStickerSetSticker
 
 instance ToMultipart Tmp CreateNewStickerSetRequest where
   toMultipart CreateNewStickerSetRequest{..} = MultipartData fields files where
     fields =
-      [ Input "png_sticker" $ T.pack "attach://file"
-      , Input "user_id" $ T.pack . show $ userId
+      [ Input (stickerLabel stickerFileLabel) "attach://file"
+      , Input "user_id" $ T.pack . show $ createNewStickerSetUserId
       , Input "name" createNewStickerSetName
       , Input "title" createNewStickerSetTitle
       , Input "emojis" createNewStickerSetEmojis
-      ] <>
-          maybe id (\t -> (Input "contains_masks" (bool "false" "true" t):)) createNewStickerSetContainsMasks
-        ( maybe id (\t -> (Input "mask_position" (TL.toStrict $ encodeToLazyText t):)) createNewStickerSetMaskPosition
-        [])
-    files
-      = [FileData "file" (T.pack $ takeFileName path) ct path]
-
-    UserId userId     = createNewStickerSetUserId
-    InputFile path ct = createNewStickerSetPngSticker
+      ] <> catMaybes
+      [ createNewStickerSetContainsMasks <&>
+        \t -> Input "contains_masks" (bool "false" "true" t)
+      , createNewStickerSetMaskPosition <&>
+        \t -> Input "mask_position" (TL.toStrict $ encodeToLazyText t)
+      ]
+    files = [makeFile "file" stickerFileSticker]
+    StickerFile {..} = createNewStickerSetSticker
 
 type CreateNewStickerSetContent
   = "createNewStickerSet"
@@ -172,7 +196,7 @@ type CreateNewStickerSetLink
 --   Returns True on success.
 createNewStickerSet :: CreateNewStickerSetRequest -> ClientM (Response Bool)
 createNewStickerSet r =
-  case createNewStickerSetPngSticker r of
+  case stickerFileSticker $ createNewStickerSetSticker r of
     InputFile{} -> do
       boundary <- liftIO genBoundary
       client (Proxy @CreateNewStickerSetContent) (boundary, r)
@@ -182,28 +206,35 @@ createNewStickerSet r =
 data AddStickerToSetRequest = AddStickerToSetRequest
   { addStickerToSetUserId :: UserId -- ^ User identifier of sticker set owner
   , addStickerToSetName :: T.Text -- ^ Sticker set name
-  , addStickerToSetPngSticker :: InputFile -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. 
+  , addStickerToSetSticker :: StickerFile -- ^ Sticker file to upload 
   , addStickerToSetEmojis :: T.Text -- ^ One or more emoji corresponding to the sticker
   , addStickerToSetMaskPosition :: Maybe MaskPosition -- ^ A JSON-serialized object for position where the mask should be placed on faces
   } deriving Generic
 
-instance ToJSON AddStickerToSetRequest where toJSON = gtoJSON
+instance ToJSON AddStickerToSetRequest where
+  toJSON AddStickerToSetRequest{..} = object
+    [ "user_id" .= addStickerToSetUserId
+    , "name" .= addStickerToSetName
+    , stickerLabel stickerFileLabel .= stickerFileSticker
+    , "emojis" .= addStickerToSetEmojis
+    , "mask_position" .= addStickerToSetMaskPosition
+    ]
+    where
+      StickerFile{..} = addStickerToSetSticker
 
 instance ToMultipart Tmp AddStickerToSetRequest where
   toMultipart AddStickerToSetRequest{..} = MultipartData fields files where
     fields =
-      [ Input "png_sticker" $ T.pack "attach://file"
-      , Input "user_id" $ T.pack . show $ userId
+      [ Input (stickerLabel stickerFileLabel) "attach://file"
+      , Input "user_id" $ T.pack . show $ addStickerToSetUserId
       , Input "name" addStickerToSetName
       , Input "emojis" addStickerToSetEmojis
-      ] <>
-        maybe [] (\t -> [Input "mask_position" (TL.toStrict $ encodeToLazyText t)]) addStickerToSetMaskPosition
-        
-    files
-      = [FileData "file" (T.pack $ takeFileName path) ct path]
-
-    UserId userId     = addStickerToSetUserId
-    InputFile path ct = addStickerToSetPngSticker
+      ] <> maybeToList
+      ( addStickerToSetMaskPosition <&>
+        \t -> Input "mask_position" (TL.toStrict $ encodeToLazyText t)
+      )
+    files = [makeFile "file" stickerFileSticker]
+    StickerFile {..} = addStickerToSetSticker
 
 type AddStickerToSetContent
   = "addStickerToSet"
@@ -224,7 +255,7 @@ type AddStickerToSetLink
 --   Returns True on success.
 addStickerToSet :: AddStickerToSetRequest -> ClientM (Response Bool)
 addStickerToSet r =
-  case addStickerToSetPngSticker r of
+  case stickerFileSticker $ addStickerToSetSticker r of
     InputFile{} -> do
       boundary <- liftIO genBoundary
       client (Proxy @AddStickerToSetContent) (boundary, r)
@@ -240,7 +271,6 @@ type GetStickerSet
 getStickerSet :: T.Text -- ^ Name of the sticker set
   -> ClientM (Response StickerSet)
 getStickerSet = client (Proxy @GetStickerSet)
-
 
 type SetStickerPositionInSet
   = "setStickerPositionInSet"
@@ -268,7 +298,7 @@ deleteStickerFromSet :: T.Text -- ^ File identifier of the sticker
 deleteStickerFromSet = client (Proxy @DeleteStickerFromSet)
 
 -- | Request parameters for 'setStickerSetThumb'.
-data SetStickerSetThumbRequest = SetStickerSetThumbRequest 
+data SetStickerSetThumbRequest = SetStickerSetThumbRequest
   { setStickerSetThumbName :: T.Text -- ^ Sticker set name
   , setStickerSetThumbUserId :: UserId -- ^ User identifier of the sticker set owner
   , setStickerSetThumbThumb :: InputFile -- ^ A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size; see <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for animated sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated sticker set thumbnail can't be uploaded via HTTP URL.
@@ -279,15 +309,11 @@ instance ToJSON SetStickerSetThumbRequest where toJSON = gtoJSON
 instance ToMultipart Tmp SetStickerSetThumbRequest where
   toMultipart SetStickerSetThumbRequest{..} = MultipartData fields files where
     fields =
-      [ Input "png_sticker" $ T.pack "attach://file"
-      , Input "user_id" $ T.pack . show $ userId
+      [ Input "png_sticker" "attach://file"
+      , Input "user_id" $ T.pack . show $ setStickerSetThumbUserId
       , Input "name" setStickerSetThumbName
-      ]        
-    files
-      = [FileData "file" (T.pack $ takeFileName path) ct path]
-
-    UserId userId     = setStickerSetThumbUserId
-    InputFile path ct = setStickerSetThumbThumb
+      ]
+    files = [makeFile "file" setStickerSetThumbThumb]
 
 type SetStickerSetThumbContent
   = "setStickerSetThumb"

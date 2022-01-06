@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.34.6.
 --
 -- see: https://github.com/sol/hpack
 
@@ -34,6 +34,7 @@ library
       Telegram.Bot.API.InlineMode
       Telegram.Bot.API.InlineMode.InlineQueryResult
       Telegram.Bot.API.InlineMode.InputMessageContent
+      Telegram.Bot.API.Internal.Multipart
       Telegram.Bot.API.Internal.Utils
       Telegram.Bot.API.MakingRequests
       Telegram.Bot.API.Methods

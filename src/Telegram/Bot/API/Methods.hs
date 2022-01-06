@@ -171,7 +171,7 @@ data SendDocumentRequest = SendDocumentRequest
 newtype DocumentFile = MakeDocumentFile InputFile
   deriving newtype ToJSON
 
-pattern DocumentFileId :: Int -> DocumentFile
+pattern DocumentFileId :: FileId -> DocumentFile
 pattern DocumentFileId x = MakeDocumentFile (InputFileId x)
 
 pattern DocumentUrl :: Text -> DocumentFile
@@ -243,7 +243,7 @@ type SendPhotoLink
 newtype PhotoFile = MakePhotoFile InputFile
   deriving newtype ToJSON
 
-pattern PhotoFileId :: Int -> PhotoFile
+pattern PhotoFileId :: FileId -> PhotoFile
 pattern PhotoFileId x = MakePhotoFile (InputFileId x)
 
 pattern PhotoUrl :: Text -> PhotoFile
