@@ -9,8 +9,8 @@ module Telegram.Bot.API (
   module Telegram.Bot.API.Methods,
   -- * Updating messages
   module Telegram.Bot.API.UpdatingMessages,
---   -- * Stickers
---   module Telegram.Bot.API.Stickers,
+  -- * Stickers
+  module Telegram.Bot.API.Stickers,
   -- * Inline mode
   module Telegram.Bot.API.InlineMode,
 --   -- * Payments
@@ -24,7 +24,7 @@ import           Telegram.Bot.API.MakingRequests
 import           Telegram.Bot.API.Methods
 import           Telegram.Bot.API.Types
 import           Telegram.Bot.API.UpdatingMessages
--- import Telegram.Bot.API.Stickers
+import Telegram.Bot.API.Stickers
 import Telegram.Bot.API.InlineMode
 -- import Telegram.Bot.API.Payments
 -- import Telegram.Bot.API.Games
