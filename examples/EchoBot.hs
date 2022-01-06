@@ -7,7 +7,7 @@ import           Data.Maybe
 
 import           Telegram.Bot.API
 import           Telegram.Bot.Simple
-import           Telegram.Bot.Simple.UpdateParser (updateMessageText)
+import           Telegram.Bot.Simple.UpdateParser (updateMessageText, updateMessageSticker)
 import           Telegram.Bot.API.InlineMode.InlineQueryResult
 import           Telegram.Bot.API.InlineMode.InputMessageContent (defaultInputTextMessageContent)
 
@@ -16,6 +16,7 @@ type Model = ()
 data Action
   = NoOp
   | InlineEcho InlineQueryId Text
+  | StickerEcho InputFile ChatId
   | Echo Text
 
 echoBot :: BotApp Model Action
@@ -33,6 +34,10 @@ updateToAction update _
       let queryId = inlineQueryId query
       let msg =  inlineQueryQuery query
       Just $ InlineEcho queryId msg
+  | isJust $ updateMessageSticker update = do
+    fileId <- stickerFileId <$> updateMessageSticker update
+    chatId <- updateChatId update
+    pure $ StickerEcho (InputFileId fileId) chatId
   | otherwise = case updateMessageText update of
       Just text -> Just (Echo text)
       Nothing   -> Nothing
@@ -50,6 +55,17 @@ handleAction action model = case action of
             ]
         )
       )
+    return NoOp
+  StickerEcho file chat -> model <# do
+    _ <- liftClientM 
+      (sendSticker 
+        (SendStickerRequest 
+          (SomeChatId chat) 
+          file 
+          Nothing 
+          Nothing 
+          Nothing 
+          Nothing))
     return NoOp
   Echo msg -> model <# do
     replyText msg

@@ -68,3 +68,7 @@ callbackQueryDataRead = mkParser $ \update -> do
 
 updateMessageText :: Update -> Maybe Text
 updateMessageText = updateMessage >=> messageText
+
+
+updateMessageSticker :: Update -> Maybe Sticker
+updateMessageSticker = updateMessage >=> messageSticker 
