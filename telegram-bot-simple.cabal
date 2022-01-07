@@ -120,6 +120,42 @@ executable example-echo-bot
     , unordered-containers
   default-language: Haskell2010
 
+executable example-game-bot
+  main-is: examples/GameBot.hs
+  other-modules:
+      Paths_telegram_bot_simple
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.9 && <5
+    , bytestring
+    , cron >=0.7.0
+    , filepath
+    , hashable
+    , http-api-data
+    , http-client
+    , http-client-tls
+    , monad-control
+    , mtl
+    , optparse-applicative
+    , pretty-show
+    , profunctors
+    , servant
+    , servant-client
+    , servant-multipart
+    , servant-multipart-api
+    , servant-multipart-client
+    , split
+    , stm
+    , telegram-bot-simple
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , unordered-containers
+  default-language: Haskell2010
+
 executable example-todo-bot
   main-is: examples/TodoBot.hs
   other-modules:
