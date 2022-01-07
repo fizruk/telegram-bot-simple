@@ -27,7 +27,7 @@ startBotAsync :: BotApp model action -> ClientEnv -> IO (action -> IO ())
 startBotAsync bot env = do
   botEnv <- startBotEnv bot env
   fork_ $ startBotPolling bot botEnv
-  return (issueAction botEnv Nothing)
+  return (issueAction botEnv Nothing . Just)
   where
     fork_ = void . forkIO . void . flip runClientM env
 

@@ -14,8 +14,7 @@ import           Telegram.Bot.API.InlineMode.InputMessageContent (defaultInputTe
 type Model = ()
 
 data Action
-  = NoOp
-  | InlineEcho InlineQueryId Text
+  = InlineEcho InlineQueryId Text
   | StickerEcho InputFile ChatId
   | Echo Text
 
@@ -44,7 +43,6 @@ updateToAction update _
 
 handleAction :: Action -> Model -> Eff Action Model
 handleAction action model = case action of
-  NoOp -> pure model
   InlineEcho queryId msg -> model <# do
     _ <- liftClientM (
       answerInlineQuery (
@@ -55,7 +53,7 @@ handleAction action model = case action of
             ]
         )
       )
-    return NoOp
+    return ()
   StickerEcho file chat -> model <# do
     _ <- liftClientM 
       (sendSticker 
@@ -66,10 +64,9 @@ handleAction action model = case action of
           Nothing 
           Nothing 
           Nothing))
-    return NoOp
+    return ()
   Echo msg -> model <# do
-    replyText msg
-    return NoOp
+    pure msg -- or replyText msg
 
 run :: Token -> IO ()
 run token = do
