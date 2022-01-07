@@ -45,11 +45,11 @@ data User = User
   deriving (Show, Generic)
 
 -- | Unique identifier for this user or bot.
-newtype UserId = UserId Int32
+newtype UserId = UserId Integer
   deriving (Eq, Show, ToJSON, FromJSON)
 
 instance ToHttpApiData UserId where
-  toUrlPiece = pack . show @Int32 . coerce
+  toUrlPiece = pack . show @Integer . coerce
 
 -- ** Chat
 
