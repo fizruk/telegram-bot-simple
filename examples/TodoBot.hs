@@ -11,6 +11,7 @@ import qualified Data.HashMap.Strict as HashMap
 import Telegram.Bot.API
 import Telegram.Bot.Simple
 import Telegram.Bot.Simple.UpdateParser
+
 type Item = Text
 
 data Model = Model
@@ -127,4 +128,3 @@ main = do
   putStrLn "Please, enter Telegram bot's API token:"
   token <- Token . Text.pack <$> getLine
   run token
-  return ()

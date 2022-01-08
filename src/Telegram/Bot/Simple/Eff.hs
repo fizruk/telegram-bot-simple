@@ -40,23 +40,17 @@ data Bot action where
 applyBot :: BotContext -> Bot action -> ClientM (Maybe action)
 applyBot context (ExistBot run effect) = run context effect
 instance Functor Bot where
-   fmap f (ExistBot run effect) = ExistBot ((fmap . fmap . fmap . fmap) f run) effect
+   fmap = liftM
 
 instance Applicative Bot where
   pure a = ExistBot (pure . pure . pure . pure $ a) (pure ())
-  (ExistBot runF effF) <*> (ExistBot runV effV) = ExistBot newRun tupleEff
-    where
-      tupleEff = (,) <$> effF <*> effV
-      newRun context effect = do
-        val <- runV context (snd <$> effect)
-        func <- runF context (fst <$> effect)
-        pure (func <*> val)
+  (<*>) = ap
 
 instance Monad Bot where
-  (ExistBot run effect) >>= fun = ExistBot newRun effect
+  ExistBot run effect >>= fun = ExistBot newRun effect
     where
-      newRun context effect = do
-        x <- run context effect
+      newRun context newEffect = do
+        x <- run context newEffect
         case x of
           Nothing -> pure Nothing
           Just a -> do
@@ -64,8 +58,27 @@ instance Monad Bot where
 
 instance MonadIO Bot where
   liftIO action = ExistBot ((const . const) $ Just <$> liftIO action) (pure ())
-class RunBot a action where
-  runBot :: BotContext -> BotM a -> ClientM (Maybe action)
+
+-- | It's main type class of new return-types system.
+--   You can create your own return-types, creating 
+--   new instance. 'ret'-type is what you want to 
+--   return from BotM action. 'action' - it's 'botAction' 
+--   type, that goes bakc to 'botHandler' function. If you 
+--   don't want to return action, just retun 'Nothing'.
+--
+--   At now we provide you three polimorfic instances, 
+--   that defined at "Telegram.Bot.Simple.Instances": 
+--   - @RunBot a a@ - for simple making finite automata of 
+--   BotM actions. (For example you can log every update 
+--   and then return new 'action' to answer at message/send sticker/etc) 
+--   - @RunBot () a@ - if you don't want to do nothing
+--   after BotM action, than just do @pure ()@.
+--   - @RunBot Text a@ - simple sugar over the 
+--  'replyText' function. 'OverloadedStrings' breaks type inference, 
+--   so I suppose that you prefer @replyText \"message\"@ 
+--   instead of @pure \@_ \@Text \"message\"@.
+class RunBot ret action where
+  runBot :: BotContext -> BotM ret -> ClientM (Maybe action)
 
 instance Bifunctor Eff where
   bimap f g = Eff . mapWriter (bimap g (map (fmap f))) . _runEff
