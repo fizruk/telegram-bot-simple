@@ -63,7 +63,7 @@ executables:
       - -with-rtsopts=-N # -N option provides concurrent running on all available cores.
 
   example-todo-bot:
-    main: examples/EchoBot.hs
+    main: examples/TodoBot.hs
     dependencies: telegram-bot-simple
     ghc-options:
       - -threaded

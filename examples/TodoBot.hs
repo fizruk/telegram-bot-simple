@@ -29,8 +29,7 @@ initialModel = Model
   }
 
 data Action
-  = NoOp
-  | Start
+  =  Start
   | AddItem Item
   | RemoveItem Item
   | SwitchToList Text
@@ -59,24 +58,18 @@ todoBot3 = BotApp
 
     handleAction :: Action -> Model -> Eff Action Model
     handleAction action model = case action of
-      NoOp -> pure model
       Start -> model <# do
         reply (toReplyMessage startMessage)
           { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
-        return NoOp
       AddItem item -> addItem item model <# do
         replyText "Ok, got it!"
-        return NoOp
       RemoveItem item -> removeItem item model <# do
-        replyText "Item removed!"
-        return NoOp
+        replyText "Item removed!"  
       SwitchToList name -> model { currentList = name } <# do
-        replyText ("Switched to list «" <> name <> "»!")
-        return NoOp
+        replyText ("Switched to list «" <> name <> "»!") 
       ShowAll -> model <# do
         reply (toReplyMessage "Available todo lists")
           { replyMessageReplyMarkup = Just (SomeInlineKeyboardMarkup listsKeyboard) }
-        return NoOp
       Show "" -> model <# do
         return (Show defaultListName)
       Show name -> model <# do
@@ -85,7 +78,6 @@ todoBot3 = BotApp
           then reply (toReplyMessage ("The list «" <> name <> "» is empty. Maybe try these starter options?"))
                  { replyMessageReplyMarkup = Just (SomeReplyKeyboardMarkup startKeyboard) }
           else replyText (Text.unlines items)
-        return NoOp
 
       where
         listsKeyboard = InlineKeyboardMarkup
@@ -115,6 +107,7 @@ todoBot3 = BotApp
       , replyKeyboardMarkupResizeKeyboard = Just True
       , replyKeyboardMarkupOneTimeKeyboard = Just True
       , replyKeyboardMarkupSelective = Nothing
+      , replyKeyboardMarkupInputFieldSelector = Nothing
       }
 
 addItem :: Item -> Model -> Model
@@ -135,4 +128,3 @@ main = do
   putStrLn "Please, enter Telegram bot's API token:"
   token <- Token . Text.pack <$> getLine
   run token
-  return ()

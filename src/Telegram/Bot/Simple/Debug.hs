@@ -70,9 +70,10 @@ traceBotActionsWith
   -> BotApp model action
 traceBotActionsWith f botApp = botApp { botHandler = newHandler }
   where
-    traceAction action = action <$ do
+    traceAction (Just action) = Just action <$ do
       liftIO $ putStrLn (f (TracedIssuedAction action))
-
+    traceAction Nothing = pure Nothing
+    
     newHandler !action model = do
       Eff (tell (map (>>= traceAction) actions))
       pure newModel

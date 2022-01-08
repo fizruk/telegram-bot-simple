@@ -5,7 +5,7 @@ module Telegram.Bot.Simple.BotApp.Internal where
 
 import           Control.Concurrent      (ThreadId, forkIO, threadDelay)
 import           Control.Concurrent.STM
-import           Control.Monad           (forever, void)
+import           Control.Monad           (forever, void, (<=<))
 import           Control.Monad.Except    (catchError)
 import           Control.Monad.Trans     (liftIO)
 import           Data.Bifunctor          (first)
@@ -63,7 +63,7 @@ runJobTask botEnv@BotEnv{..} task = do
         writeTVar botModelVar newModel
         return effects
   res <- flip runClientM botClientEnv $
-    mapM_ ((>>= liftIO . issueAction botEnv Nothing) . runBotM (BotContext botUser Nothing)) effects
+    mapM_ ((liftIO . issueAction botEnv Nothing) <=< runBotM (BotContext botUser Nothing)) effects
   case res of
     Left err -> print err
     Right _  -> return ()
@@ -87,9 +87,10 @@ defaultBotEnv BotApp{..} env = BotEnv
   <*> (either (error . show) Telegram.responseResult <$> runClientM Telegram.getMe env)
 
 -- | Issue a new action for the bot to process.
-issueAction :: BotEnv model action -> Maybe Telegram.Update -> action -> IO ()
-issueAction BotEnv{..} update action = atomically $
+issueAction :: BotEnv model action -> Maybe Telegram.Update -> Maybe action -> IO ()
+issueAction BotEnv{..} update (Just action) = atomically $
   writeTQueue botActionsQueue (update, action)
+issueAction _ _ _ = pure ()
 
 -- | Process one action.
 processAction
@@ -105,7 +106,7 @@ processAction BotApp{..} botEnv@BotEnv{..} update action = do
       (newModel, effects) -> do
         writeTVar botModelVar newModel
         return effects
-  mapM_ ((>>= liftIO . issueAction botEnv update) . runBotM (BotContext botUser update)) effects
+  mapM_ ((liftIO . issueAction botEnv update) <=< runBotM (BotContext botUser update)) effects
 
 -- | A job to wait for the next action and process it.
 processActionJob :: BotApp model action -> BotEnv model action -> ClientM ()
@@ -127,7 +128,7 @@ startBotPolling BotApp{..} botEnv@BotEnv{..} = startPolling handleUpdate
       maction <- botAction update <$> readTVarIO botModelVar
       case maction of
         Nothing     -> return ()
-        Just action -> issueAction botEnv (Just update) action
+        Just action -> issueAction botEnv (Just update) (Just action)
 
 -- | Start 'Telegram.Update' polling with a given update handler.
 startPolling :: (Telegram.Update -> ClientM ()) -> ClientM ()
