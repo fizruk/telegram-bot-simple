@@ -63,7 +63,7 @@ runJobTask botEnv@BotEnv{..} task = do
         writeTVar botModelVar newModel
         return effects
   res <- flip runClientM botClientEnv $
-    mapM_ ((liftIO . issueAction botEnv Nothing) <=< applyBot (BotContext botUser Nothing)) effects
+    mapM_ ((liftIO . issueAction botEnv Nothing) <=< runBotM (BotContext botUser Nothing)) effects
   case res of
     Left err -> print err
     Right _  -> return ()
@@ -106,7 +106,7 @@ processAction BotApp{..} botEnv@BotEnv{..} update action = do
       (newModel, effects) -> do
         writeTVar botModelVar newModel
         return effects
-  mapM_ ((liftIO . issueAction botEnv update) <=< applyBot (BotContext botUser update)) effects
+  mapM_ ((liftIO . issueAction botEnv update) <=< runBotM (BotContext botUser update)) effects
 
 -- | A job to wait for the next action and process it.
 processActionJob :: BotApp model action -> BotEnv model action -> ClientM ()

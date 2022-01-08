@@ -30,34 +30,8 @@ liftClientM = BotM . lift
 runBotM :: BotContext -> BotM a -> ClientM a
 runBotM update = flip runReaderT update . _runBotM
 
-newtype Eff action model = Eff { _runEff :: Writer [Bot action] model }
+newtype Eff action model = Eff { _runEff :: Writer [BotM (Maybe action)] model }
   deriving (Functor, Applicative, Monad)
-
-
-data Bot action where
-  ExistBot :: (BotContext -> BotM a -> ClientM (Maybe action)) -> BotM a -> Bot action
-
-applyBot :: BotContext -> Bot action -> ClientM (Maybe action)
-applyBot context (ExistBot run effect) = run context effect
-instance Functor Bot where
-   fmap = liftM
-
-instance Applicative Bot where
-  pure a = ExistBot (pure . pure . pure . pure $ a) (pure ())
-  (<*>) = ap
-
-instance Monad Bot where
-  ExistBot run effect >>= fun = ExistBot newRun effect
-    where
-      newRun context newEffect = do
-        x <- run context newEffect
-        case x of
-          Nothing -> pure Nothing
-          Just a -> do
-            applyBot context (fun a) 
-
-instance MonadIO Bot where
-  liftIO action = ExistBot ((const . const) $ Just <$> liftIO action) (pure ())
 
 -- | It's main type class of new return-types system.
 --   You can create your own return-types, creating 
@@ -78,16 +52,16 @@ instance MonadIO Bot where
 --   so I suppose that you prefer @replyText \"message\"@ 
 --   instead of @pure \@_ \@Text \"message\"@.
 class RunBot ret action where
-  runBot :: BotContext -> BotM ret -> ClientM (Maybe action)
+  runBot :: BotM ret -> BotM (Maybe action)
 
 instance Bifunctor Eff where
-  bimap f g = Eff . mapWriter (bimap g (map (fmap f))) . _runEff
+  bimap f g = Eff . mapWriter (bimap g (map . fmap . fmap $ f)) . _runEff
 
-runEff :: Eff action model -> (model, [Bot action])
+runEff :: Eff action model -> (model, [BotM (Maybe action)])
 runEff = runWriter . _runEff
 
 eff :: RunBot a b => BotM a -> Eff b ()
-eff e = Eff (tell [ExistBot runBot e])
+eff e = Eff (tell [runBot e])
 
 withEffect :: RunBot a action => BotM a -> model -> Eff action model
 withEffect effect model = eff effect >> pure model
@@ -96,8 +70,8 @@ withEffect effect model = eff effect >> pure model
 (<#) = flip withEffect
 
 -- | Set a specific 'Telegram.Update' in a 'BotM' context.
-setBotMUpdate :: Maybe Telegram.Update -> Bot a -> Bot a
-setBotMUpdate update (ExistBot run (BotM m)) = ExistBot run $ BotM (local f m)
+setBotMUpdate :: Maybe Telegram.Update -> BotM a -> BotM a
+setBotMUpdate update (BotM m) =  BotM (local f m)
   where
     f botContext = botContext { botContextUpdate = update }
 

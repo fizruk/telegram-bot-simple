@@ -10,12 +10,12 @@ import Telegram.Bot.Simple.Eff
 import Telegram.Bot.Simple.Reply (replyText)
 
 instance RunBot a a where
-  runBot update effect = Just <$> runBotM update effect
+  runBot effect = Just <$> effect
 
 instance RunBot () a where
-  runBot update effect = Nothing <$ runBotM  update effect
+  runBot effect = Nothing <$ effect
 
 instance RunBot Text a where
-  runBot update effect = runBot update do
+  runBot  effect = runBot do
     t <- effect
     replyText t
