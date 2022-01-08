@@ -33,23 +33,21 @@ runBotM update = flip runReaderT update . _runBotM
 newtype Eff action model = Eff { _runEff :: Writer [BotM (Maybe action)] model }
   deriving (Functor, Applicative, Monad)
 
--- | It's main type class of new return-types system.
---   You can create your own return-types, creating 
---   new instance. 'ret'-type is what you want to 
---   return from BotM action. 'action' - it's 'botAction' 
---   type, that goes bakc to 'botHandler' function. If you 
---   don't want to return action, just retun 'Nothing'.
+-- | The idea behind following type class is
+--   to allow you defining the type 'ret' you want to return from 'BotM' action.
+--   You can create your own return-types via new instances.
+--   Here 'action' is a 'botAction'
+--   type, that will be used further in 'botHandler' function.
+--   If you don't want to return action use 'Nothing' instead.
 --
---   At now we provide you three polimorfic instances, 
---   that defined at "Telegram.Bot.Simple.Instances": 
---   - @RunBot a a@ - for simple making finite automata of 
---   BotM actions. (For example you can log every update 
---   and then return new 'action' to answer at message/send sticker/etc) 
---   - @RunBot () a@ - if you don't want to do nothing
---   after BotM action, than just do @pure ()@.
---   - @RunBot Text a@ - simple sugar over the 
---  'replyText' function. 'OverloadedStrings' breaks type inference, 
---   so I suppose that you prefer @replyText \"message\"@ 
+--   See "Telegram.Bot.Simple.Instances" for more commonly useful instances.
+--   - @RunBot a a@ - for simple making finite automata of
+--   BotM actions. (For example you can log every update
+--   and then return new 'action' to answer at message/send sticker/etc)
+--   - @RunBot () a@ - to use @pure ()@ instead of dealing with @Nothing@.
+--   - @RunBot Text a@ - to add some sugar over the 'replyText' function.
+--   'OverloadedStrings' breaks type inference,
+--   so we advise to use @replyText \"message\"@
 --   instead of @pure \@_ \@Text \"message\"@.
 class RunBot ret action where
   runBot :: BotM ret -> BotM (Maybe action)
