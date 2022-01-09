@@ -27,10 +27,8 @@ import Servant.Multipart.Client
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types
-import Telegram.Bot.API.Methods
 import Data.Maybe (catMaybes, maybeToList)
 import Data.Functor
-import Telegram.Bot.API.Internal.Multipart
 
 
 -- | Type of uploaded sticker file. Static or animated.

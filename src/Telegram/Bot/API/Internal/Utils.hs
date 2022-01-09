@@ -12,12 +12,18 @@ module Telegram.Bot.API.Internal.Utils where
 import Control.Applicative ((<|>))
 import Data.Aeson (FromJSON(..), ToJSON(..), Value(..), GToJSON, GFromJSON, genericToJSON, genericParseJSON, Zero)
 import Data.Aeson.TH (deriveJSON)
-import Data.Aeson.Types (Options(..), defaultOptions, Parser)
+import Data.Aeson.Types (Options(..), defaultOptions, Parser, Pair)
 import Data.Char (isUpper, toUpper, toLower)
 import Data.List (intercalate)
 import GHC.Generics
 import Language.Haskell.TH
 import Control.Applicative (liftA2)
+
+#if MIN_VERSION_aeson(2,0,0)
+import qualified Data.Aeson.KeyMap as Map
+#else
+import qualified Data.HashMap.Strict as Map
+#endif
 
 deriveJSON' :: Name -> Q [Dec]
 deriveJSON' name = deriveJSON (jsonOptions (nameBase name)) name
@@ -98,6 +104,10 @@ instance (GSomeJSON f, GSomeJSON g) => GSomeJSON (f :+: g) where
   gsomeParseJSON js
       = L1 <$> gsomeParseJSON js
     <|> R1 <$> gsomeParseJSON js
+
+addFields :: Value -> [Pair] -> Value
+addFields (Object obj) pairs = Object $  Map.union obj (Map.fromList pairs)
+addFields x _ = x
 
 -- Instance Monoid for TH of ghc < 8.6
 #if !MIN_VERSION_template_haskell(2,17,0)
