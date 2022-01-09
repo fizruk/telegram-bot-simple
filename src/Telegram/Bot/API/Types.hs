@@ -12,26 +12,25 @@
 module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..), Value(..), object, KeyValue ((.=)), withObject, (.:))
+import Data.Aeson.Types (Parser, Pair)
+import Data.Aeson.Text (encodeToLazyText)
 import Data.Coerce (coerce)
 import Data.Int (Int32)
+import Data.Bool (bool)
+import Data.Maybe (catMaybes)
+import Data.Functor ((<&>))
 import Data.Hashable (Hashable)
 import Data.String
 import Data.Text (Text, pack)
+import qualified Data.Text as Text
+import qualified Data.Text.Lazy as TL
 import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
 import Servant.API
+import Servant.Multipart.API
 import System.FilePath
 
 import Telegram.Bot.API.Internal.Utils
-import Control.Applicative
-import Data.Aeson.Types (Parser, Pair)
-import qualified Data.Text as Text
-import Servant.Multipart.API
-import Data.Functor ((<&>))
-import qualified Data.Text.Lazy as TL
-import Data.Maybe (catMaybes)
-import Data.Aeson.Text (encodeToLazyText)
-import Data.Bool (bool)
 
 type RequiredQueryParam = QueryParam' '[Required , Strict]
 
