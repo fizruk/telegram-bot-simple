@@ -74,16 +74,6 @@ type ForwardMessage
 forwardMessage :: ForwardMessageRequest -> ClientM (Response Message)
 forwardMessage = client (Proxy @ForwardMessage)
 
--- | Unique identifier for the target chat
--- or username of the target channel (in the format @\@channelusername@).
-data SomeChatId
-  = SomeChatId ChatId       -- ^ Unique chat ID.
-  | SomeChatUsername Text   -- ^ Username of the target channel.
-  deriving (Generic)
-
-instance ToJSON   SomeChatId where toJSON = genericSomeToJSON
-instance FromJSON SomeChatId where parseJSON = genericSomeParseJSON
-
 -- | Additional interface options.
 -- A JSON-serialized object for an inline keyboard, custom reply keyboard,
 -- instructions to remove reply keyboard or to force a reply from the user.

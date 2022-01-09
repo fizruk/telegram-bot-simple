@@ -34,7 +34,6 @@ library
       Telegram.Bot.API.InlineMode
       Telegram.Bot.API.InlineMode.InlineQueryResult
       Telegram.Bot.API.InlineMode.InputMessageContent
-      Telegram.Bot.API.Internal.Multipart
       Telegram.Bot.API.Internal.Utils
       Telegram.Bot.API.MakingRequests
       Telegram.Bot.API.Methods

@@ -4,9 +4,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Telegram.Bot.API.Types where
 
-import Data.Aeson (ToJSON(..), FromJSON(..), Value(..))
+import Data.Aeson (ToJSON(..), FromJSON(..), Value(..), object, KeyValue ((.=)), withObject, (.:))
 import Data.Coerce (coerce)
 import Data.Int (Int32)
 import Data.Hashable (Hashable)
@@ -18,6 +23,15 @@ import Servant.API
 import System.FilePath
 
 import Telegram.Bot.API.Internal.Utils
+import Control.Applicative
+import Data.Aeson.Types (Parser, Pair)
+import qualified Data.Text as Text
+import Servant.Multipart.API
+import Data.Functor ((<&>))
+import qualified Data.Text.Lazy as TL
+import Data.Maybe (catMaybes)
+import Data.Aeson.Text (encodeToLazyText)
+import Data.Bool (bool)
 
 type RequiredQueryParam = QueryParam' '[Required , Strict]
 
@@ -487,6 +501,11 @@ instance ToJSON InputFile where
   toJSON (InputFileId i) = toJSON i
   toJSON (FileUrl t) = toJSON t
   toJSON (InputFile f _) = toJSON ("attach://" <> pack (takeFileName f))
+
+-- | Multipart file helper, works only with InputFile constructor. 
+makeFile :: Text -> InputFile -> FileData Tmp
+makeFile name (InputFile path ct) = FileData name (pack $ takeFileName path) ct path
+makeFile _ _ = error "Bad input file for multipart"
 
 -- ** 'ReplyKeyboardMarkup'
 
@@ -1021,6 +1040,217 @@ data GameHighScore = GameHighScore
   }
   deriving (Generic, Show)
 
+-- | Unique identifier for the target chat
+-- or username of the target channel (in the format @\@channelusername@).
+data SomeChatId
+  = SomeChatId ChatId       -- ^ Unique chat ID.
+  | SomeChatUsername Text   -- ^ Username of the target channel.
+  deriving (Generic)
+
+instance ToJSON   SomeChatId where toJSON = genericSomeToJSON
+instance FromJSON SomeChatId where parseJSON = genericSomeParseJSON
+
+-- | This object represents a bot command.
+data BotCommand = BotCommand
+  { botCommandCommand :: Text -- ^ Text of the command; 1-32 characters. Can contain only lowercase English letters, digits and underscores.
+  , botCommandDescription :: Text -- ^ Description of the command; 1-256 characters.
+  }
+  deriving (Generic, Show)
+
+data BotCommandScope
+  = BotCommandScopeDefault -- ^ Represents the default scope of bot commands. Default commands are used if no commands with a narrower scope are specified for the user.
+  | BotCommandScopeAllPrivateChats -- ^ Represents the scope of bot commands, covering all private chats.
+  | BotCommandScopeAllGroupChats -- ^ Represents the scope of bot commands, covering all group and supergroup chats.
+  | BotCommandScopeAllChatAdministrators -- ^ Represents the scope of bot commands, covering all group and supergroup chat administrators.
+  | BotCommandScopeChat SomeChatId -- ^ Represents the scope of bot commands, covering a specific chat.
+  | BotCommandScopeChatAdministrators SomeChatId -- ^ Represents the scope of bot commands, covering all administrators of a specific group or supergroup chat.
+  | BotCommandScopeChatMember SomeChatId UserId -- ^ Represents the scope of bot commands, covering a specific member of a group or supergroup chat.
+
+addType :: Text -> [Pair] -> [Pair]
+addType name xs = ("type" .= name) : xs
+instance ToJSON BotCommandScope where
+  toJSON = \case
+    BotCommandScopeDefault ->
+      object $ addType "default" []
+    BotCommandScopeAllPrivateChats ->
+      object $ addType "all_private_chats" []
+    BotCommandScopeAllGroupChats ->
+      object $ addType "all_group_chats" []
+    BotCommandScopeAllChatAdministrators ->
+      object $ addType "all_chat_administrators" []
+    BotCommandScopeChat sci ->
+      object $ addType "chat" ["chat_id" .= sci]
+    BotCommandScopeChatAdministrators sci ->
+      object $ addType "chat_administrators" ["chat_id" .= sci]
+    BotCommandScopeChatMember sci ui ->
+      object $ addType "chat_member" ["chat_id" .= sci, "user_id" .= ui]
+
+instance FromJSON BotCommandScope where
+  parseJSON = withObject "BotCommandScope" \o ->
+    (o .: "type" :: Parser Text) >>= \case
+    "default" ->                pure BotCommandScopeDefault
+    "all_private_chats" ->      pure BotCommandScopeAllPrivateChats
+    "all_group_chats" ->        pure BotCommandScopeAllGroupChats
+    "all_chat_administrators"-> pure BotCommandScopeAllChatAdministrators
+    "chat" ->                        BotCommandScopeChat <$> o .: "chat_id"
+    "chat_administrators"->          BotCommandScopeChatAdministrators <$> o .: "chat_id"
+    "chat_member"->                  BotCommandScopeChatMember <$> o .: "chat_id" <*> o .: "user_id"
+    t -> fail $ Text.unpack ("Unknown type: " <> t)
+
+
+-- | Generic fields for all InputMedia structures
+data InputMediaGeneric = InputMediaGeneric
+  { inputMediaGenericMedia :: InputFile -- ^ File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name.
+  , inputMediaGenericCaption :: Maybe Text -- ^ Caption of the photo to be sent, 0-1024 characters after entities parsing.
+  , inputMediaGenericParseMode :: Maybe Text -- ^ Mode for parsing entities in the photo caption. See formatting options <https:\/\/core.telegram.org\/bots\/api#formatting-options> for more details.
+  , inputMediaGenericCaptionEntities :: Maybe [MessageEntity] -- ^ List of special entities that appear in the caption, which can be specified instead of parse_mode.
+  }
+  deriving Generic
+
+instance ToJSON InputMediaGeneric where toJSON = gtoJSON
+
+instance ToMultipart Tmp InputMediaGeneric where
+  toMultipart InputMediaGeneric{..} = MultipartData fields files where
+    fields =
+      [ Input "media" "attach://file"
+      ] <> catMaybes
+      [ inputMediaGenericCaption <&>
+        \t -> Input "caption" t
+      , inputMediaGenericParseMode <&>
+        \t -> Input "parse_mode" t
+      , inputMediaGenericCaptionEntities <&>
+        \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
+      ]
+    files = [makeFile "file" inputMediaGenericMedia]
+
+data InputMediaGenericThumb = InputMediaGenericThumb
+  { inputMediaGenericGeneric :: InputMediaGeneric
+  , inputMediaGenericThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. 
+  }
+
+instance ToJSON InputMediaGenericThumb where
+  toJSON InputMediaGenericThumb{..}
+    = addFields (toJSON inputMediaGenericGeneric)
+      ["thumb" .= inputMediaGenericThumb]
+
+instance ToMultipart Tmp InputMediaGenericThumb where
+  toMultipart = \case
+    InputMediaGenericThumb generic Nothing -> toMultipart generic
+    InputMediaGenericThumb generic (Just thumb) -> MultipartData fields files where
+      (MultipartData nestedFields nestedFiles) = toMultipart generic
+      fields = Input "thumb" "attach://thumb" : nestedFields
+      files = makeFile "thumb" thumb : nestedFiles
+
+data InputMedia
+  = InputMediaPhoto InputMediaGeneric -- ^ Represents a photo to be sent.
+  | InputMediaVideo -- ^ Represents a video to be sent.
+    { inputMediaVideoGeneric :: InputMediaGenericThumb
+    , inputMediaVideoWidth :: Maybe Integer -- ^ Video width
+    , inputMediaVideoHeight :: Maybe Integer -- ^ Video height
+    , inputMediaVideoDuration :: Maybe Integer -- ^ Video duration in seconds
+    , inputMediaVideoSupportsStreaming :: Maybe Bool -- ^ Pass True, if the uploaded video is suitable for streaming
+    }
+  | InputMediaAnimation -- ^ Represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent.
+    { inputMediaAnimationGeneric :: InputMediaGenericThumb
+    , inputMediaAnimationWidth :: Maybe Integer -- ^ Animation width
+    , inputMediaAnimationHeight :: Maybe Integer -- ^ Animation height
+    , inputMediaAnimationDuration :: Maybe Integer -- ^ Animation duration in seconds
+    }
+  | InputMediaAudio -- ^ Represents an audio file to be treated as music to be sent.
+    { inputMediaAudioGeneric :: InputMediaGenericThumb
+    , inputMediaAudioDuration :: Maybe Integer -- ^ Duration of the audio in seconds
+    , inputMediaAudioPerformer :: Maybe Text -- ^ Performer of the audio
+    , inputMediaAudioTitle :: Maybe Text -- ^ Title of the audio
+    }
+  | InputMediaDocument -- ^ Represents a general file to be sent.
+    { inputMediaDocumentGeneric :: InputMediaGenericThumb
+    , inputMediaDocumentDisableContentTypeDetection :: Maybe Bool -- ^ Disables automatic server-side content type detection for files uploaded using multipart/form-data. Always True, if the document is sent as part of an album.
+    }
+
+instance ToJSON InputMedia where
+  toJSON = \case
+    InputMediaPhoto img ->
+      addFields (toJSON img) (addType "photo" [])
+    InputMediaVideo imgt width height duration streaming ->
+      addFields (toJSON imgt)
+                (addType "video"
+                [ "width" .= width
+                , "height" .= height
+                , "duration" .= duration
+                , "support_streaming" .= streaming
+                ])
+    InputMediaAnimation imgt width height duration ->
+      addFields (toJSON imgt)
+                (addType "animation"
+                [ "width" .= width
+                , "height" .= height
+                , "duration" .= duration
+                ])
+    InputMediaAudio imgt duration performer title ->
+      addFields (toJSON imgt)
+                (addType "audio"
+                [ "duration" .= duration
+                , "performer" .= performer
+                , "title" .= title
+                ])
+    InputMediaDocument imgt dctd ->
+      addFields (toJSON imgt)
+                (addType "document" ["disable_content_type_detection" .= dctd])
+
+
+
+instance ToMultipart Tmp InputMedia where
+  toMultipart = let
+    addMultipartFields newFields (MultipartData currenFields files)
+      = MultipartData (newFields <> currenFields) files
+    in \case
+    InputMediaPhoto img ->
+      addMultipartFields
+      [ Input "type" "photo"
+      ] (toMultipart img)
+    InputMediaVideo imgt width height duration streaming ->
+      addMultipartFields
+      (Input "type" "video"
+      : catMaybes 
+      [ width <&>
+        \t -> Input "width" (TL.toStrict $ encodeToLazyText t)
+      , height <&>
+        \t -> Input "height" (TL.toStrict $ encodeToLazyText t)
+      , duration <&>
+        \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
+      , streaming <&>
+        \t -> Input "support_streaming" (bool "false" "true" t)
+      ]) (toMultipart imgt)
+    InputMediaAnimation imgt width height duration ->
+      addMultipartFields
+      (Input "type" "animation"
+      : catMaybes 
+      [ width <&>
+        \t -> Input "width" (TL.toStrict $ encodeToLazyText t)
+      , height <&>
+        \t -> Input "height" (TL.toStrict $ encodeToLazyText t)
+      , duration <&>
+        \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
+      ]) (toMultipart imgt)
+    InputMediaAudio imgt duration performer title ->
+      addMultipartFields
+      (Input "type" "audio"
+      : catMaybes 
+      [ duration <&>
+        \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
+      , performer <&>
+        \t -> Input "performer" t
+      , title <&>
+        \t -> Input "title" t
+      ]) (toMultipart imgt)
+    InputMediaDocument imgt dctd ->
+      addMultipartFields
+      (Input "type" "document"
+      : catMaybes 
+      [ dctd <&> 
+         \t -> Input "disable_content_type_detection" (bool "false" "true" t)
+      ]) (toMultipart imgt)
+
 foldMap deriveJSON'
   [ ''User
   , ''Chat
@@ -1073,4 +1303,5 @@ foldMap deriveJSON'
   , ''ChatPermissions
   , ''ChatLocation
   , ''StickerSet
+  , ''BotCommand
   ]
