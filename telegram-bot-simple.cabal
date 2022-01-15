@@ -129,8 +129,11 @@ executable example-game-bot
       aeson
     , aeson-pretty
     , base >=4.9 && <5
+    , blaze-html
     , bytestring
     , cron >=0.7.0
+    , cookie
+    , dhall
     , filepath
     , hashable
     , http-api-data
@@ -140,12 +143,16 @@ executable example-game-bot
     , mtl
     , optparse-applicative
     , pretty-show
+    , prettyprinter
     , profunctors
+    , QuickCheck
     , servant
+    , servant-blaze
     , servant-client
     , servant-multipart
     , servant-multipart-api
     , servant-multipart-client
+    , servant-server
     , split
     , stm
     , telegram-bot-simple
@@ -154,6 +161,7 @@ executable example-game-bot
     , time
     , transformers
     , unordered-containers
+    , warp
   default-language: Haskell2010
 
 executable example-todo-bot

@@ -1033,7 +1033,7 @@ data Game = Game
 -- ** 'CallbackGame'
 
 -- | A placeholder, currently holds no information. Use BotFather to set up your game.
-data CallbackGame = CallbackGame
+newtype CallbackGame = CallbackGame Text
   deriving (Generic, Show)
 
 -- ** 'GameHighScore'

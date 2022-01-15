@@ -32,6 +32,30 @@ import Telegram.Bot.API.Types
 import Data.Maybe (catMaybes)
 import Data.Functor ((<&>))
 
+-- * Temporary methods
+
+-- ** 'answerCallbackQuery'
+
+type AnswerCallbackQuery
+  = "answerCallbackQuery"
+  :> ReqBody '[JSON] AnswerCallbackQueryRequest
+  :> Post '[JSON] (Response Bool)
+
+answerCallbackQuery :: AnswerCallbackQueryRequest -> ClientM (Response Bool)
+answerCallbackQuery = client (Proxy @AnswerCallbackQuery)
+
+data AnswerCallbackQueryRequest = AnswerCallbackQueryRequest
+  { answerCallbackQueryRequestCallbackQueryId :: Text
+  , answerCallbackQueryRequestText            :: Maybe Text
+  , answerCallbackQueryRequestShowAlert       :: Maybe Bool
+  , answerCallbackQueryRequestUrl             :: Maybe Text
+  , answerCallbackQueryRequestCacheTime       :: Maybe Int
+  }
+  deriving (Generic, Show)
+
+instance ToJSON AnswerCallbackQueryRequest where toJSON = gtoJSON
+
+
 -- * Available methods
 
 -- ** 'getMe'

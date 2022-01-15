@@ -73,8 +73,16 @@ executables:
   example-game-bot:
     main: examples/GameBot.hs
     dependencies:
+      - blaze-html
+      - cookie
       - telegram-bot-simple
       - optparse-applicative
+      - prettyprinter
+      - QuickCheck
+      - servant-blaze
+      - servant-server
+      - dhall
+      - warp
     ghc-options:
       - -threaded
       - -rtsopts
