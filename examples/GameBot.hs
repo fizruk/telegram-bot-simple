@@ -1,4 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TypeOperators #-}
@@ -10,17 +11,21 @@
 module Main where
 
 import Control.Concurrent.STM
+import Control.Monad.IO.Class (liftIO)
+import Data.Char (isSpace)
 import Data.Coerce (coerce)
 import Data.Hashable (Hashable)
 import Data.HashSet (HashSet)
 import Data.HashMap.Strict (HashMap)
 import Data.Maybe (isJust)
-import Dhall
+import Data.Text.Encoding (encodeUtf8)
+import Dhall hiding (maybe)
 import Network.Wai.Handler.Warp (run)
 import Options.Applicative hiding (command, action)
 import Prettyprinter.Internal   (pretty)
 import Servant
 import Servant.HTML.Blaze
+import System.Random (randomIO)
 import Test.QuickCheck (generate, shuffle)
 import Text.Blaze.Html
 import Web.Cookie
@@ -29,6 +34,7 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
+import qualified Data.UUID as UUID
 import qualified Options.Applicative as Optparse (command)
 
 import Telegram.Bot.API
@@ -166,7 +172,8 @@ runServer :: IO ()
 runServer = do
   serverSettings <- loadServerSettings
   let port = fromIntegral (serverPort serverSettings)
-  run port (serverApp serverSettings)
+  env <- loadEnv serverSettings
+  run port (serverApp env)
 
 data ServerSettings = ServerSettings
   { serverPort       :: Natural
@@ -187,19 +194,23 @@ type WithCookie x = Headers '[ Header "Set-Cookie" SetCookie ] x
 type API
   =  Header "Cookie" Text
   :> (     Get '[HTML] (WithCookie Html)
-     :<|> "next"  :> ReqBody '[JSON] Int :> Post '[HTML] (WithCookie Html)
-     :<|> "score" :> Get '[HTML] (WithCookie Html)
+     :<|> "game"  :>
+        (    Get '[HTML] (WithCookie Html)
+        :<|> ReqBody '[JSON] Int :> Post '[HTML] (WithCookie Html)
+        )
      )
 
 api :: Proxy API
 api = Proxy
 
-server :: ServerSettings -> Server API
-server settings = \cookie ->
-  (    startHandler settings cookie
-  :<|> nextQuestionHandler settings cookie
-  :<|> getScoreHandler settings cookie
+server :: Env -> Server API
+server env = \cookie ->
+  (    startHandler env cookie
+  :<|> (firstQuestionHandler env cookie :<|> nextQuestionHandler env cookie)
   )
+
+serverApp :: Env -> Application
+serverApp env = serve api (server env)
 
 -- *** Questions
 
@@ -239,8 +250,8 @@ validateQuestion (QuestionChoice _ choices _) = checkConsistency choices
   where
     checkConsistency = (== 1) . length . filter choiceIsCorrect
 
-shuffleQuestionsIO :: Int -> HashSet Question -> IO [Question]
-shuffleQuestionsIO limit questions
+shuffleQuestions :: Int -> HashSet Question -> IO [Question]
+shuffleQuestions limit questions
   = generate $ take limit <$> shuffle (HashSet.toList questions)
 
 solveQuestion :: Int -> Question -> Bool
@@ -282,6 +293,30 @@ data UserData = UserData
   }
   deriving (Eq, Show, Generic, FromDhall, ToDhall)
 
+createUser :: Handler GameUserId
+createUser = liftIO (GameUserId . UUID.toText <$> randomIO)
+
+getOrCreateUser :: Maybe Text -> Handler GameUserId
+getOrCreateUser Nothing       = createUser
+getOrCreateUser (Just cookie) =
+  case parseUser cookie of
+    Nothing   -> createUser
+    Just user -> pure user
+
+parseUser :: Text -> Maybe GameUserId
+parseUser = fmap GameUserId
+  . HashMap.lookup "HUID"
+  . HashMap.fromList
+  . fmap (fmap (Text.drop 1) . Text.span (/= '='))
+  . Text.splitOn ";"
+  . Text.filter (not . isSpace)
+
+userToSetCookie :: GameUserId -> SetCookie
+userToSetCookie user = defaultSetCookie
+  { setCookieName = "HUID"
+  , setCookieValue = encodeUtf8 (coerce user)
+  }
+
 findUserData :: GameUserId -> HashMap GameUserId UserData -> Maybe UserData
 findUserData = HashMap.lookup
 
@@ -294,8 +329,8 @@ initUserData total@(q : qs) = UserData
   , userDataTotalQuestions  = fromIntegral $ length total
   }
 
-alterUserData :: UserData -> Int -> Maybe UserData
-alterUserData old userAnswer = case userDataQuestions old of
+alterUserData :: Int -> UserData -> Maybe UserData
+alterUserData userAnswer old = case userDataQuestions old of
   []     -> Nothing
   q : qs ->
     Just $ old
@@ -305,12 +340,14 @@ alterUserData old userAnswer = case userDataQuestions old of
           registerAnswer userAnswer (userDataCurrentQuestion old) (userDataAnswers old)
       }
 
+data GameState = GameOver UserData | GameNotFound | GameInProgress UserData
+  deriving Eq
+
 -- *** Analytics
 
 data Analytics = Analytics
   { rootPageCounter         :: Integer
   , nextQuestionPageCounter :: Integer
-  , scorePageCounter        :: Integer
   }
   deriving (Eq, Show, Generic, FromDhall, ToDhall)
 
@@ -319,9 +356,6 @@ incrementRootPage a = a { rootPageCounter = 1 + rootPageCounter a }
 
 incrementNextQuestionPage :: Analytics -> Analytics
 incrementNextQuestionPage a = a { nextQuestionPageCounter = 1 + nextQuestionPageCounter a }
-
-incrementScorePageCounter :: Analytics -> Analytics
-incrementScorePageCounter a = a { scorePageCounter = 1 + scorePageCounter a }
 
 -- *** Env
 
@@ -359,17 +393,86 @@ storeEnv Env{..} = do
 
 -- *** Handlers
 
-startHandler :: ServerSettings -> Maybe Text -> Handler (WithCookie Html)
-startHandler = e
+withUser
+  :: Env
+  -> Maybe Text
+  -> (GameUserId -> Handler (WithCookie Html))
+  -> Handler (WithCookie Html)
+withUser _env Nothing _action = redirectToRoot
+withUser env (Just cookie) action = maybe redirectToRoot action (parseUser cookie)
 
-nextQuestionHandler :: ServerSettings -> Maybe Text -> Int -> Handler (WithCookie Html)
-nextQuestionHandler = e
+startHandler :: Env -> Maybe Text -> Handler (WithCookie Html)
+startHandler _env mCookie = do
+  user <- getOrCreateUser mCookie
+  pure
+    $ addHeader @"Set-Cookie" (userToSetCookie user)
+    $ renderStartPage
 
-getScoreHandler :: ServerSettings -> Maybe Text -> Handler (WithCookie Html)
-getScoreHandler = e
+firstQuestionHandler :: Env -> Maybe Text -> Handler (WithCookie Html)
+firstQuestionHandler env mCookie = withUser env mCookie (firstQuestionForUser env)
+  where
+    ServerSettings{..} = settings env
+    limit = fromIntegral questionsPerGame
 
-serverApp :: ServerSettings -> Application
-serverApp settings = serve api (server settings)
+    firstQuestionForUser Env{..} user = do
+      newUserData <- liftIO $ do
+        newQuestions <- shuffleQuestions limit =<< readTVarIO questionsState
+        atomically $ do
+          modifyTVar' analytics incrementNextQuestionPage
+          let newUserData = initUserData newQuestions
+          modifyTVar' userState $! HashMap.insert user $! newUserData
+          pure newUserData
+      pure
+        $ addHeader @"Set-Cookie" (userToSetCookie user)
+        $ renderFirstQuestionPage newUserData
+
+nextQuestionHandler :: Env -> Maybe Text -> Int -> Handler (WithCookie Html)
+nextQuestionHandler env mCookie n = withUser env mCookie (nextQuestionForUser env n)
+  where
+    nextQuestionForUser Env{..} numAnswer user = do
+      newGameState <- liftIO $ atomically $ do
+        modifyTVar' analytics incrementNextQuestionPage
+        oldUserState <- readTVar userState
+        case findUserData user oldUserState of
+          Nothing -> pure GameNotFound
+          Just oldUserData -> case alterUserData numAnswer oldUserData of
+            Nothing -> do
+              writeTVar userState $! HashMap.delete user oldUserState
+              pure (GameOver oldUserData)
+            Just newUserData -> do
+              writeTVar userState $! HashMap.insert user newUserData oldUserState
+              pure (GameInProgress newUserData)
+      case newGameState of
+        GameNotFound -> redirectToStart user
+        GameOver oldUserData -> pure
+          $ addHeader @"Set-Cookie" (userToSetCookie user)
+          $ renderUserScore oldUserData
+        GameInProgress newUserData -> pure
+          $ addHeader @"Set-Cookie" (userToSetCookie user)
+          $ renderNextQuestionPage newUserData
+
+-- *** Redirects
+
+redirectToRoot :: Handler (WithCookie Html)
+redirectToRoot = noHeader @"Set-Cookie" <$> throwError err301
+
+redirectToStart :: GameUserId -> Handler (WithCookie Html)
+redirectToStart user = addHeader @"Set-Cookie" (userToSetCookie user) <$> throwError err301
+
+redirectToScore :: GameUserId -> Handler (WithCookie Html)
+redirectToScore user = addHeader @"Set-Cookie" (userToSetCookie user) <$> throwError err301
+
+-- *** Renderers
+
+renderStartPage = e
+
+renderFirstQuestionPage = e
+
+renderNextQuestionPage = e
+
+renderUserScore = e
+
+-- *** Helpers
 
 e :: a
 e = error "TBD"

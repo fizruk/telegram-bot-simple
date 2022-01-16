@@ -146,6 +146,7 @@ executable example-game-bot
     , prettyprinter
     , profunctors
     , QuickCheck
+    , random
     , servant
     , servant-blaze
     , servant-client
@@ -161,6 +162,7 @@ executable example-game-bot
     , time
     , transformers
     , unordered-containers
+    , uuid
     , warp
   default-language: Haskell2010
 

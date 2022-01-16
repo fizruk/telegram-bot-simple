@@ -75,13 +75,15 @@ executables:
     dependencies:
       - blaze-html
       - cookie
-      - telegram-bot-simple
+      - dhall
       - optparse-applicative
       - prettyprinter
       - QuickCheck
+      - random
       - servant-blaze
       - servant-server
-      - dhall
+      - telegram-bot-simple
+      - uuid
       - warp
     ghc-options:
       - -threaded
