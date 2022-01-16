@@ -76,6 +76,7 @@ executables:
       - blaze-html
       - cookie
       - dhall
+      - http-types
       - optparse-applicative
       - prettyprinter
       - QuickCheck

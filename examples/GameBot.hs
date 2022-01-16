@@ -12,6 +12,7 @@ module Main where
 
 import Control.Concurrent.STM
 import Control.Monad.IO.Class (liftIO)
+import Data.ByteString (ByteString)
 import Data.Char (isSpace)
 import Data.Coerce (coerce)
 import Data.Hashable (Hashable)
@@ -20,6 +21,7 @@ import Data.HashMap.Strict (HashMap)
 import Data.Maybe (isJust)
 import Data.Text.Encoding (encodeUtf8)
 import Dhall hiding (maybe)
+import Network.HTTP.Types (hLocation)
 import Network.Wai.Handler.Warp (run)
 import Options.Applicative hiding (command, action)
 import Prettyprinter.Internal   (pretty)
@@ -454,13 +456,15 @@ nextQuestionHandler env mCookie n = withUser env mCookie (nextQuestionForUser en
 -- *** Redirects
 
 redirectToRoot :: Handler (WithCookie Html)
-redirectToRoot = noHeader @"Set-Cookie" <$> throwError err301
+redirectToRoot = noHeader @"Set-Cookie" <$> throwError (err301WithLoc "/")
 
 redirectToStart :: GameUserId -> Handler (WithCookie Html)
-redirectToStart user = addHeader @"Set-Cookie" (userToSetCookie user) <$> throwError err301
+redirectToStart user
+  =   addHeader @"Set-Cookie" (userToSetCookie user)
+  <$> throwError (err301WithLoc "/game")
 
-redirectToScore :: GameUserId -> Handler (WithCookie Html)
-redirectToScore user = addHeader @"Set-Cookie" (userToSetCookie user) <$> throwError err301
+err301WithLoc :: ByteString -> ServerError
+err301WithLoc loc = err301 { errHeaders = [(hLocation, loc)] }
 
 -- *** Renderers
 

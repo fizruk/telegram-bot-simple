@@ -139,6 +139,7 @@ executable example-game-bot
     , http-api-data
     , http-client
     , http-client-tls
+    , http-types
     , monad-control
     , mtl
     , optparse-applicative
