@@ -501,10 +501,17 @@ instance ToJSON InputFile where
   toJSON (FileUrl t) = toJSON t
   toJSON (InputFile f _) = toJSON ("attach://" <> pack (takeFileName f))
 
--- | Multipart file helper, works only with InputFile constructor. 
-makeFile :: Text -> InputFile -> FileData Tmp
-makeFile name (InputFile path ct) = FileData name (pack $ takeFileName path) ct path
-makeFile _ _ = error "Bad input file for multipart"
+-- | Multipart file helper
+makeFile :: Text -> InputFile ->  MultipartData Tmp ->  MultipartData Tmp
+makeFile name (InputFile path ct) (MultipartData fields files) = 
+  MultipartData 
+    (Input name ("attach://" <> name) : fields) 
+    (FileData name (pack $ takeFileName path) ct path : files)
+
+makeFile name file (MultipartData fields files) = 
+  MultipartData 
+    (Input name (TL.toStrict $ encodeToLazyText file) : fields) 
+    files
 
 -- ** 'ReplyKeyboardMarkup'
 
@@ -1049,6 +1056,10 @@ data SomeChatId
 instance ToJSON   SomeChatId where toJSON = genericSomeToJSON
 instance FromJSON SomeChatId where parseJSON = genericSomeParseJSON
 
+instance ToHttpApiData SomeChatId where
+  toUrlPiece (SomeChatId id) = toUrlPiece id
+  toUrlPiece (SomeChatUsername name) = name
+  
 -- | This object represents a bot command.
 data BotCommand = BotCommand
   { botCommandCommand :: Text -- ^ Text of the command; 1-32 characters. Can contain only lowercase English letters, digits and underscores.
@@ -1109,10 +1120,8 @@ data InputMediaGeneric = InputMediaGeneric
 instance ToJSON InputMediaGeneric where toJSON = gtoJSON
 
 instance ToMultipart Tmp InputMediaGeneric where
-  toMultipart InputMediaGeneric{..} = MultipartData fields files where
-    fields =
-      [ Input "media" "attach://file"
-      ] <> catMaybes
+  toMultipart InputMediaGeneric{..} = makeFile "media" inputMediaGenericMedia (MultipartData fields []) where
+    fields = catMaybes
       [ inputMediaGenericCaption <&>
         \t -> Input "caption" t
       , inputMediaGenericParseMode <&>
@@ -1120,7 +1129,6 @@ instance ToMultipart Tmp InputMediaGeneric where
       , inputMediaGenericCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       ]
-    files = [makeFile "file" inputMediaGenericMedia]
 
 data InputMediaGenericThumb = InputMediaGenericThumb
   { inputMediaGenericGeneric :: InputMediaGeneric
@@ -1129,16 +1137,14 @@ data InputMediaGenericThumb = InputMediaGenericThumb
 
 instance ToJSON InputMediaGenericThumb where
   toJSON InputMediaGenericThumb{..}
-    = addFields (toJSON inputMediaGenericGeneric)
+    = addJsonFields (toJSON inputMediaGenericGeneric)
       ["thumb" .= inputMediaGenericThumb]
 
 instance ToMultipart Tmp InputMediaGenericThumb where
   toMultipart = \case
     InputMediaGenericThumb generic Nothing -> toMultipart generic
-    InputMediaGenericThumb generic (Just thumb) -> MultipartData fields files where
-      (MultipartData nestedFields nestedFiles) = toMultipart generic
-      fields = Input "thumb" "attach://thumb" : nestedFields
-      files = makeFile "thumb" thumb : nestedFiles
+    InputMediaGenericThumb generic (Just thumb) -> makeFile "thumb" thumb (toMultipart generic) where
+
 
 data InputMedia
   = InputMediaPhoto InputMediaGeneric -- ^ Represents a photo to be sent.
@@ -1169,9 +1175,9 @@ data InputMedia
 instance ToJSON InputMedia where
   toJSON = \case
     InputMediaPhoto img ->
-      addFields (toJSON img) (addType "photo" [])
+      addJsonFields (toJSON img) (addType "photo" [])
     InputMediaVideo imgt width height duration streaming ->
-      addFields (toJSON imgt)
+      addJsonFields (toJSON imgt)
                 (addType "video"
                 [ "width" .= width
                 , "height" .= height
@@ -1179,29 +1185,27 @@ instance ToJSON InputMedia where
                 , "support_streaming" .= streaming
                 ])
     InputMediaAnimation imgt width height duration ->
-      addFields (toJSON imgt)
+      addJsonFields (toJSON imgt)
                 (addType "animation"
                 [ "width" .= width
                 , "height" .= height
                 , "duration" .= duration
                 ])
     InputMediaAudio imgt duration performer title ->
-      addFields (toJSON imgt)
+      addJsonFields (toJSON imgt)
                 (addType "audio"
                 [ "duration" .= duration
                 , "performer" .= performer
                 , "title" .= title
                 ])
     InputMediaDocument imgt dctd ->
-      addFields (toJSON imgt)
+      addJsonFields (toJSON imgt)
                 (addType "document" ["disable_content_type_detection" .= dctd])
 
 
 
 instance ToMultipart Tmp InputMedia where
   toMultipart = let
-    addMultipartFields newFields (MultipartData currenFields files)
-      = MultipartData (newFields <> currenFields) files
     in \case
     InputMediaPhoto img ->
       addMultipartFields
@@ -1303,4 +1307,5 @@ foldMap deriveJSON'
   , ''ChatLocation
   , ''StickerSet
   , ''BotCommand
+  , ''ChatInviteLink
   ]

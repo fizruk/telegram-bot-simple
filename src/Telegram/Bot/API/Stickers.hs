@@ -58,10 +58,10 @@ data SendStickerRequest = SendStickerRequest
 instance ToJSON SendStickerRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp SendStickerRequest where
-  toMultipart SendStickerRequest{..} = MultipartData fields files where
+  toMultipart SendStickerRequest{..} = 
+    makeFile "sticker" sendStickerSticker (MultipartData fields []) where
     fields =
-      [ Input "sticker" "attach://file"
-      , Input "chat_id" $ case sendStickerChatId of
+      [ Input "chat_id" $ case sendStickerChatId of
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
@@ -74,7 +74,6 @@ instance ToMultipart Tmp SendStickerRequest where
       , sendStickerReplyMarkup <&>
         \t -> Input "reply_markup" (TL.toStrict $ encodeToLazyText t)
       ]
-    files = [makeFile "file" sendStickerSticker]
 
 type SendStickerContent
   = "sendSticker"
@@ -106,12 +105,9 @@ data UploadStickerFileRequest = UploadStickerFileRequest
 instance ToJSON UploadStickerFileRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp UploadStickerFileRequest where
-  toMultipart UploadStickerFileRequest{..} = MultipartData fields files where
-    fields =
-      [ Input "png_sticker" "attach://file"
-      , Input "user_id" $ T.pack . show $ uploadStickerFileUserId
-      ]
-    files = [makeFile "file" uploadStickerFilePngSticker]
+  toMultipart UploadStickerFileRequest{..} = 
+    makeFile "png_sticker" uploadStickerFilePngSticker (MultipartData fields []) where
+    fields = [ Input "user_id" $ T.pack . show $ uploadStickerFileUserId ]
 
 type UploadStickerFileContent
   = "uploadStickerFile"
@@ -161,10 +157,10 @@ instance ToJSON CreateNewStickerSetRequest where
       StickerFile{..} = createNewStickerSetSticker
 
 instance ToMultipart Tmp CreateNewStickerSetRequest where
-  toMultipart CreateNewStickerSetRequest{..} = MultipartData fields files where
+  toMultipart CreateNewStickerSetRequest{..} = 
+    makeFile (stickerLabel stickerFileLabel) stickerFileSticker (MultipartData fields []) where
     fields =
-      [ Input (stickerLabel stickerFileLabel) "attach://file"
-      , Input "user_id" $ T.pack . show $ createNewStickerSetUserId
+      [ Input "user_id" $ T.pack . show $ createNewStickerSetUserId
       , Input "name" createNewStickerSetName
       , Input "title" createNewStickerSetTitle
       , Input "emojis" createNewStickerSetEmojis
@@ -174,7 +170,6 @@ instance ToMultipart Tmp CreateNewStickerSetRequest where
       , createNewStickerSetMaskPosition <&>
         \t -> Input "mask_position" (TL.toStrict $ encodeToLazyText t)
       ]
-    files = [makeFile "file" stickerFileSticker]
     StickerFile {..} = createNewStickerSetSticker
 
 type CreateNewStickerSetContent
@@ -221,17 +216,16 @@ instance ToJSON AddStickerToSetRequest where
       StickerFile{..} = addStickerToSetSticker
 
 instance ToMultipart Tmp AddStickerToSetRequest where
-  toMultipart AddStickerToSetRequest{..} = MultipartData fields files where
+  toMultipart AddStickerToSetRequest{..} = 
+    makeFile (stickerLabel stickerFileLabel) stickerFileSticker (MultipartData fields []) where
     fields =
-      [ Input (stickerLabel stickerFileLabel) "attach://file"
-      , Input "user_id" $ T.pack . show $ addStickerToSetUserId
+      [ Input "user_id" $ T.pack . show $ addStickerToSetUserId
       , Input "name" addStickerToSetName
       , Input "emojis" addStickerToSetEmojis
       ] <> maybeToList
       ( addStickerToSetMaskPosition <&>
         \t -> Input "mask_position" (TL.toStrict $ encodeToLazyText t)
       )
-    files = [makeFile "file" stickerFileSticker]
     StickerFile {..} = addStickerToSetSticker
 
 type AddStickerToSetContent
@@ -305,13 +299,12 @@ data SetStickerSetThumbRequest = SetStickerSetThumbRequest
 instance ToJSON SetStickerSetThumbRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp SetStickerSetThumbRequest where
-  toMultipart SetStickerSetThumbRequest{..} = MultipartData fields files where
+  toMultipart SetStickerSetThumbRequest{..} = 
+    makeFile "png_sticker" setStickerSetThumbThumb (MultipartData fields []) where
     fields =
-      [ Input "png_sticker" "attach://file"
-      , Input "user_id" $ T.pack . show $ setStickerSetThumbUserId
+      [ Input "user_id" $ T.pack . show $ setStickerSetThumbUserId
       , Input "name" setStickerSetThumbName
       ]
-    files = [makeFile "file" setStickerSetThumbThumb]
 
 type SetStickerSetThumbContent
   = "setStickerSetThumb"
