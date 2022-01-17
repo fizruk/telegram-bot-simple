@@ -4,8 +4,10 @@
 {-# LANGUAGE StrictData #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 module Main where
@@ -31,6 +33,7 @@ import Servant.HTML.Blaze
 import System.Random (randomIO)
 import Test.QuickCheck (generate, shuffle)
 import Text.Blaze.Html
+import Web.Internal.FormUrlEncoded (ToForm, FromForm)
 import Web.Cookie
 
 import qualified Data.HashMap.Strict as HashMap
@@ -194,6 +197,12 @@ serverSettingsPath = "./examples/game-server-settings.dhall"
 loadServerSettings :: IO ServerSettings
 loadServerSettings = input Dhall.auto serverSettingsPath
 
+data AnswerInt = AnswerInt { q :: Int } deriving (Eq, Show, Generic)
+
+instance ToForm AnswerInt
+
+instance FromForm AnswerInt
+
 type WithCookie x = Headers '[ Header "Set-Cookie" SetCookie ] x
 
 type API
@@ -201,7 +210,7 @@ type API
   :> (     Get '[HTML] (WithCookie Html)
      :<|> "game"  :>
         (    Get '[HTML] (WithCookie Html)
-        :<|> ReqBody '[JSON] Int :> Post '[HTML] (WithCookie Html)
+        :<|> ReqBody '[FormUrlEncoded] AnswerInt :> Post '[HTML] (WithCookie Html)
         )
      )
 
@@ -238,6 +247,10 @@ data Question
       , questionChoiceExplanation :: Text
       }
   deriving (Eq, Show, Generic, Hashable, Ord, FromDhall, ToDhall)
+
+questionText :: Question -> Text
+questionText (QuestionBool txt _ _)  = txt
+questionText (QuestionChoice txt _ _) = txt
 
 questionExists :: Text -> HashSet Question -> Bool
 questionExists questionTxt = not . HashSet.null . HashSet.filter exists
@@ -334,16 +347,27 @@ initUserData total@(q : qs) = Just $ UserData
   , userDataTotalQuestions  = fromIntegral $ length total
   }
 
-alterUserData :: Int -> UserData -> Maybe UserData
-alterUserData userAnswer old = case userDataQuestions old of
-  []     -> Nothing
-  q : qs ->
-    Just $ old
-      { userDataCurrentQuestion = Just q
-      , userDataQuestions       = qs
-      , userDataAnswers         =
-          registerAnswer userAnswer (userDataCurrentQuestion old) (userDataAnswers old)
-      }
+alterUserData :: Int -> UserData -> GameState
+alterUserData userAnswer old = case (userDataCurrentQuestion old, userDataQuestions old) of
+  (Nothing, []) -> GameNotFound
+  (Just q, [])  -> GameOver $ old
+    { userDataCurrentQuestion = Just q
+    , userDataQuestions       = []
+    , userDataAnswers         =
+        registerAnswer userAnswer (userDataCurrentQuestion old) (userDataAnswers old)
+    }
+  (_, q : qs) -> GameInProgress $ old
+    { userDataCurrentQuestion = Just q
+    , userDataQuestions       = qs
+    , userDataAnswers         =
+        registerAnswer userAnswer (userDataCurrentQuestion old) (userDataAnswers old)
+    }
+
+gameDataFromState :: GameState -> Maybe UserData
+gameDataFromState = \case
+  GameNotFound -> Nothing
+  GameOver game -> Just game
+  GameInProgress game -> Just game
 
 data GameState = GameOver UserData | GameNotFound | GameInProgress UserData
   deriving Eq
@@ -434,8 +458,8 @@ firstQuestionHandler env mCookie = withUser mCookie (firstQuestionForUser env)
           $ addHeader @"Set-Cookie" (userToSetCookie user)
           $ renderQuestionPage newUserData
 
-nextQuestionHandler :: Env -> Maybe Text -> Int -> Handler (WithCookie Html)
-nextQuestionHandler env mCookie n = withUser mCookie (nextQuestionForUser env n)
+nextQuestionHandler :: Env -> Maybe Text -> AnswerInt -> Handler (WithCookie Html)
+nextQuestionHandler env mCookie (AnswerInt n) = withUser mCookie (nextQuestionForUser env n)
   where
     nextQuestionForUser Env{..} numAnswer user = do
       newGameState <- liftIO $ atomically $ do
@@ -443,13 +467,13 @@ nextQuestionHandler env mCookie n = withUser mCookie (nextQuestionForUser env n)
         oldUserState <- readTVar userState
         case findUserData user oldUserState of
           Nothing -> pure GameNotFound
-          Just oldUserData -> case alterUserData numAnswer oldUserData of
-            Nothing -> do
-              writeTVar userState $! HashMap.delete user oldUserState
-              pure (GameOver oldUserData)
-            Just newUserData -> do
-              writeTVar userState $! HashMap.insert user newUserData oldUserState
-              pure (GameInProgress newUserData)
+          Just oldUserData -> do
+            let newUserState = alterUserData numAnswer oldUserData
+            case gameDataFromState newUserState of
+              Nothing -> writeTVar userState $! HashMap.delete user oldUserState
+              Just newUserData ->
+                writeTVar userState $! HashMap.insert user newUserData oldUserState
+            pure newUserState
       case newGameState of
         GameNotFound -> redirectToStart user
         GameOver oldUserData -> pure
@@ -484,7 +508,7 @@ renderStartPage :: Html
 renderStartPage = withGameTemplate $ do
   H.div $ "Game"
   H.form ! A.action "/game" ! A.method "get" $ do
-    H.button ! A.type_ "submit" $ "Play"
+    H.button ! A.type_ "submit" ! A.value "submit" $ "Play"
 
 renderQuestionPage :: UserData -> Html
 renderQuestionPage UserData{..} = withGameTemplate $ do
@@ -492,12 +516,13 @@ renderQuestionPage UserData{..} = withGameTemplate $ do
     Nothing -> do
       H.div $ "No more questions left."
       H.form ! A.action "/game" ! A.method "get" $ do
-        H.button ! A.type_ "submit" $ "Play again"
+        H.button ! A.type_ "submit" ! A.value "submit" $ "Play again"
     Just QuestionBool{..} -> do
       H.pre $ toMarkup questionBoolText
       H.br
       H.div $ toMarkup
         $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
+      H.br
       H.form ! A.action "/game" ! A.method "post" $ do
         H.div $ do
           H.label ! A.for "f" $ "False"
@@ -506,12 +531,13 @@ renderQuestionPage UserData{..} = withGameTemplate $ do
           H.label ! A.for "f" $ "True"
           H.input ! A.id "f" ! A.type_ "radio" ! A.name "q" ! A.value "1" 
         H.div $ do
-          H.button ! A.type_ "submit" $ "Next question"
+          H.button ! A.type_ "submit" ! A.value "submit" $ "Next question"
     Just QuestionChoice{..} -> do
       H.pre $ toMarkup questionChoiceText
       H.br
       H.div $ toMarkup
         $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
+      H.br
       H.form ! A.action "/game" ! A.method "post" $ do
         forM_ questionChoiceChoices $
           \Choice{..} -> H.div $ do
@@ -519,9 +545,22 @@ renderQuestionPage UserData{..} = withGameTemplate $ do
             H.label ! A.for choiceId $ toMarkup choiceText
             H.input ! A.id choiceId ! A.type_ "radio" ! A.name "q" ! A.value choiceId
         H.div $ do
-          H.button ! A.type_ "submit" $ "Next question"      
+          H.button ! A.type_ "submit" ! A.value "submit" $ "Next question"
 
-renderUserScore = e
+renderUserScore :: UserData -> Html
+renderUserScore UserData{..} = withGameTemplate $ do
+  case userDataAnswers of
+    [] -> do
+      H.div $ "Sorry. Looks like no answers available at the moment. Try again maybe?"
+      H.form ! A.action "/game" ! A.method "get" $ do
+        H.button ! A.type_ "submit" ! A.value "submit" $ "Play again"
+    _  -> H.table $ H.tbody $ do
+      H.tr $ do
+        H.th $ "Question"
+        H.th $ "Answer"
+      forM_ userDataAnswers $ \Answer{..} -> H.tr $ do
+        H.td $ H.pre $ toMarkup (questionText answerQuestion)
+        H.td $ H.div $ (if answerIsRight then "OK" else toMarkup $ explainError answerQuestion)
 
 -- *** Helpers
 
