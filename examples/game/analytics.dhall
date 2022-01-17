@@ -1,0 +1,1 @@
+{ rootPageCounter = +0, nextQuestionPageCounter = +0 }

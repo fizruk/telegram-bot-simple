@@ -11,6 +11,7 @@
 module Main where
 
 import Control.Concurrent.STM
+import Control.Monad (forM_)
 import Control.Monad.IO.Class (liftIO)
 import Data.ByteString (ByteString)
 import Data.Char (isSpace)
@@ -38,6 +39,8 @@ import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import qualified Data.UUID as UUID
 import qualified Options.Applicative as Optparse (command)
+import qualified Text.Blaze.Html5 as H
+import qualified Text.Blaze.Html5.Attributes as A
 
 import Telegram.Bot.API
 import Telegram.Bot.API.Games
@@ -322,9 +325,9 @@ userToSetCookie user = defaultSetCookie
 findUserData :: GameUserId -> HashMap GameUserId UserData -> Maybe UserData
 findUserData = HashMap.lookup
 
-initUserData :: [Question] -> UserData
-initUserData [] = UserData Nothing [] [] 0
-initUserData total@(q : qs) = UserData
+initUserData :: [Question] -> Maybe UserData
+initUserData [] = Nothing
+initUserData total@(q : qs) = Just $ UserData
   { userDataCurrentQuestion = Just q
   , userDataQuestions       = qs
   , userDataAnswers         = []
@@ -396,12 +399,11 @@ storeEnv Env{..} = do
 -- *** Handlers
 
 withUser
-  :: Env
-  -> Maybe Text
+  :: Maybe Text
   -> (GameUserId -> Handler (WithCookie Html))
   -> Handler (WithCookie Html)
-withUser _env Nothing _action = redirectToRoot
-withUser env (Just cookie) action = maybe redirectToRoot action (parseUser cookie)
+withUser Nothing _action = redirectToRoot
+withUser (Just cookie) action = maybe redirectToRoot action (parseUser cookie)
 
 startHandler :: Env -> Maybe Text -> Handler (WithCookie Html)
 startHandler _env mCookie = do
@@ -411,25 +413,29 @@ startHandler _env mCookie = do
     $ renderStartPage
 
 firstQuestionHandler :: Env -> Maybe Text -> Handler (WithCookie Html)
-firstQuestionHandler env mCookie = withUser env mCookie (firstQuestionForUser env)
+firstQuestionHandler env mCookie = withUser mCookie (firstQuestionForUser env)
   where
     ServerSettings{..} = settings env
     limit = fromIntegral questionsPerGame
 
     firstQuestionForUser Env{..} user = do
-      newUserData <- liftIO $ do
+      mNewUserData <- liftIO $ do
         newQuestions <- shuffleQuestions limit =<< readTVarIO questionsState
         atomically $ do
           modifyTVar' analytics incrementNextQuestionPage
           let newUserData = initUserData newQuestions
-          modifyTVar' userState $! HashMap.insert user $! newUserData
+          case newUserData of
+            Nothing       -> pure ()
+            Just userData -> modifyTVar' userState $! HashMap.insert user userData
           pure newUserData
-      pure
-        $ addHeader @"Set-Cookie" (userToSetCookie user)
-        $ renderFirstQuestionPage newUserData
+      case mNewUserData of
+        Nothing -> redirectToRoot
+        Just newUserData -> pure
+          $ addHeader @"Set-Cookie" (userToSetCookie user)
+          $ renderQuestionPage newUserData
 
 nextQuestionHandler :: Env -> Maybe Text -> Int -> Handler (WithCookie Html)
-nextQuestionHandler env mCookie n = withUser env mCookie (nextQuestionForUser env n)
+nextQuestionHandler env mCookie n = withUser mCookie (nextQuestionForUser env n)
   where
     nextQuestionForUser Env{..} numAnswer user = do
       newGameState <- liftIO $ atomically $ do
@@ -451,7 +457,7 @@ nextQuestionHandler env mCookie n = withUser env mCookie (nextQuestionForUser en
           $ renderUserScore oldUserData
         GameInProgress newUserData -> pure
           $ addHeader @"Set-Cookie" (userToSetCookie user)
-          $ renderNextQuestionPage newUserData
+          $ renderQuestionPage newUserData
 
 -- *** Redirects
 
@@ -468,11 +474,52 @@ err301WithLoc loc = err301 { errHeaders = [(hLocation, loc)] }
 
 -- *** Renderers
 
-renderStartPage = e
+withGameTemplate :: Html -> Html
+withGameTemplate content = toHtml $ H.html $ do
+  H.head $ do
+    H.title $ "Game"
+  H.body $ content
 
-renderFirstQuestionPage = e
+renderStartPage :: Html
+renderStartPage = withGameTemplate $ do
+  H.div $ "Game"
+  H.form ! A.action "/game" ! A.method "get" $ do
+    H.button ! A.type_ "submit" $ "Play"
 
-renderNextQuestionPage = e
+renderQuestionPage :: UserData -> Html
+renderQuestionPage UserData{..} = withGameTemplate $ do
+  case userDataCurrentQuestion of
+    Nothing -> do
+      H.div $ "No more questions left."
+      H.form ! A.action "/game" ! A.method "get" $ do
+        H.button ! A.type_ "submit" $ "Play again"
+    Just QuestionBool{..} -> do
+      H.pre $ toMarkup questionBoolText
+      H.br
+      H.div $ toMarkup
+        $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
+      H.form ! A.action "/game" ! A.method "post" $ do
+        H.div $ do
+          H.label ! A.for "f" $ "False"
+          H.input ! A.id "f" ! A.type_ "radio" ! A.name "q" ! A.value "0" 
+        H.div $ do
+          H.label ! A.for "f" $ "True"
+          H.input ! A.id "f" ! A.type_ "radio" ! A.name "q" ! A.value "1" 
+        H.div $ do
+          H.button ! A.type_ "submit" $ "Next question"
+    Just QuestionChoice{..} -> do
+      H.pre $ toMarkup questionChoiceText
+      H.br
+      H.div $ toMarkup
+        $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
+      H.form ! A.action "/game" ! A.method "post" $ do
+        forM_ questionChoiceChoices $
+          \Choice{..} -> H.div $ do
+            let choiceId = H.toValue (show choiceNumber)
+            H.label ! A.for choiceId $ toMarkup choiceText
+            H.input ! A.id choiceId ! A.type_ "radio" ! A.name "q" ! A.value choiceId
+        H.div $ do
+          H.button ! A.type_ "submit" $ "Next question"      
 
 renderUserScore = e
 
