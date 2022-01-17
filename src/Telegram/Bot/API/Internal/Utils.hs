@@ -23,6 +23,7 @@ import Control.Applicative (liftA2)
 import qualified Data.Aeson.KeyMap as Map
 #else
 import qualified Data.HashMap.Strict as Map
+import Servant.Multipart (MultipartData(MultipartData), Input)
 #endif
 
 deriveJSON' :: Name -> Q [Dec]
@@ -105,9 +106,13 @@ instance (GSomeJSON f, GSomeJSON g) => GSomeJSON (f :+: g) where
       = L1 <$> gsomeParseJSON js
     <|> R1 <$> gsomeParseJSON js
 
-addFields :: Value -> [Pair] -> Value
-addFields (Object obj) pairs = Object $  Map.union obj (Map.fromList pairs)
-addFields x _ = x
+addJsonFields :: Value -> [Pair] -> Value
+addJsonFields (Object obj) pairs = Object $  Map.union obj (Map.fromList pairs)
+addJsonFields x _ = x
+
+addMultipartFields :: [Input] -> MultipartData tag -> MultipartData tag
+addMultipartFields newFields (MultipartData currenFields files)
+      = MultipartData (newFields <> currenFields) files
 
 -- Instance Monoid for TH of ghc < 8.6
 #if !MIN_VERSION_template_haskell(2,17,0)
