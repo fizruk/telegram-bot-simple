@@ -125,11 +125,11 @@ handleAction action model = case action of
     let queryId = coerce (callbackQueryId callback)
         queryData = callbackQueryData callback
         answerCallbackQueryRequest = AnswerCallbackQueryRequest
-          { answerCallbackQueryRequestCallbackQueryId = queryId
-          , answerCallbackQueryRequestText            = queryData
-          , answerCallbackQueryRequestShowAlert       = Nothing
-          , answerCallbackQueryRequestUrl             = Just "http://localhost:8080/game"
-          , answerCallbackQueryRequestCacheTime       = Nothing
+          { answerCallbackQueryCallbackQueryId = queryId
+          , answerCallbackQueryText            = queryData
+          , answerCallbackQueryShowAlert       = Nothing
+          , answerCallbackQueryUrl             = Just "http://localhost:8080/game"
+          , answerCallbackQueryCacheTime       = Nothing
           }
     _ <- liftClientM $ answerCallbackQuery answerCallbackQueryRequest
     return ()
