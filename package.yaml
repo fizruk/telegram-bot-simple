@@ -84,6 +84,7 @@ executables:
       - servant-blaze
       - servant-server
       - telegram-bot-simple
+      - unix
       - uuid
       - warp
     ghc-options:

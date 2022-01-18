@@ -13,19 +13,20 @@
 module Main where
 
 import Control.Concurrent.STM
-import Control.Monad (forM_)
+import Control.Monad (void, forM_)
 import Control.Monad.IO.Class (liftIO)
 import Data.ByteString (ByteString)
 import Data.Char (isSpace)
 import Data.Coerce (coerce)
+import Data.Function ((&))
 import Data.Hashable (Hashable)
 import Data.HashSet (HashSet)
 import Data.HashMap.Strict (HashMap)
 import Data.Maybe (isJust)
 import Data.Text.Encoding (encodeUtf8)
-import Dhall hiding (maybe)
+import Dhall hiding (maybe, void)
 import Network.HTTP.Types (hLocation)
-import Network.Wai.Handler.Warp (run)
+import Network.Wai.Handler.Warp (defaultSettings, runSettings, setInstallShutdownHandler, setPort)
 import Options.Applicative hiding (command, action)
 import Prettyprinter.Internal   (pretty)
 import Servant
@@ -42,6 +43,7 @@ import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import qualified Data.UUID as UUID
 import qualified Options.Applicative as Optparse (command)
+import qualified System.Posix.Signals as Sig
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
@@ -179,9 +181,16 @@ loadBotSettings = input Dhall.auto "./examples/game-bot-settings.dhall"
 runServer :: IO ()
 runServer = do
   serverSettings <- loadServerSettings
-  let port = fromIntegral (serverPort serverSettings)
   env <- loadEnv serverSettings
-  run port (serverApp env)
+  let shutdownHandler closeSocket = void $ Sig.installHandler Sig.sigTERM handler Nothing
+        where
+          shutdownAction = storeEnv env
+          handler = Sig.Catch $ shutdownAction >> closeSocket
+      warpSettings = defaultSettings
+        & setPort port
+        & setInstallShutdownHandler shutdownHandler
+      port = fromIntegral (serverPort serverSettings)
+  runSettings warpSettings (serverApp env)
 
 data ServerSettings = ServerSettings
   { serverPort       :: Natural
