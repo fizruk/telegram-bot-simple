@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveGeneric    #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.UpdatingMessages where
 
 import           Data.Aeson
@@ -11,7 +12,7 @@ import           GHC.Generics                    (Generic)
 import           Servant.API
 import           Servant.Client                  (ClientM, client)
 
-import           Telegram.Bot.API.Internal.Utils (gparseJSON, gtoJSON)
+import           Telegram.Bot.API.Internal.Utils (gparseJSON, gtoJSON, deriveJSON' )
 import           Telegram.Bot.API.MakingRequests
 import           Telegram.Bot.API.Methods
 import           Telegram.Bot.API.Types
@@ -39,5 +40,7 @@ data EditMessageTextRequest = EditMessageTextRequest
   , editMessageTextReplyMarkup           :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 } deriving (Generic)
 
-instance ToJSON   EditMessageTextRequest where toJSON = gtoJSON
-instance FromJSON EditMessageTextRequest where parseJSON = gparseJSON
+
+foldMap deriveJSON' 
+  [ ''EditMessageTextRequest
+  ]

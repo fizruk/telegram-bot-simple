@@ -362,7 +362,7 @@ instance ToMultipart Tmp SendAudioRequest where
       , sendAudioCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendAudioDuration <&>
-        \t -> Input "duration" t
+        \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
       , sendAudioPerformer <&>
         \t -> Input "performer" t
       , sendAudioTitle <&>
@@ -1597,4 +1597,5 @@ foldMap deriveJSON'
   , ''StopMessageLiveLocationRequest
   , ''EditMessageLiveLocationRequest
   , ''SendLocationRequest
+  , ''CopyMessageRequest
   ]
