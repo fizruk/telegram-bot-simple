@@ -63,16 +63,16 @@ data Action
   | AFeedback SomeChatId MessageId
   | ACallback CallbackQuery
 
-gameBot :: BotApp Model Action
-gameBot = BotApp
+gameBot :: BotSettings -> BotApp Model Action
+gameBot settings = BotApp
   { botInitialModel = ()
-  , botAction = flip updateToAction
-  , botHandler = handleAction
+  , botAction = flip (updateToAction settings)
+  , botHandler = handleAction settings
   , botJobs = []
   }
 
-updateToAction :: Model -> Update -> Maybe Action
-updateToAction  _ update
+updateToAction :: BotSettings -> Model -> Update -> Maybe Action
+updateToAction BotSettings{..}  _ update
   | isJust $ parseUpdate (command "game") update = game update
   | isJust $ parseUpdate (command "feedback") update = do
       msg <- updateMessage update
@@ -88,14 +88,14 @@ updateToAction  _ update
   | isJust $ updateCallbackQuery update = ACallback <$> updateCallbackQuery update
   | otherwise = Nothing
   where
-    game upd = AGame <$> (updateChatId upd) <*> (Just "http://localhost:8080/game")
+    game upd = AGame <$> (updateChatId upd) <*> (Just gameUrl)
 
-handleAction :: Action -> Model -> Eff Action Model
-handleAction action model = case action of
+handleAction :: BotSettings -> Action -> Model -> Eff Action Model
+handleAction BotSettings{..} action model = case action of
   NoOp -> pure model
   AFeedback sourceChatId msgId -> model <# do
     let shouldNotify  = Just True
-        targetChatId  = SomeChatId (ChatId (-711299241))
+        targetChatId  = SomeChatId (ChatId (fromIntegral supportChatId))
         fwdMsgRequest = ForwardMessageRequest targetChatId sourceChatId shouldNotify msgId
     _ <- liftClientM (forwardMessage fwdMsgRequest)
     return ()
@@ -115,7 +115,7 @@ handleAction action model = case action of
   AGame targetChatId msg -> model <# do
     let sendGameRequest = SendGameRequest
           { sendGameRequestChatId                   = coerce targetChatId
-          , sendGameRequestGameShortName            = "samplegame"
+          , sendGameRequestGameShortName            = gameId
           , sendGameRequestDisableNotification      = Nothing
           , sendGameRequestReplyToMessageId         = Nothing
           , sendGameRequestAllowSendingWithoutReply = Nothing
@@ -130,14 +130,14 @@ handleAction action model = case action of
           { answerCallbackQueryCallbackQueryId = queryId
           , answerCallbackQueryText            = queryData
           , answerCallbackQueryShowAlert       = Nothing
-          , answerCallbackQueryUrl             = Just "http://localhost:8080/game"
+          , answerCallbackQueryUrl             = Just gameUrl
           , answerCallbackQueryCacheTime       = Nothing
           }
     _ <- liftClientM $ answerCallbackQuery answerCallbackQueryRequest
     return ()
     
   where
-    gameMessageText = "<a href=\"http://localhost:8080/game\">Haskell Quiz</a>"
+    gameMessageText = "<a href=\"" <> gameUrl <> "\">" <> gameName <> "</a>"
 data Command = CmdBot | CmdServer
 
 -- * Main
@@ -165,11 +165,14 @@ runTelegramBot = do
   botSettings <- loadBotSettings
   let token = Token (botToken botSettings)
   env <- defaultTelegramClientEnv token
-  startBot_ (conversationBot updateChatId gameBot) env
+  startBot_ (conversationBot updateChatId (gameBot botSettings)) env
 
 data BotSettings = BotSettings
-  { botToken :: Text
-  , gameUrl  :: Text
+  { botToken      :: Text
+  , gameUrl       :: Text
+  , gameId        :: Text
+  , gameName      :: Text
+  , supportChatId :: Integer
   }
   deriving (Generic, FromDhall)
 
@@ -219,7 +222,7 @@ type API
   :> (     Get '[HTML] (WithCookie Html)
      :<|> "game"  :>
         (    Get '[HTML] (WithCookie Html)
-        :<|> ReqBody '[FormUrlEncoded] AnswerInt :> Post '[HTML] (WithCookie Html)
+        :<|> ReqBody' '[Required, Strict] '[FormUrlEncoded] AnswerInt :> Post '[HTML] (WithCookie Html)
         )
      )
 
@@ -275,7 +278,9 @@ validateQuestion :: Question -> Bool
 validateQuestion (QuestionBool _ _ _) = True
 validateQuestion (QuestionChoice _ choices _) = checkConsistency choices
   where
-    checkConsistency = (== 1) . length . filter choiceIsCorrect
+    checkAnswerConsistency = (== 1) . length . filter choiceIsCorrect
+    checkIdConsistency x = (HashSet.size . HashSet.fromList . fmap choiceNumber) x == length x
+    checkConsistency x = checkIdConsistency x && checkAnswerConsistency x
 
 shuffleQuestions :: Int -> HashSet Question -> IO [Question]
 shuffleQuestions limit questions
@@ -468,7 +473,8 @@ firstQuestionHandler env mCookie = withUser mCookie (firstQuestionForUser env)
           $ renderQuestionPage newUserData
 
 nextQuestionHandler :: Env -> Maybe Text -> AnswerInt -> Handler (WithCookie Html)
-nextQuestionHandler env mCookie (AnswerInt n) = withUser mCookie (nextQuestionForUser env n)
+nextQuestionHandler env mCookie (AnswerInt answer)
+  = withUser mCookie (nextQuestionForUser env answer)
   where
     nextQuestionForUser Env{..} numAnswer user = do
       newGameState <- liftIO $ atomically $ do
@@ -511,67 +517,145 @@ withGameTemplate :: Html -> Html
 withGameTemplate content = toHtml $ H.html $ do
   H.head $ do
     H.title $ "Game"
+    H.style $ toMarkup pageStyle
   H.body $ content
+  where
+    pageStyle :: Text
+    pageStyle = "      body { background-color: #000000; font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace; }\
+\      .qbox { margin: auto; text-align: center; width: 34em; }\
+\      .qel  { padding: 1em; border: 0.3em green solid; border-radius: 3em; }\
+\      .wel  { padding: 1em; border: 0.3em red solid; border-radius: 3em; } }\
+\      .pad { padding: 0.3em; }\
+\      .text {\
+\          font-size: 1.25em;\
+\          font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;\
+\          color: #2ca32c;\
+\          text-align: left;\
+\          overflow-wrap: break-word; \
+\          overflow: hidden;\
+\          white-space: pre-wrap;\
+\      }\
+\      @media screen and (max-width: 600px) {\
+\          .text { font-size: 1em; }\
+\          .qbox { width: 95%; }\
+\      }\
+\\
+\      .button { background-color: #000000; }\
+\      .button:hover { background-color: green; color: black; }\
+\      \
+\      .container {\
+\          display: block;\
+\          position: relative;\
+\          padding-left: 2em;\
+\          margin-bottom: 0.75em;\
+\          cursor: pointer;\
+\          -webkit-user-select: none;\
+\          -moz-user-select: none;\
+\          -ms-user-select: none;\
+\          user-select: none;\
+\      }\
+\      .container input { position: absolute; opacity: 0; cursor: pointer; }\
+\      .checkmark {\
+\          position: absolute;\
+\          top: 0;\
+\          left: 0;\
+\          height: 1em;\
+\          width: 1em;\
+\          background-color: black;\
+\          border-radius: 50%;\
+\          border: 0.3em green solid;\
+\      }\
+\      .ctext { padding-left: 0.7em; }\
+\      .container:hover input ~ .checkmark { background-color: green; }\
+\      .container input:checked ~ .checkmark { background-color: green; }\
+\      .checkmark:after { content: \"\"; position: absolute; display: none; }\
+\      .container input:checked ~ .checkmark:after { display: block; }"
+
+renderText :: Text -> Html
+renderText txt =
+  H.div ! A.class_ "qbox pad" $ do
+    H.div ! A.class_ "qel" $ do
+      H.div ! A.class_ "text" $ toMarkup txt
+
+renderExplanation :: Bool -> Text -> Html
+renderExplanation True txt = renderText txt
+renderExplanation False txt = 
+  H.div ! A.class_ "qbox pad" $ do
+    H.div ! A.class_ "wel" $ do
+      H.div ! A.class_ "text" $ toMarkup txt
+
+renderButton :: Text -> Html
+renderButton txt = 
+  H.div ! A.class_ "qbox pad" $ do
+    H.button ! A.class_ "qel text button" ! A.type_ "submit"  ! A.value "submit" $ toMarkup txt
+
+renderAnswer :: Bool -> Int -> Text -> Html
+renderAnswer ch num txt =
+  H.div ! A.class_ "qbox pad" $ do
+    H.div ! A.class_ "qel" $ do
+      H.label ! A.class_ "container" ! A.for (toValue num) $ do
+        H.input
+          ! A.id (toValue num)
+          ! A.type_ "radio"
+          ! A.name "q"
+          !? (ch, A.checked "")
+          ! A.value (toValue num)
+        H.div ! A.class_ "checkmark" $ ""
+        H.div ! A.class_ "ctext text typing" $ toMarkup txt
 
 renderStartPage :: Html
 renderStartPage = withGameTemplate $ do
-  H.div $ "Game"
+  renderText "Haskell Quiz Game"
   H.form ! A.action "/game" ! A.method "get" $ do
-    H.button ! A.type_ "submit" ! A.value "submit" $ "Play"
+    renderButton "Play"
 
 renderQuestionPage :: UserData -> Html
 renderQuestionPage UserData{..} = withGameTemplate $ do
   case userDataCurrentQuestion of
     Nothing -> do
-      H.div $ "No more questions left."
+      renderText "No more questions left."
       H.form ! A.action "/game" ! A.method "get" $ do
-        H.button ! A.type_ "submit" ! A.value "submit" $ "Play again"
+        renderButton "Play again"
+
     Just QuestionBool{..} -> do
-      H.pre $ toMarkup questionBoolText
-      H.br
-      H.div $ toMarkup
-        $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
-      H.br
+      renderText questionBoolText
       H.form ! A.action "/game" ! A.method "post" $ do
-        H.div $ do
-          H.label ! A.for "f" $ "False"
-          H.input ! A.id "f" ! A.type_ "radio" ! A.name "q" ! A.value "0" 
-        H.div $ do
-          H.label ! A.for "f" $ "True"
-          H.input ! A.id "f" ! A.type_ "radio" ! A.name "q" ! A.value "1" 
-        H.div $ do
-          H.button ! A.type_ "submit" ! A.value "submit" $ "Next question"
+        renderAnswer True 1 "True"
+        renderAnswer False 0 "False"
+        renderButton "Next question"
+        H.div ! A.class_ "text" $ toMarkup
+          $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
+
     Just QuestionChoice{..} -> do
-      H.pre $ toMarkup questionChoiceText
-      H.br
-      H.div $ toMarkup
-        $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
-      H.br
+      renderText questionChoiceText
       H.form ! A.action "/game" ! A.method "post" $ do
         forM_ questionChoiceChoices $
-          \Choice{..} -> H.div $ do
-            let choiceId = H.toValue (show choiceNumber)
-            H.label ! A.for choiceId $ toMarkup choiceText
-            H.input ! A.id choiceId ! A.type_ "radio" ! A.name "q" ! A.value choiceId
-        H.div $ do
-          H.button ! A.type_ "submit" ! A.value "submit" $ "Next question"
+          \Choice{..} -> renderAnswer
+            (if choiceNumber == 1 then True else False)
+            (fromIntegral choiceNumber)
+            choiceText
+        renderButton "Next question"
+        H.div $ toMarkup
+          $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
 
 renderUserScore :: UserData -> Html
 renderUserScore UserData{..} = withGameTemplate $ do
   case userDataAnswers of
     [] -> do
-      H.div $ "Sorry. Looks like no answers available at the moment. Try again maybe?"
+      renderText "Sorry. Looks like no answers available at the moment. Try again maybe?"
       H.form ! A.action "/game" ! A.method "get" $ do
-        H.button ! A.type_ "submit" ! A.value "submit" $ "Play again"
-    _  -> H.table $ H.tbody $ do
-      H.tr $ do
-        H.th $ "Question"
-        H.th $ "Answer"
-      forM_ userDataAnswers $ \Answer{..} -> H.tr $ do
-        H.td $ H.pre $ toMarkup (questionText answerQuestion)
-        H.td $ H.div $ (if answerIsRight then "OK" else toMarkup $ explainError answerQuestion)
-
--- *** Helpers
-
-e :: a
-e = error "TBD"
+        renderButton $ "Play again"
+    _  -> do
+      let total = show userDataTotalQuestions
+          current = show (length $ filter answerIsRight userDataAnswers)
+          score = Text.pack (current <> "/" <> total)
+      H.b $ do
+        renderText $ "Your score is: " <> score
+      H.div $ do
+        forM_ userDataAnswers $ \Answer{..} -> H.tr $ do
+          H.div $ renderText (questionText answerQuestion)
+          H.div $ if answerIsRight
+            then renderExplanation True "OK"
+            else renderExplanation False $ explainError answerQuestion
+      H.form ! A.action "/game" ! A.method "get" $ do
+        renderButton "Play again"
