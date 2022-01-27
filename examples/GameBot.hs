@@ -197,6 +197,7 @@ runServer = do
 
 data ServerSettings = ServerSettings
   { serverPort       :: Natural
+  , serverUrlPrefix  :: Text
   , questionsPerGame :: Natural
   , usersPath        :: Text
   , questionsPath    :: Text
@@ -444,11 +445,11 @@ withUser Nothing _action = redirectToRoot
 withUser (Just cookie) action = maybe redirectToRoot action (parseUser cookie)
 
 startHandler :: Env -> Maybe Text -> Handler (WithCookie Html)
-startHandler _env mCookie = do
+startHandler Env{..} mCookie = do
   user <- getOrCreateUser mCookie
   pure
     $ addHeader @"Set-Cookie" (userToSetCookie user)
-    $ renderStartPage
+    $ renderStartPage settings
 
 firstQuestionHandler :: Env -> Maybe Text -> Handler (WithCookie Html)
 firstQuestionHandler env mCookie = withUser mCookie (firstQuestionForUser env)
@@ -470,7 +471,7 @@ firstQuestionHandler env mCookie = withUser mCookie (firstQuestionForUser env)
         Nothing -> redirectToRoot
         Just newUserData -> pure
           $ addHeader @"Set-Cookie" (userToSetCookie user)
-          $ renderQuestionPage newUserData
+          $ renderQuestionPage settings newUserData
 
 nextQuestionHandler :: Env -> Maybe Text -> AnswerInt -> Handler (WithCookie Html)
 nextQuestionHandler env mCookie (AnswerInt answer)
@@ -493,10 +494,10 @@ nextQuestionHandler env mCookie (AnswerInt answer)
         GameNotFound -> redirectToStart user
         GameOver oldUserData -> pure
           $ addHeader @"Set-Cookie" (userToSetCookie user)
-          $ renderUserScore oldUserData
+          $ renderUserScore settings oldUserData
         GameInProgress newUserData -> pure
           $ addHeader @"Set-Cookie" (userToSetCookie user)
-          $ renderQuestionPage newUserData
+          $ renderQuestionPage settings newUserData
 
 -- *** Redirects
 
@@ -512,6 +513,15 @@ err301WithLoc :: ByteString -> ServerError
 err301WithLoc loc = err301 { errHeaders = [(hLocation, loc)] }
 
 -- *** Renderers
+
+makeAbsoluteUrl :: ServerSettings -> Text -> Text
+makeAbsoluteUrl ServerSettings{..} uri = serverUrlPrefix <> uri
+
+makeAbsoluteRootUrl :: ServerSettings -> Text
+makeAbsoluteRootUrl = flip makeAbsoluteUrl "/"
+
+makeAbsoluteGameUrl :: ServerSettings -> Text
+makeAbsoluteGameUrl = flip makeAbsoluteUrl "/game"
 
 withGameTemplate :: Html -> Html
 withGameTemplate content = toHtml $ H.html $ do
@@ -603,14 +613,22 @@ renderAnswer ch num txt =
         H.div ! A.class_ "checkmark" $ ""
         H.div ! A.class_ "ctext text typing" $ toMarkup txt
 
-renderStartPage :: Html
-renderStartPage = withGameTemplate $ do
+renderProgress :: Text -> Html
+renderProgress txt =
+  H.div ! A.class_ "qbox pad" $ do
+    H.div $ do
+      H.div ! A.class_ "text" $ toMarkup txt
+
+
+renderStartPage :: ServerSettings -> Html
+renderStartPage settings = withGameTemplate $ do
   renderText "Haskell Quiz Game"
-  H.form ! A.action "/game" ! A.method "get" $ do
+  H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "get" $ do
     renderButton "Play"
 
-renderQuestionPage :: UserData -> Html
-renderQuestionPage UserData{..} = withGameTemplate $ do
+renderQuestionPage :: ServerSettings -> UserData -> Html
+renderQuestionPage settings UserData{..} = withGameTemplate $ do
+  let progress = show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
   case userDataCurrentQuestion of
     Nothing -> do
       renderText "No more questions left."
@@ -619,31 +637,29 @@ renderQuestionPage UserData{..} = withGameTemplate $ do
 
     Just QuestionBool{..} -> do
       renderText questionBoolText
-      H.form ! A.action "/game" ! A.method "post" $ do
+      H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "post" $ do
         renderAnswer True 1 "True"
         renderAnswer False 0 "False"
         renderButton "Next question"
-        H.div ! A.class_ "text" $ toMarkup
-          $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
+        renderProgress $ Text.pack progress
 
     Just QuestionChoice{..} -> do
       renderText questionChoiceText
-      H.form ! A.action "/game" ! A.method "post" $ do
+      H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "post" $ do
         forM_ questionChoiceChoices $
           \Choice{..} -> renderAnswer
             (if choiceNumber == 1 then True else False)
             (fromIntegral choiceNumber)
             choiceText
         renderButton "Next question"
-        H.div $ toMarkup
-          $ show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
+        renderProgress $ Text.pack progress
 
-renderUserScore :: UserData -> Html
-renderUserScore UserData{..} = withGameTemplate $ do
+renderUserScore :: ServerSettings -> UserData -> Html
+renderUserScore settings UserData{..} = withGameTemplate $ do
   case userDataAnswers of
     [] -> do
       renderText "Sorry. Looks like no answers available at the moment. Try again maybe?"
-      H.form ! A.action "/game" ! A.method "get" $ do
+      H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "get" $ do
         renderButton $ "Play again"
     _  -> do
       let total = show userDataTotalQuestions

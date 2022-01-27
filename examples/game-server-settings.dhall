@@ -1,4 +1,5 @@
-{ serverPort = 8080
+{ serverPort = env:HASKELL_GAME_SERVER_PORT
+, serverUrlPrefix = env:HASKELL_GAME_URL
 , questionsPerGame = 10
 , usersPath = "./examples/game/users.dhall"
 , questionsPath = "./examples/game/questions.dhall"
