@@ -673,5 +673,5 @@ renderUserScore settings UserData{..} = withGameTemplate $ do
           H.div $ if answerIsRight
             then renderExplanation True "OK"
             else renderExplanation False $ explainError answerQuestion
-      H.form ! A.action "/game" ! A.method "get" $ do
+      H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "get" $ do
         renderButton "Play again"
