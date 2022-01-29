@@ -131,7 +131,7 @@ startBotPolling BotApp{..} botEnv@BotEnv{..} = startPolling handleUpdate
         Just action -> issueAction botEnv (Just update) (Just action)
 
 -- | Start 'Telegram.Update' polling with a given update handler.
-startPolling :: (Telegram.Update -> ClientM ()) -> ClientM ()
+startPolling :: (Telegram.Update -> ClientM a) -> ClientM a
 startPolling handleUpdate = go Nothing
   where
     go lastUpdateId = do
