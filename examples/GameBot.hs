@@ -527,6 +527,7 @@ withGameTemplate :: Html -> Html
 withGameTemplate content = toHtml $ H.html $ do
   H.head $ do
     H.title $ "Game"
+    H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
     H.style $ toMarkup pageStyle
   H.body $ content
   where
@@ -545,7 +546,7 @@ withGameTemplate content = toHtml $ H.html $ do
 \          overflow: hidden;\
 \          white-space: pre-wrap;\
 \      }\
-\      @media screen and (max-width: 600px) {\
+\      @media screen and (max-device-width: 667px) and (orientation: portrait) {\
 \          .text { font-size: 1em; }\
 \          .qbox { width: 95%; }\
 \      }\
