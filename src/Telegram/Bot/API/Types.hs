@@ -12,7 +12,7 @@
 module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..), Value(..), object, KeyValue ((.=)), withObject, (.:))
-import Data.Aeson.Types (Parser, Pair)
+import Data.Aeson.Types (Parser, Pair, Object)
 import Data.Aeson.Text (encodeToLazyText)
 import Data.Coerce (coerce)
 import Data.Int (Int32)
@@ -1033,7 +1033,7 @@ data Game = Game
 -- ** 'CallbackGame'
 
 -- | A placeholder, currently holds no information. Use BotFather to set up your game.
-data CallbackGame = CallbackGame
+newtype CallbackGame = CallbackGame Object
   deriving (Generic, Show)
 
 -- ** 'GameHighScore'
