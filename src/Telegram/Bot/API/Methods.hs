@@ -104,9 +104,11 @@ data SendMessageRequest = SendMessageRequest
   { sendMessageChatId                :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
   , sendMessageText                  :: Text -- ^ Text of the message to be sent.
   , sendMessageParseMode             :: Maybe ParseMode -- ^ Send 'Markdown' or 'HTML', if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
+  , sendMessageEntities              :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
   , sendMessageDisableWebPagePreview :: Maybe Bool -- ^ Disables link previews for links in this message.
   , sendMessageDisableNotification   :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendMessageReplyToMessageId      :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
+  , sendMessageAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , sendMessageReplyMarkup           :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   } deriving (Generic)
 
@@ -154,8 +156,11 @@ data SendDocumentRequest = SendDocumentRequest
   , sendDocumentThumb :: Maybe FilePath -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
   , sendDocumentCaption :: Maybe Text -- ^ Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
   , sendDocumentParseMode :: Maybe ParseMode -- ^ Mode for parsing entities in the document caption.
+  , sendDocumentCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
+  , sendDocumentDisableContentTypeDetection :: Maybe Bool -- ^ Disables automatic server-side content type detection for files uploaded using @multipart/form-data@.
   , sendDocumentDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendDocumentReplyToMessageId :: Maybe MessageId
+  , sendDocumentReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
+  , sendDocumentAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , sendDocumentReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
@@ -185,8 +190,11 @@ instance ToMultipart Tmp SendDocumentRequest where
       (   (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendDocumentThumb)
         $ (maybe id (\t -> ((Input "caption" t):)) sendDocumentCaption)
         $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentParseMode)
+        $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentCaptionEntities)
         $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendDocumentDisableNotification)
+        $ (maybe id (\t -> ((Input "disable_content_type_detection" (bool "false" "true" t)):)) sendDocumentDisableContentTypeDetection)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyToMessageId)
+        $ (maybe id (\t -> ((Input "allow_sending_without_reply" (bool "false" "true" t)):)) sendDocumentAllowSendingWithoutReply)
         $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyMarkup)
         [])
     files
@@ -206,8 +214,11 @@ toSendDocument ch df = SendDocumentRequest
   , sendDocumentThumb = Nothing
   , sendDocumentCaption = Nothing
   , sendDocumentParseMode = Nothing
+  , sendDocumentCaptionEntities =  Nothing
+  , sendDocumentDisableContentTypeDetection = Nothing
   , sendDocumentDisableNotification = Nothing
   , sendDocumentReplyToMessageId = Nothing
+  , sendDocumentAllowSendingWithoutReply = Nothing
   , sendDocumentReplyMarkup = Nothing
   }
 
@@ -253,8 +264,10 @@ data SendPhotoRequest = SendPhotoRequest
   , sendPhotoThumb :: Maybe FilePath -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
   , sendPhotoCaption :: Maybe Text -- ^ Photo caption (may also be used when resending Photos by file_id), 0-1024 characters after entities parsing
   , sendPhotoParseMode :: Maybe ParseMode -- ^ Mode for parsing entities in the Photo caption.
+  , sendPhotoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
   , sendPhotoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendPhotoReplyToMessageId :: Maybe MessageId
+  , sendPhotoReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
+  , sendPhotoAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , sendPhotoReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
@@ -270,8 +283,10 @@ instance ToMultipart Tmp SendPhotoRequest where
       (   (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendPhotoThumb)
         $ (maybe id (\t -> ((Input "caption" t):)) sendPhotoCaption)
         $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoParseMode)
+        $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoCaptionEntities)
         $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendPhotoDisableNotification)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyToMessageId)
+        $ (maybe id (\t -> ((Input "allow_sending_without_reply" (bool "false" "true" t)):)) sendPhotoAllowSendingWithoutReply)
         $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyMarkup)
         [])
     files
