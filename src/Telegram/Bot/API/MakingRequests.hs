@@ -4,7 +4,6 @@
 module Telegram.Bot.API.MakingRequests where
 
 import           Data.Aeson                      (FromJSON (..), ToJSON (..))
-import           Data.Monoid                     ((<>))
 import           Data.String                     (IsString)
 import           Data.Text                       (Text)
 import qualified Data.Text                       as Text

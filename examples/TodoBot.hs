@@ -2,7 +2,6 @@
 module Main where
 
 import Control.Applicative
-import Data.Monoid
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.HashMap.Strict (HashMap)

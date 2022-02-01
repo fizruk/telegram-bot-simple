@@ -5,7 +5,6 @@ import           Control.Monad.Trans        (liftIO)
 import           Control.Monad.Writer       (tell)
 import           Data.Aeson                 (ToJSON)
 import qualified Data.Aeson.Encode.Pretty   as Aeson
-import           Data.Monoid                ((<>))
 import qualified Data.Text.Lazy             as Text
 import qualified Data.Text.Lazy.Encoding    as Text
 import           Debug.Trace                (trace)
