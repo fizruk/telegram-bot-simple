@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -1002,7 +1003,36 @@ data EncryptedCredentials = EncryptedCredentials
 
 -- ** 'PassportElementError'
 
--- FIXME: Decide about PassportElementError
+data PassportErrorSource
+  = PassportErrorSourceData
+  | PassportErrorSourceFrontSide
+  | PassportErrorSourceReverseSide
+  | PassportErrorSourceSelfie
+  | PassportErrorSourceFile
+  | PassportErrorSourceFiles
+  | PassportErrorSourceTranslationFile
+  | PassportErrorSourceTranslationFiles
+  | PassportErrorSourceUnspecified
+  deriving (Generic, Show)
+
+data PassportElementError
+  = PassportElementError
+    { passportElementErroSource       :: PassportErrorSource -- ^ Error source, must be one of 'PassportErrorSource'.
+    , passportElementErrorType        :: PassportElementType -- ^ The section of the user's Telegram Passport which has the error, one of 'PassportElementType'.
+    , passportElementErrorName        :: Text                -- ^ Name of the data field which has the error.
+    , passportElementErrorHash        :: Maybe Text          -- ^ Base64-encoded data hash.
+    , passportElementErrorMessage     :: Text                -- ^ Error message.
+    , passportElementErrorFileHash    :: Maybe Text          -- ^ Base64-encoded hash of the file with the reverse side of the document.
+    , passportElementErrorFileHashes  :: Maybe [Text]        -- ^ List of base64-encoded file hashes.
+    , passportElementErrorElementHash :: Maybe Text          -- ^ Base64-encoded element hash.
+    }
+    deriving (Generic, Show)
+
+instance ToHttpApiData PassportElementError where
+  toUrlPiece = TL.toStrict . encodeToLazyText
+
+instance ToHttpApiData [PassportElementError] where
+  toUrlPiece = TL.toStrict . encodeToLazyText
 
 -- * Games
 
@@ -1298,6 +1328,8 @@ foldMap deriveJSON'
   , ''EncryptedPassportElement
   , ''PassportElementType
   , ''PassportFile
+  , ''PassportErrorSource
+  , ''PassportElementError
   , ''EncryptedCredentials
   , ''ProximityAlertTriggered
   , ''VoiceChatScheduled

@@ -37,6 +37,7 @@ library
       Telegram.Bot.API.Internal.Utils
       Telegram.Bot.API.MakingRequests
       Telegram.Bot.API.Methods
+      Telegram.Bot.API.Passport
       Telegram.Bot.API.Payments
       Telegram.Bot.API.Stickers
       Telegram.Bot.API.Types
