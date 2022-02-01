@@ -5,7 +5,6 @@ module Telegram.Bot.Simple.UpdateParser where
 
 import           Control.Applicative
 import           Control.Monad.Reader
-import           Data.Monoid          ((<>))
 import           Data.Text            (Text)
 import qualified Data.Text            as Text
 import           Text.Read            (readMaybe)

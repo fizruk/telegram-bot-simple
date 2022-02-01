@@ -1058,7 +1058,7 @@ instance ToJSON   SomeChatId where toJSON = genericSomeToJSON
 instance FromJSON SomeChatId where parseJSON = genericSomeParseJSON
 
 instance ToHttpApiData SomeChatId where
-  toUrlPiece (SomeChatId id) = toUrlPiece id
+  toUrlPiece (SomeChatId chatid) = toUrlPiece chatid
   toUrlPiece (SomeChatUsername name) = name
   
 -- | This object represents a bot command.

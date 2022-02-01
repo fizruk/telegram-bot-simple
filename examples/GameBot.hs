@@ -108,7 +108,15 @@ handleAction BotSettings{..} action model = case action of
             (Just msg)
             (Just gameMsg)
         gameMsg = (defaultInputTextMessageContent gameMessageText) { inputMessageContentParseMode = Just "HTML" }
-        answerInlineQueryRequest = AnswerInlineQueryRequest queryId [inlineQueryResult]
+        answerInlineQueryRequest = AnswerInlineQueryRequest
+          { answerInlineQueryRequestInlineQueryId = queryId
+          , answerInlineQueryRequestResults       = [inlineQueryResult]
+          , answerInlineQueryCacheTime            = Nothing
+          , answerInlineQueryIsPersonal           = Nothing
+          , answerInlineQueryNextOffset           = Nothing
+          , answerInlineQuerySwitchPmText         = Nothing
+          , answerInlineQuerySwitchPmParameter    = Nothing
+          }
 
     _ <- liftClientM (answerInlineQuery answerInlineQueryRequest)
     return ()
