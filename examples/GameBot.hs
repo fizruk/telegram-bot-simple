@@ -107,6 +107,7 @@ handleAction BotSettings{..} action model = case action of
             (InlineQueryResultId msg)
             (Just msg)
             (Just gameMsg)
+            Nothing
         gameMsg = (defaultInputTextMessageContent gameMessageText) { inputMessageContentParseMode = Just "HTML" }
         answerInlineQueryRequest = AnswerInlineQueryRequest
           { answerInlineQueryRequestInlineQueryId = queryId

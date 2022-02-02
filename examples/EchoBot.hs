@@ -44,7 +44,7 @@ updateToAction update _
 handleAction :: Action -> Model -> Eff Action Model
 handleAction action model = case action of
   InlineEcho queryId msg -> model <# do
-    let result = InlineQueryResult InlineQueryResultArticle (InlineQueryResultId msg) (Just msg) (Just (defaultInputTextMessageContent msg))
+    let result = InlineQueryResult InlineQueryResultArticle (InlineQueryResultId msg) (Just msg) (Just (defaultInputTextMessageContent msg)) Nothing
         answerInlineQueryRequest = AnswerInlineQueryRequest
           { answerInlineQueryRequestInlineQueryId = queryId
           , answerInlineQueryRequestResults       = [result]

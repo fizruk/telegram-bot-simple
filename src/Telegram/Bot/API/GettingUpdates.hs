@@ -40,8 +40,8 @@ data Update = Update
 
   , updateCallbackQuery     :: Maybe CallbackQuery -- ^ New incoming callback query
 
---   , updateShippingQuery :: Maybe ShippingQuery -- ^ New incoming shipping query. Only for invoices with flexible price
---   , updatePreCheckoutQuery :: Maybe PreCheckoutQuery -- ^ New incoming pre-checkout query. Contains full information about checkout
+  , updateShippingQuery     :: Maybe ShippingQuery -- ^ New incoming shipping query. Only for invoices with flexible price
+  , updatePreCheckoutQuery  :: Maybe PreCheckoutQuery -- ^ New incoming pre-checkout query. Contains full information about checkout
   } deriving (Generic, Show)
 
 instance ToJSON   Update where toJSON = gtoJSON

@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -783,17 +784,11 @@ data ResponseParameters = ResponseParameters
   }
   deriving (Show, Generic)
 
--- FIXME: Decide about 'BotCommandScope' types.
-
--- FIXME: Decide about 'InputMedia' types.
-
 -- * Stickers
 
 -- | The following methods and objects allow your bot to handle stickers and sticker sets.
 
 -- ** 'Sticker'
-
--- FIXME: sticker.set_name vs sticker_set.name?
 
 -- | This object represents a sticker.
 data Sticker = Sticker
@@ -804,7 +799,7 @@ data Sticker = Sticker
   , stickerIsAnimated   :: Bool               -- ^ True, if the sticker is animated.
   , stickerThumb        :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
   , stickerEmoji        :: Maybe Text         -- ^ Emoji associated with the sticker.
-  , stickerSetName_     :: Maybe Text         -- ^ Name of the sticker set to which the sticker belongs.
+  , stickerSetName      :: Maybe Text         -- ^ Name of the sticker set to which the sticker belongs.
   , stickerMaskPosition :: Maybe MaskPosition -- ^ For mask stickers, the position where the mask should be placed.
   , stickerFileSize     :: Maybe Integer      -- ^ File size in bytes.
   }
@@ -1343,4 +1338,6 @@ foldMap deriveJSON'
   , ''ChatInviteLink
   , ''LabeledPrice
   , ''ShippingOption
+  , ''ShippingQuery
+  , ''PreCheckoutQuery
   ]

@@ -791,7 +791,7 @@ data EditMessageLiveLocationRequest = EditMessageLiveLocationRequest
 
 type EditMessageLiveLocation = "editMessageLiveLocation"
   :> ReqBody '[JSON] EditMessageLiveLocationRequest
-  :> Post '[JSON] (Response Message)
+  :> Post '[JSON] (Response (Either Bool Message))
 
 -- FIXME: Add Bool returning in case of inline message. 
 
@@ -801,7 +801,7 @@ type EditMessageLiveLocation = "editMessageLiveLocation"
 --   call to stopMessageLiveLocation. On success, if
 --   the edited message is not an inline message, the
 --   edited Message is returned, otherwise True is returned.
-editMessageLiveLocation :: EditMessageLiveLocationRequest ->  ClientM (Response Message)
+editMessageLiveLocation :: EditMessageLiveLocationRequest ->  ClientM (Response (Either Bool Message))
 editMessageLiveLocation = client (Proxy @EditMessageLiveLocation)
 
 -- | Request parameters for 'stopMessageLiveLocation'.
@@ -815,7 +815,7 @@ data StopMessageLiveLocationRequest = StopMessageLiveLocationRequest
 
 type StopMessageLiveLocation = "stopMessageLiveLocation"
   :> ReqBody '[JSON] StopMessageLiveLocationRequest
-  :> Post '[JSON] (Response Message)
+  :> Post '[JSON] (Response (Either Bool Message))
 
 -- FIXME: Add Bool returning in case of inline message. 
 
@@ -824,7 +824,7 @@ type StopMessageLiveLocation = "stopMessageLiveLocation"
 --   expires. On success, if the message is
 --   not an inline message, the edited Message
 --   is returned, otherwise True is returned.
-stopMessageLiveLocation :: StopMessageLiveLocationRequest ->  ClientM (Response Message)
+stopMessageLiveLocation :: StopMessageLiveLocationRequest ->  ClientM (Response (Either Bool Message))
 stopMessageLiveLocation = client (Proxy @StopMessageLiveLocation)
 
 -- | Request parameters for 'sendVenue'.
@@ -1274,8 +1274,6 @@ declineChatJoinRequest :: SomeChatId -- ^ Unique identifier for the target chat 
   -> ClientM (Response Bool)
 declineChatJoinRequest = client (Proxy @DeclineChatJoinRequest)
 
--- FIXME: Unsafe usage of InputFile - valid only InputFile constructor.
-
 -- | Request parameters for 'setChatPhoto'.
 data SetChatPhotoRequest = SetChatPhotoRequest
   { setChatPhotoChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -1301,6 +1299,9 @@ type SetChatPhoto = "setChatPhoto"
 --   administrator in the chat for this to work 
 --   and must have the appropriate administrator rights. 
 --   Returns True on success.
+--
+-- *Note*: Only 'InputFile' case might be used in 'SetChatPhotoRequest'.
+-- Rest cases will be rejected by Telegram.
 setChatPhoto :: SetChatPhotoRequest ->  ClientM (Response Bool)
 setChatPhoto r =do
       boundary <- liftIO genBoundary
