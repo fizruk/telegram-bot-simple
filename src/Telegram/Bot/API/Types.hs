@@ -1341,4 +1341,6 @@ foldMap deriveJSON'
   , ''StickerSet
   , ''BotCommand
   , ''ChatInviteLink
+  , ''LabeledPrice
+  , ''ShippingOption
   ]
