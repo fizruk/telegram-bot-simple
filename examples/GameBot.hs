@@ -435,7 +435,6 @@ storeEnv :: Env -> IO ()
 storeEnv Env{..} = do
   let ServerSettings{..} = settings
   storeState @(HashMap GameUserId UserData) usersPath userState
-  storeState @(HashSet Question) questionsPath questionsState
   storeState @Analytics analyticsPath analytics
   where
     storeState :: forall a. ToDhall a => Text -> TVar a -> IO ()
