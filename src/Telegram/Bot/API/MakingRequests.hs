@@ -1,9 +1,16 @@
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings          #-}
 module Telegram.Bot.API.MakingRequests where
 
 import           Data.Aeson                      (FromJSON (..), ToJSON (..))
+#if defined(MIN_VERSION_GLASGOW_HASKELL)
+#if MIN_VERSION_GLASGOW_HASKELL(8,6,2,0)
+#else
+import           Data.Monoid                     ((<>))
+#endif
+#endif
 import           Data.String                     (IsString)
 import           Data.Text                       (Text)
 import qualified Data.Text                       as Text

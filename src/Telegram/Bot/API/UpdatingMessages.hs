@@ -22,11 +22,10 @@ import           Telegram.Bot.API.Types
 type EditMessageText
   = "editMessageText"
   :> ReqBody '[JSON] EditMessageTextRequest
-  :> Post '[JSON] (Response Message)
+  :> Post '[JSON] (Response (Either Bool Message))
 
--- | Use this method to send text messages.
--- On success, the sent 'Message' is returned.
-editMessageText :: EditMessageTextRequest -> ClientM (Response Message)
+-- | Use this method to edit text and game messages. On success, if the edited message is not an inline message, the edited 'Message' is returned, otherwise 'True' is returned.
+editMessageText :: EditMessageTextRequest -> ClientM (Response (Either Bool Message))
 editMessageText = client (Proxy @EditMessageText)
 
 -- | Request parameters for 'editMessageText'.
@@ -54,13 +53,13 @@ data EditMessageCaptionRequest = EditMessageCaptionRequest
 
 type EditMessageCaption  = "editMessageCaption"
   :> ReqBody '[JSON] EditMessageCaptionRequest
-  :> Post '[JSON] (Response Message)
+  :> Post '[JSON] (Response (Either Bool Message))
 
 -- | Use this method to edit captions of messages.
 --   On success, if the edited message is not an
 --   inline message, the edited Message is returned,
 --   otherwise True is returned.
-editMessageCaption :: EditMessageCaptionRequest -> ClientM (Response Message)
+editMessageCaption :: EditMessageCaptionRequest -> ClientM (Response (Either Bool Message))
 editMessageCaption = client (Proxy @EditMessageCaption)
 
 -- | Request parameters for 'editMessageMedia'.
@@ -76,7 +75,7 @@ instance ToJSON EditMessageMediaRequest where toJSON = gtoJSON
 
 type EditMessageMedia  = "editMessageMedia"
   :> ReqBody '[JSON] EditMessageMediaRequest
-  :> Post '[JSON] (Response Message)
+  :> Post '[JSON] (Response (Either Bool Message))
 
 -- | Use this method to edit animation, audio,
 --   document, photo, or video messages. If a
@@ -88,7 +87,7 @@ type EditMessageMedia  = "editMessageMedia"
 --   previously uploaded file via its file_id or specify a URL.
 --   On success, if the edited message is not an inline
 --   message, the edited Message is returned, otherwise True is returned.
-editMessageMedia :: EditMessageMediaRequest -> ClientM (Response Message)
+editMessageMedia :: EditMessageMediaRequest -> ClientM (Response (Either Bool Message))
 editMessageMedia = client (Proxy @EditMessageMedia)
 
 -- | Request parameters for 'editMessageReplyMarkup'.
@@ -102,12 +101,12 @@ data EditMessageReplyMarkupRequest = EditMessageReplyMarkupRequest
 
 type EditMessageReplyMarkup = "editMessageReplyMarkup"
   :> ReqBody '[JSON] EditMessageReplyMarkupRequest
-  :> Post '[JSON] (Response Message)
+  :> Post '[JSON] (Response (Either Bool Message))
 
 -- | Use this method to edit only the reply markup of messages.
 --   On success, if the edited message is not an inline message,
 --   the edited Message is returned, otherwise True is returned.
-editMessageReplyMarkup :: EditMessageReplyMarkupRequest -> ClientM (Response Message)
+editMessageReplyMarkup :: EditMessageReplyMarkupRequest -> ClientM (Response (Either Bool Message))
 editMessageReplyMarkup = client (Proxy @EditMessageReplyMarkup)
 
 -- | Request parameters for 'stopPoll'.
