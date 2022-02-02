@@ -79,7 +79,6 @@ updateToAction BotSettings{..}  _ update
       let msgId = messageMessageId msg
           chat  = SomeChatId $ chatId $ messageChat msg
       pure $ AFeedback chat msgId
-  | isJust $ updateMessageText update = game update
   | isJust $ updateInlineQuery update = do
       query <- updateInlineQuery update
       let queryId = inlineQueryId query
@@ -211,6 +210,8 @@ data ServerSettings = ServerSettings
   , usersPath        :: Text
   , questionsPath    :: Text
   , analyticsPath    :: Text
+  , pageStyle        :: Text
+  , quizDescription  :: Text
   } deriving (Generic, FromDhall)
 
 serverSettingsPath :: Text
@@ -532,64 +533,13 @@ makeAbsoluteRootUrl = flip makeAbsoluteUrl "/"
 makeAbsoluteGameUrl :: ServerSettings -> Text
 makeAbsoluteGameUrl = flip makeAbsoluteUrl "/game"
 
-withGameTemplate :: Html -> Html
-withGameTemplate content = toHtml $ H.html $ do
+withGameTemplate :: ServerSettings -> Html -> Html
+withGameTemplate ServerSettings{..} content = toHtml $ H.html $ do
   H.head $ do
     H.title $ "Game"
     H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
     H.style $ toMarkup pageStyle
   H.body $ content
-  where
-    pageStyle :: Text
-    pageStyle = "      body { background-color: #000000; font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace; }\
-\      .qbox { margin: auto; text-align: center; width: 34em; }\
-\      .qel  { padding: 1em; border: 0.3em green solid; border-radius: 3em; }\
-\      .wel  { padding: 1em; border: 0.3em red solid; border-radius: 3em; } }\
-\      .pad { padding: 0.3em; }\
-\      .text {\
-\          font-size: 1.25em;\
-\          font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;\
-\          color: #2ca32c;\
-\          text-align: left;\
-\          overflow-wrap: break-word; \
-\          overflow: hidden;\
-\          white-space: pre-wrap;\
-\      }\
-\      @media screen and (max-device-width: 667px) and (orientation: portrait) {\
-\          .text { font-size: 1em; }\
-\          .qbox { width: 95%; }\
-\      }\
-\\
-\      .button { background-color: #000000; }\
-\      .button:hover { background-color: green; color: black; }\
-\      \
-\      .container {\
-\          display: block;\
-\          position: relative;\
-\          padding-left: 2em;\
-\          margin-bottom: 0.75em;\
-\          cursor: pointer;\
-\          -webkit-user-select: none;\
-\          -moz-user-select: none;\
-\          -ms-user-select: none;\
-\          user-select: none;\
-\      }\
-\      .container input { position: absolute; opacity: 0; cursor: pointer; }\
-\      .checkmark {\
-\          position: absolute;\
-\          top: 0;\
-\          left: 0;\
-\          height: 1em;\
-\          width: 1em;\
-\          background-color: black;\
-\          border-radius: 50%;\
-\          border: 0.3em green solid;\
-\      }\
-\      .ctext { padding-left: 0.7em; }\
-\      .container:hover input ~ .checkmark { background-color: green; }\
-\      .container input:checked ~ .checkmark { background-color: green; }\
-\      .checkmark:after { content: \"\"; position: absolute; display: none; }\
-\      .container input:checked ~ .checkmark:after { display: block; }"
 
 renderText :: Text -> Html
 renderText txt =
@@ -629,15 +579,15 @@ renderProgress txt =
     H.div $ do
       H.div ! A.class_ "text" $ toMarkup txt
 
-
 renderStartPage :: ServerSettings -> Html
-renderStartPage settings = withGameTemplate $ do
+renderStartPage settings = withGameTemplate settings $ do
   renderText "Haskell Quiz Game"
+  renderText (quizDescription settings)
   H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "get" $ do
     renderButton "Play"
 
 renderQuestionPage :: ServerSettings -> UserData -> Html
-renderQuestionPage settings UserData{..} = withGameTemplate $ do
+renderQuestionPage settings UserData{..} = withGameTemplate settings $ do
   let progress = show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
   case userDataCurrentQuestion of
     Nothing -> do
@@ -665,7 +615,7 @@ renderQuestionPage settings UserData{..} = withGameTemplate $ do
         renderProgress $ Text.pack progress
 
 renderUserScore :: ServerSettings -> UserData -> Html
-renderUserScore settings UserData{..} = withGameTemplate $ do
+renderUserScore settings UserData{..} = withGameTemplate settings $ do
   case userDataAnswers of
     [] -> do
       renderText "Sorry. Looks like no answers available at the moment. Try again maybe?"
