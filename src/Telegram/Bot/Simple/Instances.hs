@@ -9,13 +9,13 @@ import Data.Text (Text)
 import Telegram.Bot.Simple.Eff
 import Telegram.Bot.Simple.Reply (replyText)
 
-instance RunBot a a where
-  runBot effect = Just <$> effect
+instance GetAction a a where
+  getNextAction effect = Just <$> effect
 
-instance RunBot () a where
-  runBot effect = Nothing <$ effect
+instance GetAction () a where
+  getNextAction effect = Nothing <$ effect
 
-instance RunBot Text a where
-  runBot  effect = runBot do
+instance GetAction Text a where
+  getNextAction effect = getNextAction do
     t <- effect
     replyText t
