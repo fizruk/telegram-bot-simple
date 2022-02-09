@@ -64,7 +64,7 @@ Press "Play" to play a game.
 
 Do you like it? Share on a social media!
 
-Do you have ideas for a new question? Please share them via GameBot 
+Do you have ideas for a new question? Please share them via @HaskellTelegramSimpleBot 
 
     "/feedback <your suggestion>" 
 

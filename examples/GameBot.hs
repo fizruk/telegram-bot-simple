@@ -558,6 +558,14 @@ renderButton txt =
   H.div ! A.class_ "qbox pad" $ do
     H.button ! A.class_ "qel text button" ! A.type_ "submit"  ! A.value "submit" $ toMarkup txt
 
+renderLink :: ServerSettings -> Text -> Html
+renderLink settings txt = do
+  H.a ! A.href (toValue $ makeAbsoluteGameUrl settings) $ do 
+    H.div ! A.class_ "qbox pad" $ do
+      H.div ! A.class_ "qel button" $ do
+        H.div ! A.class_ "text" 
+          $ toMarkup txt
+
 renderAnswer :: Bool -> Int -> Text -> Html
 renderAnswer ch num txt =
   H.div ! A.class_ "qbox pad" $ do
@@ -582,8 +590,7 @@ renderStartPage :: ServerSettings -> Html
 renderStartPage settings = withGameTemplate settings $ do
   renderText "Haskell Quiz Game"
   renderText (quizDescription settings)
-  H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "get" $ do
-    renderButton "Play"
+  renderLink settings "Play"
 
 renderQuestionPage :: ServerSettings -> UserData -> Html
 renderQuestionPage settings UserData{..} = withGameTemplate settings $ do
@@ -591,8 +598,7 @@ renderQuestionPage settings UserData{..} = withGameTemplate settings $ do
   case userDataCurrentQuestion of
     Nothing -> do
       renderText "No more questions left."
-      H.form ! A.action "/game" ! A.method "get" $ do
-        renderButton "Play again"
+      renderLink settings "Play again"
 
     Just QuestionBool{..} -> do
       renderText questionBoolText
@@ -618,8 +624,7 @@ renderUserScore settings UserData{..} = withGameTemplate settings $ do
   case userDataAnswers of
     [] -> do
       renderText "Sorry. Looks like no answers available at the moment. Try again maybe?"
-      H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "get" $ do
-        renderButton $ "Play again"
+      renderLink settings "Play again"
     _  -> do
       let total = show userDataTotalQuestions
           current = show (length $ filter answerIsRight userDataAnswers)
@@ -632,5 +637,4 @@ renderUserScore settings UserData{..} = withGameTemplate settings $ do
           H.div $ if answerIsRight
             then renderExplanation True "OK"
             else renderExplanation False $ explainError answerQuestion
-      H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "get" $ do
-        renderButton "Play again"
+      renderLink settings "Play again"
