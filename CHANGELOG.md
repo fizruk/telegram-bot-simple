@@ -1,3 +1,23 @@
+0.4
+---
+
+- Add Payments methods (see [#93](https://github.com/fizruk/telegram-bot-simple/pull/93));
+- Add Passport methods (see [#90](https://github.com/fizruk/telegram-bot-simple/pull/90));
+- Resolve discrepancies with Bot API 5.5 (see [#87](https://github.com/fizruk/telegram-bot-simple/pull/87), [#88](https://github.com/fizruk/telegram-bot-simple/pull/88))
+- Make `startPolling` polymorphic (see [#86](https://github.com/fizruk/telegram-bot-simple/pull/86));
+- Add Updating messages methods (see [#85](https://github.com/fizruk/telegram-bot-simple/pull/85)) ;
+- Add missing methods (see [#83](https://github.com/fizruk/telegram-bot-simple/pull/83), [#84](https://github.com/fizruk/telegram-bot-simple/pull/84));
+- Add `GameBot` (see [#82](https://github.com/fizruk/telegram-bot-simple/pull/82), [#95](https://github.com/fizruk/telegram-bot-simple/pull/95));
+- Allow return different types in `BotM` (see [#79](https://github.com/fizruk/telegram-bot-simple/pull/79), [#98](https://github.com/fizruk/telegram-bot-simple/pull/98));
+- Fix `UserId` integer overflow (see [#78](https://github.com/fizruk/telegram-bot-simple/pull/78));
+- Upgrade `EchoBot` example with sticker replies (see [#77](https://github.com/fizruk/telegram-bot-simple/pull/77));
+- Refactor file uploads (see [#76](https://github.com/fizruk/telegram-bot-simple/pull/76));
+- Add Stickers methods (see [#72](https://github.com/fizruk/telegram-bot-simple/pull/72), [#73](https://github.com/fizruk/telegram-bot-simple/pull/73), [#74](https://github.com/fizruk/telegram-bot-simple/pull/74) and [#75](https://github.com/fizruk/telegram-bot-simple/pull/75));
+- Refactor `FileInfo` (see [#71](https://github.com/fizruk/telegram-bot-simple/pull/71));
+- Add Game methods (see [#70](https://github.com/fizruk/telegram-bot-simple/pull/70));
+- Fix `MessageId` integer overflow (see [#69](https://github.com/fizruk/telegram-bot-simple/pull/69));
+- Add missing types (see [#66](https://github.com/fizruk/telegram-bot-simple/pull/66), [#81](https://github.com/fizruk/telegram-bot-simple/pull/81));
+
 0.3.8
 ---
 
