@@ -1,3 +1,9 @@
+0.4.1
+---
+
+- Game improvements (see [#99](https://github.com/fizruk/telegram-bot-simple/pull/99) );
+- Aeson >= 2.0 support (see [#100](https://github.com/fizruk/telegram-bot-simple/pull/100) );
+
 0.4
 ---
 
