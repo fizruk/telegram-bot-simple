@@ -1,8 +1,7 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE DeriveGeneric              #-}
-
 {-# LANGUAGE OverloadedStrings          #-}
-
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE RecordWildCards            #-}
@@ -13,6 +12,9 @@ module Telegram.Bot.API.Stickers where
 
 import Control.Monad.IO.Class
 import Data.Aeson
+#if MIN_VERSION_aeson(2,0,0)
+import Data.Aeson.Key (fromText)
+#endif
 import Data.Aeson.Text
 import Data.Bool
 import qualified Data.Text as T
@@ -148,7 +150,11 @@ instance ToJSON CreateNewStickerSetRequest where
     [ "user_id" .= createNewStickerSetUserId
     , "name" .= createNewStickerSetName
     , "title" .= createNewStickerSetTitle
+#if MIN_VERSION_aeson(2,0,0)
+    , fromText (stickerLabel stickerFileLabel) .= stickerFileSticker
+#else
     , stickerLabel stickerFileLabel .= stickerFileSticker
+#endif
     , "emojis" .= createNewStickerSetEmojis
     , "contains_mask" .= createNewStickerSetContainsMasks
     , "mask_position" .= createNewStickerSetMaskPosition
@@ -208,7 +214,11 @@ instance ToJSON AddStickerToSetRequest where
   toJSON AddStickerToSetRequest{..} = object
     [ "user_id" .= addStickerToSetUserId
     , "name" .= addStickerToSetName
+#if MIN_VERSION_aeson(2,0,0)
+    , fromText (stickerLabel stickerFileLabel) .= stickerFileSticker
+#else
     , stickerLabel stickerFileLabel .= stickerFileSticker
+#endif
     , "emojis" .= addStickerToSetEmojis
     , "mask_position" .= addStickerToSetMaskPosition
     ]
