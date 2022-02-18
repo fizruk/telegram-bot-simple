@@ -1,3 +1,8 @@
+0.4.2
+---
+
+- Fix GHC 9.0 compilation (see [#102](https://github.com/fizruk/telegram-bot-simple/pull/102) );
+
 0.4.1
 ---
 
