@@ -223,11 +223,6 @@ data MessageEntityType
   | MessageEntityPhoneNumber -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_phone_number.html>.
   deriving (Eq, Show, Generic)
 
-instance ToJSON   MessageEntityType where
-  toJSON = gtoJSON
-instance FromJSON MessageEntityType where
-  parseJSON = gparseJSON
-
 -- ** 'PhotoSize'
 
 -- | This object represents one size of a photo or a file / sticker thumbnail.
@@ -503,18 +498,6 @@ instance ToJSON InputFile where
   toJSON (InputFileId i) = toJSON i
   toJSON (FileUrl t) = toJSON t
   toJSON (InputFile f _) = toJSON ("attach://" <> pack (takeFileName f))
-
--- | Multipart file helper
-makeFile :: Text -> InputFile ->  MultipartData Tmp ->  MultipartData Tmp
-makeFile name (InputFile path ct) (MultipartData fields files) = 
-  MultipartData 
-    (Input name ("attach://" <> name) : fields) 
-    (FileData name (pack $ takeFileName path) ct path : files)
-
-makeFile name file (MultipartData fields files) = 
-  MultipartData 
-    (Input name (TL.toStrict $ encodeToLazyText file) : fields) 
-    files
 
 -- ** 'ReplyKeyboardMarkup'
 
@@ -1023,12 +1006,6 @@ data PassportElementError
     }
     deriving (Generic, Show)
 
-instance ToHttpApiData PassportElementError where
-  toUrlPiece = TL.toStrict . encodeToLazyText
-
-instance ToHttpApiData [PassportElementError] where
-  toUrlPiece = TL.toStrict . encodeToLazyText
-
 -- * Games
 
 -- | Your bot can offer users HTML5 games to play solo or to compete against each other in groups and one-on-one chats. Create games via @BotFather using the /newgame command. Please note that this kind of power requires responsibility: you will need to accept the terms for each game that your bots will be offering.
@@ -1143,34 +1120,10 @@ data InputMediaGeneric = InputMediaGeneric
   }
   deriving Generic
 
-instance ToJSON InputMediaGeneric where toJSON = gtoJSON
-
-instance ToMultipart Tmp InputMediaGeneric where
-  toMultipart InputMediaGeneric{..} = makeFile "media" inputMediaGenericMedia (MultipartData fields []) where
-    fields = catMaybes
-      [ inputMediaGenericCaption <&>
-        \t -> Input "caption" t
-      , inputMediaGenericParseMode <&>
-        \t -> Input "parse_mode" t
-      , inputMediaGenericCaptionEntities <&>
-        \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
-      ]
-
 data InputMediaGenericThumb = InputMediaGenericThumb
   { inputMediaGenericGeneric :: InputMediaGeneric
   , inputMediaGenericThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. 
   }
-
-instance ToJSON InputMediaGenericThumb where
-  toJSON InputMediaGenericThumb{..}
-    = addJsonFields (toJSON inputMediaGenericGeneric)
-      ["thumb" .= inputMediaGenericThumb]
-
-instance ToMultipart Tmp InputMediaGenericThumb where
-  toMultipart = \case
-    InputMediaGenericThumb generic Nothing -> toMultipart generic
-    InputMediaGenericThumb generic (Just thumb) -> makeFile "thumb" thumb (toMultipart generic) where
-
 
 data InputMedia
   = InputMediaPhoto InputMediaGeneric -- ^ Represents a photo to be sent.
@@ -1197,6 +1150,98 @@ data InputMedia
     { inputMediaDocumentGeneric :: InputMediaGenericThumb
     , inputMediaDocumentDisableContentTypeDetection :: Maybe Bool -- ^ Disables automatic server-side content type detection for files uploaded using multipart/form-data. Always True, if the document is sent as part of an album.
     }
+
+foldMap deriveJSON'
+  [ ''User
+  , ''Chat
+  , ''Message
+  , ''MessageEntityType
+  , ''MessageEntity
+  , ''PhotoSize
+  , ''Audio
+  , ''Document
+  , ''Sticker
+  , ''Video
+  , ''Voice
+  , ''VideoNote
+  , ''Contact
+  , ''Location
+  , ''Venue
+  , ''UserProfilePhotos
+  , ''File
+  , ''ReplyKeyboardMarkup
+  , ''KeyboardButton
+  , ''ReplyKeyboardRemove
+  , ''InlineKeyboardMarkup
+  , ''InlineKeyboardButton
+  , ''CallbackQuery
+  , ''ForceReply
+  , ''ChatPhoto
+  , ''ChatMember
+  , ''ResponseParameters
+  , ''MaskPosition
+  , ''CallbackGame
+  , ''Animation
+  , ''Dice
+  , ''Game
+  , ''Poll
+  , ''PollOption
+  , ''MessageAutoDeleteTimerChanged
+  , ''Invoice
+  , ''SuccessfulPayment
+  , ''OrderInfo
+  , ''ShippingAddress
+  , ''PassportData
+  , ''EncryptedPassportElement
+  , ''PassportElementType
+  , ''PassportFile
+  , ''PassportElementError
+  , ''PassportErrorSource
+  , ''EncryptedCredentials
+  , ''ProximityAlertTriggered
+  , ''VoiceChatScheduled
+  , ''VoiceChatStarted
+  , ''VoiceChatEnded
+  , ''VoiceChatParticipantsInvited
+  , ''ChatPermissions
+  , ''ChatLocation
+  , ''StickerSet
+  , ''BotCommand
+  , ''ChatInviteLink
+  , ''LabeledPrice
+  , ''ShippingOption
+  , ''ShippingQuery
+  , ''PreCheckoutQuery
+  ]
+
+instance ToJSON InputMediaGeneric where toJSON = gtoJSON
+
+instance ToHttpApiData PassportElementError where
+  toUrlPiece = TL.toStrict . encodeToLazyText
+
+instance ToHttpApiData [PassportElementError] where
+  toUrlPiece = TL.toStrict . encodeToLazyText
+
+instance ToMultipart Tmp InputMediaGeneric where
+  toMultipart InputMediaGeneric{..} = makeFile "media" inputMediaGenericMedia (MultipartData fields []) where
+    fields = catMaybes
+      [ inputMediaGenericCaption <&>
+        \t -> Input "caption" t
+      , inputMediaGenericParseMode <&>
+        \t -> Input "parse_mode" t
+      , inputMediaGenericCaptionEntities <&>
+        \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
+      ]
+
+instance ToJSON InputMediaGenericThumb where
+  toJSON InputMediaGenericThumb{..}
+    = addJsonFields (toJSON inputMediaGenericGeneric)
+      ["thumb" .= inputMediaGenericThumb]
+
+instance ToMultipart Tmp InputMediaGenericThumb where
+  toMultipart = \case
+    InputMediaGenericThumb generic Nothing -> toMultipart generic
+    InputMediaGenericThumb generic (Just thumb) -> makeFile "thumb" thumb (toMultipart generic)
 
 instance ToJSON InputMedia where
   toJSON = \case
@@ -1280,64 +1325,15 @@ instance ToMultipart Tmp InputMedia where
          \t -> Input "disable_content_type_detection" (bool "false" "true" t)
       ]) (toMultipart imgt)
 
-foldMap deriveJSON'
-  [ ''User
-  , ''Chat
-  , ''Message
-  , ''MessageEntity
-  , ''PhotoSize
-  , ''Audio
-  , ''Document
-  , ''Sticker
-  , ''Video
-  , ''Voice
-  , ''VideoNote
-  , ''Contact
-  , ''Location
-  , ''Venue
-  , ''UserProfilePhotos
-  , ''File
-  , ''ReplyKeyboardMarkup
-  , ''KeyboardButton
-  , ''ReplyKeyboardRemove
-  , ''InlineKeyboardMarkup
-  , ''InlineKeyboardButton
-  , ''CallbackQuery
-  , ''ForceReply
-  , ''ChatPhoto
-  , ''ChatMember
-  , ''ResponseParameters
-  , ''MaskPosition
-  , ''CallbackGame
-  , ''Animation
-  , ''Dice
-  , ''Game
-  , ''Poll
-  , ''PollOption
-  , ''MessageAutoDeleteTimerChanged
-  , ''Invoice
-  , ''SuccessfulPayment
-  , ''OrderInfo
-  , ''ShippingAddress
-  , ''PassportData
-  , ''EncryptedPassportElement
-  , ''PassportElementType
-  , ''PassportFile
-  , ''PassportErrorSource
-  , ''PassportElementError
-  , ''EncryptedCredentials
-  , ''ProximityAlertTriggered
-  , ''VoiceChatScheduled
-  , ''VoiceChatStarted
-  , ''VoiceChatEnded
-  , ''VoiceChatParticipantsInvited
-  , ''ChatPermissions
-  , ''ChatLocation
-  , ''StickerSet
-  , ''BotCommand
-  , ''ChatInviteLink
-  , ''LabeledPrice
-  , ''ShippingOption
-  , ''ShippingQuery
-  , ''PreCheckoutQuery
-  ]
+
+-- | Multipart file helper
+makeFile :: Text -> InputFile ->  MultipartData Tmp ->  MultipartData Tmp
+makeFile name (InputFile path ct) (MultipartData fields files) = 
+  MultipartData 
+    (Input name ("attach://" <> name) : fields) 
+    (FileData name (pack $ takeFileName path) ct path : files)
+
+makeFile name file (MultipartData fields files) = 
+  MultipartData 
+    (Input name (TL.toStrict $ encodeToLazyText file) : fields) 
+    files

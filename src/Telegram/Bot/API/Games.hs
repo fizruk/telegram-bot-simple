@@ -59,6 +59,12 @@ data GetGameHighScoresRequest = GetGameHighScoresRequest
   }
   deriving (Generic, Show)
 
+foldMap deriveJSON'
+  [ ''SendGameRequest
+  , ''SetGameScoreRequest
+  , ''SetGameScoreResult
+  ]
+
 -- * Methods
 
 -- ** 'sendGame'
@@ -85,8 +91,3 @@ type GetGameHighScores
   = "getGameHighScores" :> ReqBody '[JSON] GetGameHighScoresRequest :> Post '[JSON] (Response [GameHighScore])
 
 
-foldMap deriveJSON'
-  [ ''SendGameRequest
-  , ''SetGameScoreRequest
-  , ''SetGameScoreResult
-  ]

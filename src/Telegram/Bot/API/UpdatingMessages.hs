@@ -19,15 +19,6 @@ import           Telegram.Bot.API.Types
 
 -- ** 'editMessageText'
 
-type EditMessageText
-  = "editMessageText"
-  :> ReqBody '[JSON] EditMessageTextRequest
-  :> Post '[JSON] (Response (Either Bool Message))
-
--- | Use this method to edit text and game messages. On success, if the edited message is not an inline message, the edited 'Message' is returned, otherwise 'True' is returned.
-editMessageText :: EditMessageTextRequest -> ClientM (Response (Either Bool Message))
-editMessageText = client (Proxy @EditMessageText)
-
 -- | Request parameters for 'editMessageText'.
 data EditMessageTextRequest = EditMessageTextRequest
   { editMessageTextChatId                :: Maybe SomeChatId -- ^ Required if 'editMessageTextInlineMessageId' is not specified. Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
@@ -51,17 +42,6 @@ data EditMessageCaptionRequest = EditMessageCaptionRequest
   , editMessageCaptionReplyMarkup      :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 } deriving (Generic)
 
-type EditMessageCaption  = "editMessageCaption"
-  :> ReqBody '[JSON] EditMessageCaptionRequest
-  :> Post '[JSON] (Response (Either Bool Message))
-
--- | Use this method to edit captions of messages.
---   On success, if the edited message is not an
---   inline message, the edited Message is returned,
---   otherwise True is returned.
-editMessageCaption :: EditMessageCaptionRequest -> ClientM (Response (Either Bool Message))
-editMessageCaption = client (Proxy @EditMessageCaption)
-
 -- | Request parameters for 'editMessageMedia'.
 data EditMessageMediaRequest = EditMessageMediaRequest
   { editMessageMediaChatId           :: Maybe SomeChatId -- ^ Required if 'editMessageMediaMessageId' is not specified. Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
@@ -72,6 +52,49 @@ data EditMessageMediaRequest = EditMessageMediaRequest
 } deriving (Generic)
 
 instance ToJSON EditMessageMediaRequest where toJSON = gtoJSON
+
+-- | Request parameters for 'editMessageReplyMarkup'.
+data EditMessageReplyMarkupRequest = EditMessageReplyMarkupRequest
+  { editMessageReplyMarkupChatId           :: Maybe SomeChatId -- ^ Required if 'editMessageReplyMarkupMessageId' is not specified. Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
+  , editMessageReplyMarkupMessageId        :: Maybe MessageId -- ^ Required if 'editMessageReplyMarkupInlineMessageId' is not specified. Identifier of the sent message.
+  , editMessageReplyMarkupInlineMessageId  :: Maybe MessageId -- ^ Required if 'editMessageReplyMarkupChatId' and 'editMessageReplyMarkupMessageId' are not specified. Identifier of the sent message.
+  , editMessageReplyMarkupReplyMarkup      :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+} deriving (Generic)
+
+-- | Request parameters for 'stopPoll'.
+data StopPollRequest = StopPollRequest
+  { stopPollChatId           :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  , stopPollMessageId        :: MessageId -- ^ Identifier of the original message with the poll
+  , stopPollReplyMarkup      :: Maybe SomeReplyMarkup -- ^ A JSON-serialized object for a new message inline keyboard.
+  } deriving (Generic)
+
+foldMap deriveJSON' 
+  [ ''EditMessageTextRequest
+  , ''EditMessageCaptionRequest
+  , ''EditMessageReplyMarkupRequest
+  , ''StopPollRequest
+  ]
+
+
+type EditMessageText
+  = "editMessageText"
+  :> ReqBody '[JSON] EditMessageTextRequest
+  :> Post '[JSON] (Response (Either Bool Message))
+
+-- | Use this method to edit text and game messages. On success, if the edited message is not an inline message, the edited 'Message' is returned, otherwise 'True' is returned.
+editMessageText :: EditMessageTextRequest -> ClientM (Response (Either Bool Message))
+editMessageText = client (Proxy @EditMessageText)
+
+type EditMessageCaption  = "editMessageCaption"
+  :> ReqBody '[JSON] EditMessageCaptionRequest
+  :> Post '[JSON] (Response (Either Bool Message))
+
+-- | Use this method to edit captions of messages.
+--   On success, if the edited message is not an
+--   inline message, the edited Message is returned,
+--   otherwise True is returned.
+editMessageCaption :: EditMessageCaptionRequest -> ClientM (Response (Either Bool Message))
+editMessageCaption = client (Proxy @EditMessageCaption)
 
 type EditMessageMedia  = "editMessageMedia"
   :> ReqBody '[JSON] EditMessageMediaRequest
@@ -90,14 +113,6 @@ type EditMessageMedia  = "editMessageMedia"
 editMessageMedia :: EditMessageMediaRequest -> ClientM (Response (Either Bool Message))
 editMessageMedia = client (Proxy @EditMessageMedia)
 
--- | Request parameters for 'editMessageReplyMarkup'.
-data EditMessageReplyMarkupRequest = EditMessageReplyMarkupRequest
-  { editMessageReplyMarkupChatId           :: Maybe SomeChatId -- ^ Required if 'editMessageReplyMarkupMessageId' is not specified. Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
-  , editMessageReplyMarkupMessageId        :: Maybe MessageId -- ^ Required if 'editMessageReplyMarkupInlineMessageId' is not specified. Identifier of the sent message.
-  , editMessageReplyMarkupInlineMessageId  :: Maybe MessageId -- ^ Required if 'editMessageReplyMarkupChatId' and 'editMessageReplyMarkupMessageId' are not specified. Identifier of the sent message.
-  , editMessageReplyMarkupReplyMarkup      :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
-} deriving (Generic)
-
 
 type EditMessageReplyMarkup = "editMessageReplyMarkup"
   :> ReqBody '[JSON] EditMessageReplyMarkupRequest
@@ -109,14 +124,6 @@ type EditMessageReplyMarkup = "editMessageReplyMarkup"
 editMessageReplyMarkup :: EditMessageReplyMarkupRequest -> ClientM (Response (Either Bool Message))
 editMessageReplyMarkup = client (Proxy @EditMessageReplyMarkup)
 
--- | Request parameters for 'stopPoll'.
-data StopPollRequest = StopPollRequest
-  { stopPollChatId           :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-  , stopPollMessageId        :: MessageId -- ^ Identifier of the original message with the poll
-  , stopPollReplyMarkup      :: Maybe SomeReplyMarkup -- ^ A JSON-serialized object for a new message inline keyboard.
-  } deriving (Generic)
-
-
 type StopPoll = "stopPoll"
   :> ReqBody '[JSON] StopPollRequest
   :> Post '[JSON] (Response Poll)
@@ -127,9 +134,3 @@ stopPoll :: StopPollRequest -> ClientM (Response Poll)
 stopPoll = client (Proxy @StopPoll)
 
 
-foldMap deriveJSON' 
-  [ ''EditMessageTextRequest
-  , ''EditMessageCaptionRequest
-  , ''EditMessageReplyMarkupRequest
-  , ''StopPollRequest
-  ]
