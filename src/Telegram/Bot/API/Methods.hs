@@ -325,20 +325,6 @@ data CopyMessageRequest = CopyMessageRequest
   }
   deriving Generic
 
-type CopyMessage
-  = "copyMessage"
-  :> ReqBody '[JSON] CopyMessageRequest
-  :> Post '[JSON] (Response MessageId)
-
--- | Use this method to copy messages of any kind.
---   Service messages and invoice messages can't be
---   copied. The method is analogous to the method
---   forwardMessage, but the copied message doesn't
---   have a link to the original message.
---   Returns the MessageId of the sent message on success.
-copyMessage :: CopyMessageRequest ->  ClientM (Response MessageId)
-copyMessage = client (Proxy @CopyMessage)
-
 -- | Request parameters for 'sendAudio'.
 data SendAudioRequest = SendAudioRequest
   { sendAudioChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -766,15 +752,6 @@ data SendLocationRequest = SendLocationRequest
   }
   deriving Generic
 
-type SendLocation = "sendLocation"
-  :> ReqBody '[JSON] SendLocationRequest
-  :> Post '[JSON] (Response Message)
-
--- | Use this method to send point on the map.
---   On success, the sent Message is returned.
-sendLocation :: SendLocationRequest ->  ClientM (Response Message)
-sendLocation = client (Proxy @SendLocation)
-
 -- | Request parameters for 'editMessageLiveLocation'.
 data EditMessageLiveLocationRequest = EditMessageLiveLocationRequest
   { editMessageLiveLocationChatId :: Maybe SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -789,21 +766,6 @@ data EditMessageLiveLocationRequest = EditMessageLiveLocationRequest
   }
   deriving Generic
 
-type EditMessageLiveLocation = "editMessageLiveLocation"
-  :> ReqBody '[JSON] EditMessageLiveLocationRequest
-  :> Post '[JSON] (Response (Either Bool Message))
-
--- FIXME: Add Bool returning in case of inline message. 
-
--- | Use this method to edit live location messages.
---   A location can be edited until its live_period
---   expires or editing is explicitly disabled by a
---   call to stopMessageLiveLocation. On success, if
---   the edited message is not an inline message, the
---   edited Message is returned, otherwise True is returned.
-editMessageLiveLocation :: EditMessageLiveLocationRequest ->  ClientM (Response (Either Bool Message))
-editMessageLiveLocation = client (Proxy @EditMessageLiveLocation)
-
 -- | Request parameters for 'stopMessageLiveLocation'.
 data StopMessageLiveLocationRequest = StopMessageLiveLocationRequest
   { stopMessageLiveLocationChatId :: Maybe SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -812,20 +774,6 @@ data StopMessageLiveLocationRequest = StopMessageLiveLocationRequest
   , stopMessageLiveLocationReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
-
-type StopMessageLiveLocation = "stopMessageLiveLocation"
-  :> ReqBody '[JSON] StopMessageLiveLocationRequest
-  :> Post '[JSON] (Response (Either Bool Message))
-
--- FIXME: Add Bool returning in case of inline message. 
-
--- | Use this method to stop updating a live
---   location message before live_period
---   expires. On success, if the message is
---   not an inline message, the edited Message
---   is returned, otherwise True is returned.
-stopMessageLiveLocation :: StopMessageLiveLocationRequest ->  ClientM (Response (Either Bool Message))
-stopMessageLiveLocation = client (Proxy @StopMessageLiveLocation)
 
 -- | Request parameters for 'sendVenue'.
 data SendVenueRequest = SendVenueRequest
@@ -846,15 +794,6 @@ data SendVenueRequest = SendVenueRequest
   }
   deriving Generic
 
-type SendVenue = "sendVenue"
-  :> ReqBody '[JSON] SendVenueRequest
-  :> Post '[JSON] (Response Message)
-
--- | Use this method to send information about a venue.
---   On success, the sent Message is returned.
-sendVenue :: SendVenueRequest ->  ClientM (Response Message)
-sendVenue = client (Proxy @SendVenue)
-
 -- | Request parameters for 'sendContact'.
 data SendContactRequest = SendContactRequest
   { sendContactChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -869,15 +808,6 @@ data SendContactRequest = SendContactRequest
   , sendContactReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
-
-type SendContact = "sendContact"
-  :> ReqBody '[JSON] SendContactRequest
-  :> Post '[JSON] (Response Message)
-
--- | Use this method to send phone contacts.
---   On success, the sent Message is returned.
-sendContact :: SendContactRequest ->  ClientM (Response Message)
-sendContact = client (Proxy @SendContact)
 
 -- | Request parameters for 'sendPoll'.
 data SendPollRequest = SendPollRequest
@@ -902,15 +832,6 @@ data SendPollRequest = SendPollRequest
   }
   deriving Generic
 
-type SendPoll = "sendPoll"
-  :> ReqBody '[JSON] SendPollRequest
-  :> Post '[JSON] (Response Message)
-
--- | Use this method to send a native poll.
---   On success, the sent Message is returned.
-sendPoll :: SendPollRequest ->  ClientM (Response Message)
-sendPoll = client (Proxy @SendPoll)
-
 -- | Request parameters for 'sendDice'.
 data SendDiceRequest = SendDiceRequest
   { sendDiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -922,16 +843,6 @@ data SendDiceRequest = SendDiceRequest
   , sendDiceReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
-
-type SendDice = "sendDice"
-  :> ReqBody '[JSON] SendDiceRequest
-  :> Post '[JSON] (Response Message)
-
--- | Use this method to send an animated emoji that
---   will display a random value.
---   On success, the sent Message is returned.
-sendDice :: SendDiceRequest ->  ClientM (Response Message)
-sendDice = client (Proxy @SendDice)
 
 type SendChatAction = "sendChatAction"
   :> RequiredQueryParam "chat_id" SomeChatId
@@ -968,15 +879,6 @@ data GetUserProfilePhotosRequest = GetUserProfilePhotosRequest
   }
   deriving Generic
 
-type GetUserProfilePhotos = "getUserProfilePhotos"
-  :> ReqBody '[JSON] GetUserProfilePhotosRequest
-  :> Post '[JSON] (Response UserProfilePhotos)
-
--- | Use this method to get a list of profile pictures for a user.
---   Returns a UserProfilePhotos object.
-getUserProfilePhotos :: GetUserProfilePhotosRequest ->  ClientM (Response UserProfilePhotos)
-getUserProfilePhotos = client (Proxy @GetUserProfilePhotos)
-
 -- | Request parameters for 'banChatMember'.
 data BanChatMemberRequest = BanChatMemberRequest
   { banChatMemberChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -986,23 +888,6 @@ data BanChatMemberRequest = BanChatMemberRequest
   }
   deriving Generic
 
-type BanChatMember = "banChatMember"
-  :> ReqBody '[JSON] BanChatMemberRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to ban a user in a
---   group, a supergroup or a channel.
---   In the case of supergroups and channels,
---   the user will not be able to return to
---   the chat on their own using invite links,
---   etc., unless unbanned first. The bot must
---   be an administrator in the chat for this
---   to work and must have the appropriate
---   administrator rights.
---   Returns True on success.
-banChatMember :: BanChatMemberRequest ->  ClientM (Response Bool)
-banChatMember = client (Proxy @BanChatMember)
-
 -- | Request parameters for 'unbanChatMember'.
 data UnbanChatMemberRequest = UnbanChatMemberRequest
   { unbanChatMemberChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -1010,26 +895,6 @@ data UnbanChatMemberRequest = UnbanChatMemberRequest
   , unbanChatMemberOnlyIfBanned :: Maybe Bool -- ^ Do nothing if the user is not banned
   }
   deriving Generic
-
-type UnbanChatMember = "unbanChatMember"
-  :> ReqBody '[JSON] UnbanChatMemberRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to unban a previously
---   banned user in a supergroup or channel.
---   The user will not return to the group
---   or channel automatically, but will be
---   able to join via link, etc. The bot must
---   be an administrator for this to work. By
---   default, this method guarantees that after
---   the call the user is not a member of the chat,
---   but will be able to join it. So if the user is
---   a member of the chat they will also be removed
---   from the chat. If you don't want this, use the
---   parameter only_if_banned.
---   Returns True on success.
-unbanChatMember :: UnbanChatMemberRequest ->  ClientM (Response Bool)
-unbanChatMember = client (Proxy @UnbanChatMember)
 
 -- | Request parameters for 'restrictChatMember'.
 data RestrictChatMemberRequest = RestrictChatMemberRequest
@@ -1039,21 +904,6 @@ data RestrictChatMemberRequest = RestrictChatMemberRequest
   , restrictChatMemberUntilDate :: Maybe Int -- ^ Date when restrictions will be lifted for the user, unix time. If user is restricted for more than 366 days or less than 30 seconds from the current time, they are considered to be restricted forever
   }
   deriving Generic
-
-type RestrictChatMember = "restrictChatMember"
-  :> ReqBody '[JSON] RestrictChatMemberRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to restrict a user
---   in a supergroup. The bot must be an
---   administrator in the supergroup for
---   this to work and must have the appropriate
---   administrator rights. Pass True for all
---   permissions to lift restrictions from a
---   user.
---   Returns True on success.
-restrictChatMember :: RestrictChatMemberRequest ->  ClientM (Response Bool)
-restrictChatMember = client (Proxy @RestrictChatMember)
 
 -- | Request parameters for 'promoteChatMember'.
 data PromoteChatMemberRequest = PromoteChatMemberRequest
@@ -1073,21 +923,6 @@ data PromoteChatMemberRequest = PromoteChatMemberRequest
   }
   deriving Generic
 
-type PromoteChatMember = "promoteChatMember"
-  :> ReqBody '[JSON] PromoteChatMemberRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to promote or demote
---   a user in a supergroup or a channel.
---   The bot must be an administrator in
---   the chat for this to work and must have
---   the appropriate administrator rights.
---   Pass False for all boolean parameters
---   to demote a user.
---   Returns True on success.
-promoteChatMember ::PromoteChatMemberRequest ->  ClientM (Response Bool)
-promoteChatMember = client (Proxy @PromoteChatMember)
-
 -- | Request parameters for 'setChatAdministratorCustomTitle'.
 data SetChatAdministratorCustomTitleRequest = SetChatAdministratorCustomTitleRequest
   { setChatAdministratorCustomTitleChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -1095,17 +930,6 @@ data SetChatAdministratorCustomTitleRequest = SetChatAdministratorCustomTitleReq
   , setChatAdministratorCustomTitleCustomTitle :: Text -- ^ New custom title for the administrator; 0-16 characters, emoji are not allowed
   }
   deriving Generic
-
-type SetChatAdministratorCustomTitle = "setChatAdministratorCustomTitle"
-  :> ReqBody '[JSON] SetChatAdministratorCustomTitleRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to set a custom title
---   for an administrator in a supergroup
---   promoted by the bot.
---   Returns True on success.
-setChatAdministratorCustomTitle :: SetChatAdministratorCustomTitleRequest ->  ClientM (Response Bool)
-setChatAdministratorCustomTitle = client (Proxy @SetChatAdministratorCustomTitle)
 
 type BanChatSenderChat = "banChatSenderChat"
   :> RequiredQueryParam "chat_id" SomeChatId
@@ -1149,19 +973,6 @@ data SetChatPermissionsRequest = SetChatPermissionsRequest
   }
   deriving Generic
 
-type SetChatPermissions = "setChatPermissions"
-  :> ReqBody '[JSON] SetChatPermissionsRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to set default chat
---   permissions for all members. The bot
---   must be an administrator in the group
---   or a supergroup for this to work and must
---   have the can_restrict_members administrator rights.
---   Returns True on success.
-setChatPermissions :: SetChatPermissionsRequest ->  ClientM (Response Bool)
-setChatPermissions = client (Proxy @SetChatPermissions)
-
 type ExportChatInviteLink = "exportChatInviteLink"
   :> RequiredQueryParam "chat_id" SomeChatId
   :> Post '[JSON] (Response Text)
@@ -1187,20 +998,6 @@ data CreateChatInviteLinkRequest = CreateChatInviteLinkRequest
   }
   deriving Generic
 
-type CreateChatInviteLink = "createChatInviteLink"
-  :> ReqBody '[JSON] CreateChatInviteLinkRequest
-  :> Post '[JSON] (Response ChatInviteLink)
-
--- | Use this method to create an additional
---   invite link for a chat. The bot must be 
---   an administrator in the chat for this to 
---   work and must have the appropriate administrator 
---   rights. The link can be revoked using the 
---   method revokeChatInviteLink. 
---   Returns the new invite link as ChatInviteLink object.
-createChatInviteLink :: CreateChatInviteLinkRequest ->  ClientM (Response ChatInviteLink)
-createChatInviteLink = client (Proxy @CreateChatInviteLink)
-
 -- | Request parameters for 'editChatInviteLink'.
 data EditChatInviteLinkRequest = EditChatInviteLinkRequest
   { editChatInviteLinkChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -1211,19 +1008,6 @@ data EditChatInviteLinkRequest = EditChatInviteLinkRequest
   , editChatInviteLinkCreatesJoinRequest :: Maybe Bool -- ^ True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified
   }
   deriving Generic
-
-type EditChatInviteLink = "editChatInviteLink"
-  :> ReqBody '[JSON] EditChatInviteLinkRequest
-  :> Post '[JSON] (Response ChatInviteLink)
-
--- | Use this method to edit a non-primary
---   invite link created by the bot. The 
---   bot must be an administrator in the 
---   chat for this to work and must have 
---   the appropriate administrator rights.
---   Returns the edited invite link as a ChatInviteLink object.
-editChatInviteLink :: EditChatInviteLinkRequest ->  ClientM (Response ChatInviteLink)
-editChatInviteLink = client (Proxy @EditChatInviteLink)
 
 type RevokeChatInviteLink = "revokeChatInviteLink"
   :> RequiredQueryParam "chat_id" SomeChatId
@@ -1360,20 +1144,6 @@ data PinChatMessageRequest = PinChatMessageRequest
   , pinChatMessageDisableNotification :: Maybe Bool -- ^ Pass True, if it is not necessary to send a notification to all chat members about the new pinned message. Notifications are always disabled in channels and private chats.
   }
   deriving Generic
-
-type PinChatMessage = "pinChatMessage"
-  :> ReqBody '[JSON] PinChatMessageRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to add a message to the list 
---   of pinned messages in a chat. If the chat is 
---   not a private chat, the bot must be an administrator 
---   in the chat for this to work and must have the 
---   'can_pin_messages' administrator right in a supergroup
---   or 'can_edit_messages' administrator right in a channel. 
---   Returns True on success.
-pinChatMessage :: PinChatMessageRequest ->  ClientM (Response Bool)
-pinChatMessage = client (Proxy @PinChatMessage)
 
 type UnpinChatMessage = "unpinChatMessage"
   :> RequiredQueryParam "chat_id" SomeChatId
@@ -1515,25 +1285,6 @@ data AnswerCallbackQueryRequest = AnswerCallbackQueryRequest
   }
   deriving Generic
 
-type AnswerCallbackQuery = "answerCallbackQuery"
-  :> ReqBody '[JSON] AnswerCallbackQueryRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to send answers to callback 
---   queries sent from inline keyboards. The answer 
---   will be displayed to the user as a notification 
---   at the top of the chat screen or as an alert. 
---   On success, True is returned.
---
---  Alternatively, the user can be redirected to 
---  the specified Game URL. For this option to work, 
---  you must first create a game for your bot via 
---  @Botfather and accept the terms. Otherwise, you 
---  may use links like t.me/your_bot?start=XXXX that 
---  open your bot with a parameter.
-answerCallbackQuery :: AnswerCallbackQueryRequest ->  ClientM (Response Bool)
-answerCallbackQuery = client (Proxy @AnswerCallbackQuery)
-
 -- | Request parameters for 'setMyCommands'.
 data SetMyCommandsRequest = SetMyCommandsRequest
   { setMyCommandsCommands :: [BotCommand] -- ^ A JSON-serialized list of bot commands to be set as the list of the bot's commands. At most 100 commands can be specified.
@@ -1542,17 +1293,6 @@ data SetMyCommandsRequest = SetMyCommandsRequest
   }
   deriving Generic
 
-type SetMyCommands = "setMyCommands"
-  :> ReqBody '[JSON] SetMyCommandsRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to change the list of 
---   the bot's commands. See <https:\/\/core.telegram.org\/bots#commands> 
---   for more details about bot commands. 
---   Returns True on success.
-setMyCommands :: SetMyCommandsRequest ->  ClientM (Response Bool)
-setMyCommands = client (Proxy @SetMyCommands)
-
 -- | Request parameters for 'deleteMyCommands'.
 data DeleteMyCommandsRequest = DeleteMyCommandsRequest
   { deleteMyCommandsScope :: Maybe BotCommandScope  -- ^ A JSON-serialized object, describing scope of users. Defaults to BotCommandScopeDefault. 
@@ -1560,36 +1300,12 @@ data DeleteMyCommandsRequest = DeleteMyCommandsRequest
   }
   deriving Generic
 
-type DeleteMyCommands = "deleteMyCommands"
-  :> ReqBody '[JSON] DeleteMyCommandsRequest
-  :> Post '[JSON] (Response Bool)
-
--- | Use this method to delete the list of 
---   the bot's commands for the given scope 
---   and user language. After deletion, higher 
---   level commands will be shown to affected users. 
---   Returns True on success.
-deleteMyCommands :: DeleteMyCommandsRequest -> ClientM (Response Bool)
-deleteMyCommands = client (Proxy @DeleteMyCommands)
-
 -- | Request parameters for 'getMyCommands'.
 data GetMyCommandsRequest = GetMyCommandsRequest
   { getMyCommandsScope :: Maybe BotCommandScope  -- ^ A JSON-serialized object, describing scope of users. Defaults to BotCommandScopeDefault. 
   , getMyCommandsLanguageCode :: Maybe Text   -- ^ 	A two-letter ISO 639-1 language code or an empty string
   }
   deriving Generic
-
-type GetMyCommands = "getMyCommands"
-  :> ReqBody '[JSON] GetMyCommandsRequest
-  :> Post '[JSON] (Response [BotCommand])
-
--- | Use this method to get the current list
---   of the bot's commands for the given scope 
---   and user language. Returns Array of BotCommand 
---   on success. If commands aren't set, an empty list 
---   is returned.
-getMyCommands :: GetMyCommandsRequest -> ClientM (Response [BotCommand])
-getMyCommands = client (Proxy @GetMyCommands)
 
 foldMap deriveJSON'
   [ ''GetMyCommandsRequest
@@ -1615,3 +1331,283 @@ foldMap deriveJSON'
   , ''SendLocationRequest
   , ''CopyMessageRequest
   ]
+
+type CopyMessage
+  = "copyMessage"
+  :> ReqBody '[JSON] CopyMessageRequest
+  :> Post '[JSON] (Response MessageId)
+
+-- | Use this method to copy messages of any kind.
+--   Service messages and invoice messages can't be
+--   copied. The method is analogous to the method
+--   forwardMessage, but the copied message doesn't
+--   have a link to the original message.
+--   Returns the MessageId of the sent message on success.
+copyMessage :: CopyMessageRequest ->  ClientM (Response MessageId)
+copyMessage = client (Proxy @CopyMessage)
+
+type SendLocation = "sendLocation"
+  :> ReqBody '[JSON] SendLocationRequest
+  :> Post '[JSON] (Response Message)
+
+-- | Use this method to send point on the map.
+--   On success, the sent Message is returned.
+sendLocation :: SendLocationRequest ->  ClientM (Response Message)
+sendLocation = client (Proxy @SendLocation)
+
+type EditMessageLiveLocation = "editMessageLiveLocation"
+  :> ReqBody '[JSON] EditMessageLiveLocationRequest
+  :> Post '[JSON] (Response (Either Bool Message))
+
+-- | Use this method to edit live location messages.
+--   A location can be edited until its live_period
+--   expires or editing is explicitly disabled by a
+--   call to stopMessageLiveLocation. On success, if
+--   the edited message is not an inline message, the
+--   edited Message is returned, otherwise True is returned.
+editMessageLiveLocation :: EditMessageLiveLocationRequest ->  ClientM (Response (Either Bool Message))
+editMessageLiveLocation = client (Proxy @EditMessageLiveLocation)
+
+type StopMessageLiveLocation = "stopMessageLiveLocation"
+  :> ReqBody '[JSON] StopMessageLiveLocationRequest
+  :> Post '[JSON] (Response (Either Bool Message))
+
+-- | Use this method to stop updating a live
+--   location message before live_period
+--   expires. On success, if the message is
+--   not an inline message, the edited Message
+--   is returned, otherwise True is returned.
+stopMessageLiveLocation :: StopMessageLiveLocationRequest ->  ClientM (Response (Either Bool Message))
+stopMessageLiveLocation = client (Proxy @StopMessageLiveLocation)
+
+type SendVenue = "sendVenue"
+  :> ReqBody '[JSON] SendVenueRequest
+  :> Post '[JSON] (Response Message)
+
+-- | Use this method to send information about a venue.
+--   On success, the sent Message is returned.
+sendVenue :: SendVenueRequest ->  ClientM (Response Message)
+sendVenue = client (Proxy @SendVenue)
+
+type SendContact = "sendContact"
+  :> ReqBody '[JSON] SendContactRequest
+  :> Post '[JSON] (Response Message)
+
+-- | Use this method to send phone contacts.
+--   On success, the sent Message is returned.
+sendContact :: SendContactRequest ->  ClientM (Response Message)
+sendContact = client (Proxy @SendContact)
+
+type SendPoll = "sendPoll"
+  :> ReqBody '[JSON] SendPollRequest
+  :> Post '[JSON] (Response Message)
+
+-- | Use this method to send a native poll.
+--   On success, the sent Message is returned.
+sendPoll :: SendPollRequest ->  ClientM (Response Message)
+sendPoll = client (Proxy @SendPoll)
+
+type SendDice = "sendDice"
+  :> ReqBody '[JSON] SendDiceRequest
+  :> Post '[JSON] (Response Message)
+
+-- | Use this method to send an animated emoji that
+--   will display a random value.
+--   On success, the sent Message is returned.
+sendDice :: SendDiceRequest ->  ClientM (Response Message)
+sendDice = client (Proxy @SendDice)
+
+type GetUserProfilePhotos = "getUserProfilePhotos"
+  :> ReqBody '[JSON] GetUserProfilePhotosRequest
+  :> Post '[JSON] (Response UserProfilePhotos)
+
+-- | Use this method to get a list of profile pictures for a user.
+--   Returns a UserProfilePhotos object.
+getUserProfilePhotos :: GetUserProfilePhotosRequest ->  ClientM (Response UserProfilePhotos)
+getUserProfilePhotos = client (Proxy @GetUserProfilePhotos)
+
+type BanChatMember = "banChatMember"
+  :> ReqBody '[JSON] BanChatMemberRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to ban a user in a
+--   group, a supergroup or a channel.
+--   In the case of supergroups and channels,
+--   the user will not be able to return to
+--   the chat on their own using invite links,
+--   etc., unless unbanned first. The bot must
+--   be an administrator in the chat for this
+--   to work and must have the appropriate
+--   administrator rights.
+--   Returns True on success.
+banChatMember :: BanChatMemberRequest ->  ClientM (Response Bool)
+banChatMember = client (Proxy @BanChatMember)
+
+type UnbanChatMember = "unbanChatMember"
+  :> ReqBody '[JSON] UnbanChatMemberRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to unban a previously
+--   banned user in a supergroup or channel.
+--   The user will not return to the group
+--   or channel automatically, but will be
+--   able to join via link, etc. The bot must
+--   be an administrator for this to work. By
+--   default, this method guarantees that after
+--   the call the user is not a member of the chat,
+--   but will be able to join it. So if the user is
+--   a member of the chat they will also be removed
+--   from the chat. If you don't want this, use the
+--   parameter only_if_banned.
+--   Returns True on success.
+unbanChatMember :: UnbanChatMemberRequest ->  ClientM (Response Bool)
+unbanChatMember = client (Proxy @UnbanChatMember)
+
+type RestrictChatMember = "restrictChatMember"
+  :> ReqBody '[JSON] RestrictChatMemberRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to restrict a user
+--   in a supergroup. The bot must be an
+--   administrator in the supergroup for
+--   this to work and must have the appropriate
+--   administrator rights. Pass True for all
+--   permissions to lift restrictions from a
+--   user.
+--   Returns True on success.
+restrictChatMember :: RestrictChatMemberRequest ->  ClientM (Response Bool)
+restrictChatMember = client (Proxy @RestrictChatMember)
+
+type PromoteChatMember = "promoteChatMember"
+  :> ReqBody '[JSON] PromoteChatMemberRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to promote or demote
+--   a user in a supergroup or a channel.
+--   The bot must be an administrator in
+--   the chat for this to work and must have
+--   the appropriate administrator rights.
+--   Pass False for all boolean parameters
+--   to demote a user.
+--   Returns True on success.
+promoteChatMember ::PromoteChatMemberRequest ->  ClientM (Response Bool)
+promoteChatMember = client (Proxy @PromoteChatMember)
+
+type SetChatAdministratorCustomTitle = "setChatAdministratorCustomTitle"
+  :> ReqBody '[JSON] SetChatAdministratorCustomTitleRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to set a custom title
+--   for an administrator in a supergroup
+--   promoted by the bot.
+--   Returns True on success.
+setChatAdministratorCustomTitle :: SetChatAdministratorCustomTitleRequest ->  ClientM (Response Bool)
+setChatAdministratorCustomTitle = client (Proxy @SetChatAdministratorCustomTitle)
+
+type SetChatPermissions = "setChatPermissions"
+  :> ReqBody '[JSON] SetChatPermissionsRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to set default chat
+--   permissions for all members. The bot
+--   must be an administrator in the group
+--   or a supergroup for this to work and must
+--   have the can_restrict_members administrator rights.
+--   Returns True on success.
+setChatPermissions :: SetChatPermissionsRequest ->  ClientM (Response Bool)
+setChatPermissions = client (Proxy @SetChatPermissions)
+
+type CreateChatInviteLink = "createChatInviteLink"
+  :> ReqBody '[JSON] CreateChatInviteLinkRequest
+  :> Post '[JSON] (Response ChatInviteLink)
+
+-- | Use this method to create an additional
+--   invite link for a chat. The bot must be 
+--   an administrator in the chat for this to 
+--   work and must have the appropriate administrator 
+--   rights. The link can be revoked using the 
+--   method revokeChatInviteLink. 
+--   Returns the new invite link as ChatInviteLink object.
+createChatInviteLink :: CreateChatInviteLinkRequest ->  ClientM (Response ChatInviteLink)
+createChatInviteLink = client (Proxy @CreateChatInviteLink)
+
+type EditChatInviteLink = "editChatInviteLink"
+  :> ReqBody '[JSON] EditChatInviteLinkRequest
+  :> Post '[JSON] (Response ChatInviteLink)
+
+-- | Use this method to edit a non-primary
+--   invite link created by the bot. The 
+--   bot must be an administrator in the 
+--   chat for this to work and must have 
+--   the appropriate administrator rights.
+--   Returns the edited invite link as a ChatInviteLink object.
+editChatInviteLink :: EditChatInviteLinkRequest ->  ClientM (Response ChatInviteLink)
+editChatInviteLink = client (Proxy @EditChatInviteLink)
+
+type PinChatMessage = "pinChatMessage"
+  :> ReqBody '[JSON] PinChatMessageRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to add a message to the list 
+--   of pinned messages in a chat. If the chat is 
+--   not a private chat, the bot must be an administrator 
+--   in the chat for this to work and must have the 
+--   'can_pin_messages' administrator right in a supergroup
+--   or 'can_edit_messages' administrator right in a channel. 
+--   Returns True on success.
+pinChatMessage :: PinChatMessageRequest ->  ClientM (Response Bool)
+pinChatMessage = client (Proxy @PinChatMessage)
+
+type AnswerCallbackQuery = "answerCallbackQuery"
+  :> ReqBody '[JSON] AnswerCallbackQueryRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to send answers to callback 
+--   queries sent from inline keyboards. The answer 
+--   will be displayed to the user as a notification 
+--   at the top of the chat screen or as an alert. 
+--   On success, True is returned.
+--
+--  Alternatively, the user can be redirected to 
+--  the specified Game URL. For this option to work, 
+--  you must first create a game for your bot via 
+--  @Botfather and accept the terms. Otherwise, you 
+--  may use links like t.me/your_bot?start=XXXX that 
+--  open your bot with a parameter.
+answerCallbackQuery :: AnswerCallbackQueryRequest ->  ClientM (Response Bool)
+answerCallbackQuery = client (Proxy @AnswerCallbackQuery)
+
+type SetMyCommands = "setMyCommands"
+  :> ReqBody '[JSON] SetMyCommandsRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to change the list of 
+--   the bot's commands. See <https:\/\/core.telegram.org\/bots#commands> 
+--   for more details about bot commands. 
+--   Returns True on success.
+setMyCommands :: SetMyCommandsRequest ->  ClientM (Response Bool)
+setMyCommands = client (Proxy @SetMyCommands)
+
+type DeleteMyCommands = "deleteMyCommands"
+  :> ReqBody '[JSON] DeleteMyCommandsRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to delete the list of 
+--   the bot's commands for the given scope 
+--   and user language. After deletion, higher 
+--   level commands will be shown to affected users. 
+--   Returns True on success.
+deleteMyCommands :: DeleteMyCommandsRequest -> ClientM (Response Bool)
+deleteMyCommands = client (Proxy @DeleteMyCommands)
+
+type GetMyCommands = "getMyCommands"
+  :> ReqBody '[JSON] GetMyCommandsRequest
+  :> Post '[JSON] (Response [BotCommand])
+
+-- | Use this method to get the current list
+--   of the bot's commands for the given scope 
+--   and user language. Returns Array of BotCommand 
+--   on success. If commands aren't set, an empty list 
+--   is returned.
+getMyCommands :: GetMyCommandsRequest -> ClientM (Response [BotCommand])
+getMyCommands = client (Proxy @GetMyCommands)
