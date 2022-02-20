@@ -41,6 +41,7 @@ data ReplyMessage = ReplyMessage
   , replyMessageEntities              :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
   , replyMessageDisableWebPagePreview :: Maybe Bool -- ^ Disables link previews for links in this message.
   , replyMessageDisableNotification   :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
+  , replyMessageProtectContent        :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , replyMessageReplyToMessageId      :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
  , replyMessageAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , replyMessageReplyMarkup           :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -52,7 +53,7 @@ instance IsString ReplyMessage where
 -- | Create a 'ReplyMessage' with just some 'Text' message.
 toReplyMessage :: Text -> ReplyMessage
 toReplyMessage text
-  = ReplyMessage text Nothing Nothing Nothing Nothing Nothing Nothing Nothing
+  = ReplyMessage text Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
 
 replyMessageToSendMessageRequest :: SomeChatId -> ReplyMessage -> SendMessageRequest
 replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageRequest
@@ -62,6 +63,7 @@ replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageReques
   , sendMessageEntities = replyMessageEntities
   , sendMessageDisableWebPagePreview = replyMessageDisableWebPagePreview
   , sendMessageDisableNotification = replyMessageDisableNotification
+  , sendMessageProtectContent = replyMessageProtectContent
   , sendMessageReplyToMessageId = replyMessageReplyToMessageId
   , sendMessageReplyMarkup = replyMessageReplyMarkup
   , sendMessageAllowSendingWithoutReply = replyMessageAllowSendingWithoutReply

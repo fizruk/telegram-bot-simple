@@ -36,12 +36,14 @@ import Data.Functor
 -- | Type of uploaded sticker file. Static or animated.
 data StickerType
   = PngSticker -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
-  | TgsSticker -- ^ TGS animation with the sticker, uploaded using multipart/form-data. See <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for technical requirements
+  | TgsSticker -- ^ TGS animation with the sticker, uploaded using multipart/form-data. See <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for technical requirements.
+  | WebmSticker -- ^ WEBM video with the sticker, uploaded using multipart/form-data. See <https:\/\/core.telegram.org\/stickers#video-sticker-requirements> for technical requirements.
 
 stickerLabel :: StickerType -> T.Text
 stickerLabel = \case
   PngSticker -> "png_sticker"
   TgsSticker -> "tgs_sticker"
+  WebmSticker -> "webm_sticker"
 
 -- | Sticker file with static/animated label.
 data StickerFile = StickerFile {stickerFileSticker :: InputFile, stickerFileLabel :: StickerType}
@@ -51,6 +53,7 @@ data SendStickerRequest = SendStickerRequest
   { sendStickerChatId                   :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
   , sendStickerSticker                  :: InputFile -- ^ Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a .WEBP file from the Internet, or upload a new one using multipart/form-data. 
   , sendStickerDisableNotification      :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
+  , sendStickerProtectContent           :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendStickerReplyToMessageId         :: Maybe MessageId -- ^	If the message is a reply, ID of the original message
   , sendStickerAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found
   , sendStickerReplyMarkup              :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.

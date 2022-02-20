@@ -95,7 +95,7 @@ handleAction BotSettings{..} action model = case action of
   AFeedback sourceChatId msgId -> model <# do
     let shouldNotify  = Just True
         targetChatId  = SomeChatId (ChatId (fromIntegral supportChatId))
-        fwdMsgRequest = ForwardMessageRequest targetChatId sourceChatId shouldNotify msgId
+        fwdMsgRequest = ForwardMessageRequest targetChatId sourceChatId shouldNotify Nothing msgId
     _ <- liftClientM (forwardMessage fwdMsgRequest)
     return ()
 
@@ -125,6 +125,7 @@ handleAction BotSettings{..} action model = case action of
           { sendGameRequestChatId                   = coerce targetChatId
           , sendGameRequestGameShortName            = gameId
           , sendGameRequestDisableNotification      = Nothing
+          , sendGameProtectContent                  = Nothing
           , sendGameRequestReplyToMessageId         = Nothing
           , sendGameRequestAllowSendingWithoutReply = Nothing
           , sendGameRequestReplyMarkup              = Nothing
