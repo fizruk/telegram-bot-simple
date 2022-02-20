@@ -1,3 +1,7 @@
+0.4.3
+
+- Add support `spoiler` message type and `protect_content` field for various methods (see [#103](https://github.com/fizruk/telegram-bot-simple/pull/103));
+
 0.4.2
 ---
 
