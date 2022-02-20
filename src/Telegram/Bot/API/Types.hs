@@ -221,6 +221,7 @@ data MessageEntityType
   | MessageEntityTextMention
   | MessageEntityCashtag -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_cashtag.html>.
   | MessageEntityPhoneNumber -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_phone_number.html>.
+  | MessageEntitySpoiler
   deriving (Eq, Show, Generic)
 
 -- ** 'PhotoSize'
@@ -779,7 +780,8 @@ data Sticker = Sticker
   , stickerFileUniqueId :: FileId             -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
   , stickerWidth        :: Int32              -- ^ Sticker width.
   , stickerHeight       :: Int32              -- ^ Sticker height.
-  , stickerIsAnimated   :: Bool               -- ^ True, if the sticker is animated.
+  , stickerIsAnimated   :: Bool               -- ^ 'True', if the sticker is animated.
+  , stickerIsVideo      :: Bool               -- ^ 'True', if the sticker is a video sticker.
   , stickerThumb        :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
   , stickerEmoji        :: Maybe Text         -- ^ Emoji associated with the sticker.
   , stickerSetName      :: Maybe Text         -- ^ Name of the sticker set to which the sticker belongs.
@@ -794,7 +796,8 @@ data Sticker = Sticker
 data StickerSet = StickerSet
   { stickerSetName          :: Text            -- ^ Sticker set name.
   , stickerSetTitle         :: Text            -- ^ Sticker set title.
-  , stickerSetIsAnimated    :: Bool            -- ^ True, if the sticker set contains animated stickers.
+  , stickerSetIsAnimated    :: Bool            -- ^ 'True', if the sticker set contains animated stickers.
+  , stickerSetIsVideo       :: Bool            -- ^ 'True', if the sticker is a video sticker.
   , stickerSetContainsMasks :: Bool            -- ^ True, if the sticker set contains masks.
   , stickerSetStickers      :: [Sticker]       -- ^ List of all set stickers.
   , stickerSetThumb         :: Maybe PhotoSize -- ^ Sticker set thumbnail in the .WEBP or .TGS format.

@@ -107,6 +107,7 @@ data SendMessageRequest = SendMessageRequest
   , sendMessageEntities              :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
   , sendMessageDisableWebPagePreview :: Maybe Bool -- ^ Disables link previews for links in this message.
   , sendMessageDisableNotification   :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
+  , sendMessageProtectContent        :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendMessageReplyToMessageId      :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendMessageAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , sendMessageReplyMarkup           :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -118,9 +119,10 @@ instance FromJSON SendMessageRequest where parseJSON = gparseJSON
 -- | Request parameters for 'forwardMessage'.
 data ForwardMessageRequest = ForwardMessageRequest
   { forwardMessageChatId              :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername).
-  , forwardMessageFromChatId          :: SomeChatId -- ^ Unique identifier for the chat where the original message was sent (or channel username in the format @\@channelusername)
+  , forwardMessageFromChatId          :: SomeChatId -- ^ Unique identifier for the chat where the original message was sent (or channel username in the format @\@channelusername).
   , forwardMessageDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , forwardMessageMessageId           :: MessageId -- ^ Message identifier in the chat specified in from_chat_id
+  , forwardMessageProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , forwardMessageMessageId           :: MessageId  -- ^ Message identifier in the chat specified in from_chat_id.
   } deriving (Generic)
 
 instance ToJSON   ForwardMessageRequest where toJSON = gtoJSON
@@ -159,6 +161,7 @@ data SendDocumentRequest = SendDocumentRequest
   , sendDocumentCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
   , sendDocumentDisableContentTypeDetection :: Maybe Bool -- ^ Disables automatic server-side content type detection for files uploaded using @multipart/form-data@.
   , sendDocumentDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
+  , sendDocumentProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.  
   , sendDocumentReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendDocumentAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , sendDocumentReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -217,6 +220,7 @@ toSendDocument ch df = SendDocumentRequest
   , sendDocumentCaptionEntities =  Nothing
   , sendDocumentDisableContentTypeDetection = Nothing
   , sendDocumentDisableNotification = Nothing
+  , sendDocumentProtectContent = Nothing
   , sendDocumentReplyToMessageId = Nothing
   , sendDocumentAllowSendingWithoutReply = Nothing
   , sendDocumentReplyMarkup = Nothing
@@ -266,6 +270,7 @@ data SendPhotoRequest = SendPhotoRequest
   , sendPhotoParseMode :: Maybe ParseMode -- ^ Mode for parsing entities in the Photo caption.
   , sendPhotoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
   , sendPhotoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
+  , sendPhotoProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.  
   , sendPhotoReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendPhotoAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , sendPhotoReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -422,7 +427,7 @@ data SendVideoRequest = SendVideoRequest
   , sendVideoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
   , sendVideoSupportsStreaming :: Maybe Bool -- ^ Pass True, if the uploaded video is suitable for streaming
   , sendVideoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendVideoProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
+  , sendVideoProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendVideoReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
   , sendVideoAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found
   , sendVideoReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -505,9 +510,9 @@ data SendAnimationRequest = SendAnimationRequest
   , sendAnimationParseMode :: Maybe Text -- ^ Mode for parsing entities in the animation caption. See formatting options for more details.
   , sendAnimationCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
   , sendAnimationDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendAnimationProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
-  , sendAnimationReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
-  , sendAnimationAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found
+  , sendAnimationProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendAnimationReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
+  , sendAnimationAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found.
   , sendAnimationReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
