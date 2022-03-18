@@ -25,7 +25,6 @@ import qualified Data.Aeson.KeyMap as Map
 #else
 import qualified Data.HashMap.Strict as Map
 #endif
-import Servant.Multipart (MultipartData(MultipartData), Input)
 
 deriveJSON' :: Name -> Q [Dec]
 deriveJSON' name = deriveJSON (jsonOptions (nameBase name)) name
