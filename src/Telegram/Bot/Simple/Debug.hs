@@ -1,11 +1,17 @@
 {-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE CPP #-}
 module Telegram.Bot.Simple.Debug where
 
 import           Control.Monad.Trans        (liftIO)
 import           Control.Monad.Writer       (tell)
 import           Data.Aeson                 (ToJSON)
 import qualified Data.Aeson.Encode.Pretty   as Aeson
-import           Data.Monoid                ((<>))
+#if defined(MIN_VERSION_GLASGOW_HASKELL)
+#if MIN_VERSION_GLASGOW_HASKELL(8,6,2,0)
+#else
+import           Data.Monoid                     ((<>))
+#endif
+#endif
 import qualified Data.Text.Lazy             as Text
 import qualified Data.Text.Lazy.Encoding    as Text
 import           Debug.Trace                (trace)

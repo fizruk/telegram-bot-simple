@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
@@ -12,7 +14,7 @@
 module Telegram.Bot.API.Types where
 
 import Data.Aeson (ToJSON(..), FromJSON(..), Value(..), object, KeyValue ((.=)), withObject, (.:))
-import Data.Aeson.Types (Parser, Pair)
+import Data.Aeson.Types (Parser, Pair, Object)
 import Data.Aeson.Text (encodeToLazyText)
 import Data.Coerce (coerce)
 import Data.Int (Int32)
@@ -198,6 +200,7 @@ data MessageEntity = MessageEntity
   , messageEntityLength :: Int32 -- ^ Length of the entity in UTF-16 code units
   , messageEntityUrl    :: Maybe Text -- ^ For “text_link” only, url that will be opened after user taps on the text
   , messageEntityUser   :: Maybe User -- ^ For “text_mention” only, the mentioned user
+  , messageEntityLanguage :: Maybe Text -- ^ For “pre” only, the programming language of the entity text.
   }
   deriving (Generic, Show)
 
@@ -218,12 +221,8 @@ data MessageEntityType
   | MessageEntityTextMention
   | MessageEntityCashtag -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_cashtag.html>.
   | MessageEntityPhoneNumber -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_phone_number.html>.
+  | MessageEntitySpoiler
   deriving (Eq, Show, Generic)
-
-instance ToJSON   MessageEntityType where
-  toJSON = gtoJSON
-instance FromJSON MessageEntityType where
-  parseJSON = gparseJSON
 
 -- ** 'PhotoSize'
 
@@ -501,18 +500,6 @@ instance ToJSON InputFile where
   toJSON (FileUrl t) = toJSON t
   toJSON (InputFile f _) = toJSON ("attach://" <> pack (takeFileName f))
 
--- | Multipart file helper
-makeFile :: Text -> InputFile ->  MultipartData Tmp ->  MultipartData Tmp
-makeFile name (InputFile path ct) (MultipartData fields files) = 
-  MultipartData 
-    (Input name ("attach://" <> name) : fields) 
-    (FileData name (pack $ takeFileName path) ct path : files)
-
-makeFile name file (MultipartData fields files) = 
-  MultipartData 
-    (Input name (TL.toStrict $ encodeToLazyText file) : fields) 
-    files
-
 -- ** 'ReplyKeyboardMarkup'
 
 -- | This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
@@ -781,17 +768,11 @@ data ResponseParameters = ResponseParameters
   }
   deriving (Show, Generic)
 
--- FIXME: Decide about 'BotCommandScope' types.
-
--- FIXME: Decide about 'InputMedia' types.
-
 -- * Stickers
 
 -- | The following methods and objects allow your bot to handle stickers and sticker sets.
 
 -- ** 'Sticker'
-
--- FIXME: sticker.set_name vs sticker_set.name?
 
 -- | This object represents a sticker.
 data Sticker = Sticker
@@ -799,10 +780,11 @@ data Sticker = Sticker
   , stickerFileUniqueId :: FileId             -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
   , stickerWidth        :: Int32              -- ^ Sticker width.
   , stickerHeight       :: Int32              -- ^ Sticker height.
-  , stickerIsAnimated   :: Bool               -- ^ True, if the sticker is animated.
+  , stickerIsAnimated   :: Bool               -- ^ 'True', if the sticker is animated.
+  , stickerIsVideo      :: Bool               -- ^ 'True', if the sticker is a video sticker.
   , stickerThumb        :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
   , stickerEmoji        :: Maybe Text         -- ^ Emoji associated with the sticker.
-  , stickerSetName_     :: Maybe Text         -- ^ Name of the sticker set to which the sticker belongs.
+  , stickerSetName      :: Maybe Text         -- ^ Name of the sticker set to which the sticker belongs.
   , stickerMaskPosition :: Maybe MaskPosition -- ^ For mask stickers, the position where the mask should be placed.
   , stickerFileSize     :: Maybe Integer      -- ^ File size in bytes.
   }
@@ -814,7 +796,8 @@ data Sticker = Sticker
 data StickerSet = StickerSet
   { stickerSetName          :: Text            -- ^ Sticker set name.
   , stickerSetTitle         :: Text            -- ^ Sticker set title.
-  , stickerSetIsAnimated    :: Bool            -- ^ True, if the sticker set contains animated stickers.
+  , stickerSetIsAnimated    :: Bool            -- ^ 'True', if the sticker set contains animated stickers.
+  , stickerSetIsVideo       :: Bool            -- ^ 'True', if the sticker is a video sticker.
   , stickerSetContainsMasks :: Bool            -- ^ True, if the sticker set contains masks.
   , stickerSetStickers      :: [Sticker]       -- ^ List of all set stickers.
   , stickerSetThumb         :: Maybe PhotoSize -- ^ Sticker set thumbnail in the .WEBP or .TGS format.
@@ -1001,7 +984,30 @@ data EncryptedCredentials = EncryptedCredentials
 
 -- ** 'PassportElementError'
 
--- FIXME: Decide about PassportElementError
+data PassportErrorSource
+  = PassportErrorSourceData
+  | PassportErrorSourceFrontSide
+  | PassportErrorSourceReverseSide
+  | PassportErrorSourceSelfie
+  | PassportErrorSourceFile
+  | PassportErrorSourceFiles
+  | PassportErrorSourceTranslationFile
+  | PassportErrorSourceTranslationFiles
+  | PassportErrorSourceUnspecified
+  deriving (Generic, Show)
+
+data PassportElementError
+  = PassportElementError
+    { passportElementErroSource       :: PassportErrorSource -- ^ Error source, must be one of 'PassportErrorSource'.
+    , passportElementErrorType        :: PassportElementType -- ^ The section of the user's Telegram Passport which has the error, one of 'PassportElementType'.
+    , passportElementErrorName        :: Text                -- ^ Name of the data field which has the error.
+    , passportElementErrorHash        :: Maybe Text          -- ^ Base64-encoded data hash.
+    , passportElementErrorMessage     :: Text                -- ^ Error message.
+    , passportElementErrorFileHash    :: Maybe Text          -- ^ Base64-encoded hash of the file with the reverse side of the document.
+    , passportElementErrorFileHashes  :: Maybe [Text]        -- ^ List of base64-encoded file hashes.
+    , passportElementErrorElementHash :: Maybe Text          -- ^ Base64-encoded element hash.
+    }
+    deriving (Generic, Show)
 
 -- * Games
 
@@ -1033,7 +1039,7 @@ data Game = Game
 -- ** 'CallbackGame'
 
 -- | A placeholder, currently holds no information. Use BotFather to set up your game.
-data CallbackGame = CallbackGame
+newtype CallbackGame = CallbackGame Object
   deriving (Generic, Show)
 
 -- ** 'GameHighScore'
@@ -1057,7 +1063,7 @@ instance ToJSON   SomeChatId where toJSON = genericSomeToJSON
 instance FromJSON SomeChatId where parseJSON = genericSomeParseJSON
 
 instance ToHttpApiData SomeChatId where
-  toUrlPiece (SomeChatId id) = toUrlPiece id
+  toUrlPiece (SomeChatId chatid) = toUrlPiece chatid
   toUrlPiece (SomeChatUsername name) = name
   
 -- | This object represents a bot command.
@@ -1117,34 +1123,10 @@ data InputMediaGeneric = InputMediaGeneric
   }
   deriving Generic
 
-instance ToJSON InputMediaGeneric where toJSON = gtoJSON
-
-instance ToMultipart Tmp InputMediaGeneric where
-  toMultipart InputMediaGeneric{..} = makeFile "media" inputMediaGenericMedia (MultipartData fields []) where
-    fields = catMaybes
-      [ inputMediaGenericCaption <&>
-        \t -> Input "caption" t
-      , inputMediaGenericParseMode <&>
-        \t -> Input "parse_mode" t
-      , inputMediaGenericCaptionEntities <&>
-        \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
-      ]
-
 data InputMediaGenericThumb = InputMediaGenericThumb
   { inputMediaGenericGeneric :: InputMediaGeneric
   , inputMediaGenericThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. 
   }
-
-instance ToJSON InputMediaGenericThumb where
-  toJSON InputMediaGenericThumb{..}
-    = addJsonFields (toJSON inputMediaGenericGeneric)
-      ["thumb" .= inputMediaGenericThumb]
-
-instance ToMultipart Tmp InputMediaGenericThumb where
-  toMultipart = \case
-    InputMediaGenericThumb generic Nothing -> toMultipart generic
-    InputMediaGenericThumb generic (Just thumb) -> makeFile "thumb" thumb (toMultipart generic) where
-
 
 data InputMedia
   = InputMediaPhoto InputMediaGeneric -- ^ Represents a photo to be sent.
@@ -1171,6 +1153,98 @@ data InputMedia
     { inputMediaDocumentGeneric :: InputMediaGenericThumb
     , inputMediaDocumentDisableContentTypeDetection :: Maybe Bool -- ^ Disables automatic server-side content type detection for files uploaded using multipart/form-data. Always True, if the document is sent as part of an album.
     }
+
+foldMap deriveJSON'
+  [ ''User
+  , ''Chat
+  , ''Message
+  , ''MessageEntityType
+  , ''MessageEntity
+  , ''PhotoSize
+  , ''Audio
+  , ''Document
+  , ''Sticker
+  , ''Video
+  , ''Voice
+  , ''VideoNote
+  , ''Contact
+  , ''Location
+  , ''Venue
+  , ''UserProfilePhotos
+  , ''File
+  , ''ReplyKeyboardMarkup
+  , ''KeyboardButton
+  , ''ReplyKeyboardRemove
+  , ''InlineKeyboardMarkup
+  , ''InlineKeyboardButton
+  , ''CallbackQuery
+  , ''ForceReply
+  , ''ChatPhoto
+  , ''ChatMember
+  , ''ResponseParameters
+  , ''MaskPosition
+  , ''CallbackGame
+  , ''Animation
+  , ''Dice
+  , ''Game
+  , ''Poll
+  , ''PollOption
+  , ''MessageAutoDeleteTimerChanged
+  , ''Invoice
+  , ''SuccessfulPayment
+  , ''OrderInfo
+  , ''ShippingAddress
+  , ''PassportData
+  , ''EncryptedPassportElement
+  , ''PassportElementType
+  , ''PassportFile
+  , ''PassportElementError
+  , ''PassportErrorSource
+  , ''EncryptedCredentials
+  , ''ProximityAlertTriggered
+  , ''VoiceChatScheduled
+  , ''VoiceChatStarted
+  , ''VoiceChatEnded
+  , ''VoiceChatParticipantsInvited
+  , ''ChatPermissions
+  , ''ChatLocation
+  , ''StickerSet
+  , ''BotCommand
+  , ''ChatInviteLink
+  , ''LabeledPrice
+  , ''ShippingOption
+  , ''ShippingQuery
+  , ''PreCheckoutQuery
+  ]
+
+instance ToJSON InputMediaGeneric where toJSON = gtoJSON
+
+instance ToHttpApiData PassportElementError where
+  toUrlPiece = TL.toStrict . encodeToLazyText
+
+instance ToHttpApiData [PassportElementError] where
+  toUrlPiece = TL.toStrict . encodeToLazyText
+
+instance ToMultipart Tmp InputMediaGeneric where
+  toMultipart InputMediaGeneric{..} = makeFile "media" inputMediaGenericMedia (MultipartData fields []) where
+    fields = catMaybes
+      [ inputMediaGenericCaption <&>
+        \t -> Input "caption" t
+      , inputMediaGenericParseMode <&>
+        \t -> Input "parse_mode" t
+      , inputMediaGenericCaptionEntities <&>
+        \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
+      ]
+
+instance ToJSON InputMediaGenericThumb where
+  toJSON InputMediaGenericThumb{..}
+    = addJsonFields (toJSON inputMediaGenericGeneric)
+      ["thumb" .= inputMediaGenericThumb]
+
+instance ToMultipart Tmp InputMediaGenericThumb where
+  toMultipart = \case
+    InputMediaGenericThumb generic Nothing -> toMultipart generic
+    InputMediaGenericThumb generic (Just thumb) -> makeFile "thumb" thumb (toMultipart generic)
 
 instance ToJSON InputMedia where
   toJSON = \case
@@ -1254,58 +1328,15 @@ instance ToMultipart Tmp InputMedia where
          \t -> Input "disable_content_type_detection" (bool "false" "true" t)
       ]) (toMultipart imgt)
 
-foldMap deriveJSON'
-  [ ''User
-  , ''Chat
-  , ''Message
-  , ''MessageEntity
-  , ''PhotoSize
-  , ''Audio
-  , ''Document
-  , ''Sticker
-  , ''Video
-  , ''Voice
-  , ''VideoNote
-  , ''Contact
-  , ''Location
-  , ''Venue
-  , ''UserProfilePhotos
-  , ''File
-  , ''ReplyKeyboardMarkup
-  , ''KeyboardButton
-  , ''ReplyKeyboardRemove
-  , ''InlineKeyboardMarkup
-  , ''InlineKeyboardButton
-  , ''CallbackQuery
-  , ''ForceReply
-  , ''ChatPhoto
-  , ''ChatMember
-  , ''ResponseParameters
-  , ''MaskPosition
-  , ''CallbackGame
-  , ''Animation
-  , ''Dice
-  , ''Game
-  , ''Poll
-  , ''PollOption
-  , ''MessageAutoDeleteTimerChanged
-  , ''Invoice
-  , ''SuccessfulPayment
-  , ''OrderInfo
-  , ''ShippingAddress
-  , ''PassportData
-  , ''EncryptedPassportElement
-  , ''PassportElementType
-  , ''PassportFile
-  , ''EncryptedCredentials
-  , ''ProximityAlertTriggered
-  , ''VoiceChatScheduled
-  , ''VoiceChatStarted
-  , ''VoiceChatEnded
-  , ''VoiceChatParticipantsInvited
-  , ''ChatPermissions
-  , ''ChatLocation
-  , ''StickerSet
-  , ''BotCommand
-  , ''ChatInviteLink
-  ]
+
+-- | Multipart file helper
+makeFile :: Text -> InputFile ->  MultipartData Tmp ->  MultipartData Tmp
+makeFile name (InputFile path ct) (MultipartData fields files) = 
+  MultipartData 
+    (Input name ("attach://" <> name) : fields) 
+    (FileData name (pack $ takeFileName path) ct path : files)
+
+makeFile name file (MultipartData fields files) = 
+  MultipartData 
+    (Input name (TL.toStrict $ encodeToLazyText file) : fields) 
+    files

@@ -36,12 +36,12 @@ data Update = Update
 
   , updateInlineQuery :: Maybe InlineQuery -- ^ New incoming inline query
 
---   , updateChosenInlineResult :: Maybe ChosenInlineResult -- ^ The result of an inline query that was chosen by a user and sent to their chat partner. Please see our documentation on the feedback collecting for details on how to enable these updates for your bot.
+  , updateChosenInlineResult :: Maybe ChosenInlineResult -- ^ The result of an inline query that was chosen by a user and sent to their chat partner. Please see our documentation on the feedback collecting for details on how to enable these updates for your bot.
 
   , updateCallbackQuery     :: Maybe CallbackQuery -- ^ New incoming callback query
 
---   , updateShippingQuery :: Maybe ShippingQuery -- ^ New incoming shipping query. Only for invoices with flexible price
---   , updatePreCheckoutQuery :: Maybe PreCheckoutQuery -- ^ New incoming pre-checkout query. Contains full information about checkout
+  , updateShippingQuery     :: Maybe ShippingQuery -- ^ New incoming shipping query. Only for invoices with flexible price
+  , updatePreCheckoutQuery  :: Maybe PreCheckoutQuery -- ^ New incoming pre-checkout query. Contains full information about checkout
   } deriving (Generic, Show)
 
 instance ToJSON   Update where toJSON = gtoJSON

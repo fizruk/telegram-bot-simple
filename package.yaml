@@ -1,5 +1,5 @@
 name:                telegram-bot-simple
-version:             0.3.8
+version:             0.4.3
 github:              "fizruk/telegram-bot-simple"
 license:             BSD3
 author:              "Nickolay Kudasov"
@@ -64,6 +64,28 @@ executables:
   example-todo-bot:
     main: examples/TodoBot.hs
     dependencies: telegram-bot-simple
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N # -N option provides concurrent running on all available cores.
+
+  example-game-bot:
+    main: examples/GameBot.hs
+    dependencies:
+      - blaze-html
+      - cookie
+      - dhall
+      - http-types
+      - optparse-applicative
+      - prettyprinter
+      - QuickCheck
+      - random
+      - servant-blaze
+      - servant-server
+      - telegram-bot-simple
+      - unix
+      - uuid
+      - warp
     ghc-options:
       - -threaded
       - -rtsopts

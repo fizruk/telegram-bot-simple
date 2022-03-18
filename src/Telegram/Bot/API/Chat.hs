@@ -3,12 +3,10 @@
 {-# LANGUAGE TypeOperators #-}
 module Telegram.Bot.API.Chat where
 
-import Data.Coerce (coerce)
 import Data.Proxy
 import Servant.API
 import Servant.Client hiding (Response)
 
-import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 

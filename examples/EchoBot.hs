@@ -44,15 +44,17 @@ updateToAction update _
 handleAction :: Action -> Model -> Eff Action Model
 handleAction action model = case action of
   InlineEcho queryId msg -> model <# do
-    _ <- liftClientM (
-      answerInlineQuery (
-          AnswerInlineQueryRequest
-            queryId
-            [
-              InlineQueryResult InlineQueryResultArticle (InlineQueryResultId msg) (Just msg) (Just (defaultInputTextMessageContent msg))
-            ]
-        )
-      )
+    let result = InlineQueryResult InlineQueryResultArticle (InlineQueryResultId msg) (Just msg) (Just (defaultInputTextMessageContent msg)) Nothing
+        answerInlineQueryRequest = AnswerInlineQueryRequest
+          { answerInlineQueryRequestInlineQueryId = queryId
+          , answerInlineQueryRequestResults       = [result]
+          , answerInlineQueryCacheTime            = Nothing
+          , answerInlineQueryIsPersonal           = Nothing
+          , answerInlineQueryNextOffset           = Nothing
+          , answerInlineQuerySwitchPmText         = Nothing
+          , answerInlineQuerySwitchPmParameter    = Nothing
+          }
+    _ <- liftClientM (answerInlineQuery answerInlineQueryRequest)
     return ()
   StickerEcho file chat -> model <# do
     _ <- liftClientM 
@@ -60,7 +62,8 @@ handleAction action model = case action of
         (SendStickerRequest 
           (SomeChatId chat) 
           file 
-          Nothing 
+          Nothing
+          Nothing
           Nothing 
           Nothing 
           Nothing))

@@ -41,16 +41,16 @@ newtype Eff action model = Eff { _runEff :: Writer [BotM (Maybe action)] model }
 --   If you don't want to return action use 'Nothing' instead.
 --
 --   See "Telegram.Bot.Simple.Instances" for more commonly useful instances.
---   - @RunBot a a@ - for simple making finite automata of
+--   - @GetAction a a@ - for simple making finite automata of
 --   BotM actions. (For example you can log every update
 --   and then return new 'action' to answer at message/send sticker/etc)
---   - @RunBot () a@ - to use @pure ()@ instead of dealing with @Nothing@.
---   - @RunBot Text a@ - to add some sugar over the 'replyText' function.
+--   - @GetAction () a@ - to use @pure ()@ instead of dealing with @Nothing@.
+--   - @GetAction Text a@ - to add some sugar over the 'replyText' function.
 --   'OverloadedStrings' breaks type inference,
 --   so we advise to use @replyText \"message\"@
 --   instead of @pure \@_ \@Text \"message\"@.
-class RunBot ret action where
-  runBot :: BotM ret -> BotM (Maybe action)
+class GetAction return action where
+  getNextAction :: BotM return -> BotM (Maybe action)
 
 instance Bifunctor Eff where
   bimap f g = Eff . mapWriter (bimap g (map . fmap . fmap $ f)) . _runEff
@@ -58,13 +58,13 @@ instance Bifunctor Eff where
 runEff :: Eff action model -> (model, [BotM (Maybe action)])
 runEff = runWriter . _runEff
 
-eff :: RunBot a b => BotM a -> Eff b ()
-eff e = Eff (tell [runBot e])
+eff :: GetAction a b => BotM a -> Eff b ()
+eff e = Eff (tell [getNextAction e])
 
-withEffect :: RunBot a action => BotM a -> model -> Eff action model
+withEffect :: GetAction a action => BotM a -> model -> Eff action model
 withEffect effect model = eff effect >> pure model
 
-(<#) :: RunBot a action => model -> BotM a -> Eff action model
+(<#) :: GetAction a action => model -> BotM a -> Eff action model
 (<#) = flip withEffect
 
 -- | Set a specific 'Telegram.Update' in a 'BotM' context.
