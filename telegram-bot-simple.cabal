@@ -73,7 +73,6 @@ library
     , profunctors
     , servant
     , servant-client
-    , servant-multipart
     , servant-multipart-api
     , servant-multipart-client
     , split
@@ -107,7 +106,6 @@ executable example-echo-bot
     , profunctors
     , servant
     , servant-client
-    , servant-multipart
     , servant-multipart-api
     , servant-multipart-client
     , split
@@ -142,7 +140,6 @@ executable example-todo-bot
     , profunctors
     , servant
     , servant-client
-    , servant-multipart
     , servant-multipart-api
     , servant-multipart-client
     , split

@@ -18,12 +18,12 @@ import Data.List (intercalate)
 import GHC.Generics
 import Language.Haskell.TH
 import Control.Applicative (liftA2)
+import Servant.Multipart.API (MultipartData(MultipartData), Input)
 
 #if MIN_VERSION_aeson(2,0,0)
 import qualified Data.Aeson.KeyMap as Map
 #else
 import qualified Data.HashMap.Strict as Map
-import Servant.Multipart (MultipartData(MultipartData), Input)
 #endif
 
 deriveJSON' :: Name -> Q [Dec]
