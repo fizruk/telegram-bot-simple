@@ -36,7 +36,6 @@ dependencies:
 - pretty-show
 - servant
 - servant-client
-- servant-multipart
 - servant-multipart-client
 - servant-multipart-api
 - split
