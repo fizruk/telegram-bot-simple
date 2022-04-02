@@ -1,3 +1,9 @@
+0.4.5
+---
+
+- Fix `UpdateId` overflow exception (see [#108](https://github.com/fizruk/telegram-bot-simple/pull/108));
+- Hide examples under flag `examples` (see [#109](https://github.com/fizruk/telegram-bot-simple/pull/109));
+
 0.4.4
 ---
 
