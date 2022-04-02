@@ -25,6 +25,11 @@ source-repository head
   type: git
   location: https://github.com/fizruk/telegram-bot-simple
 
+flag examples
+  description: Build examples
+  manual: True
+  default: False
+
 library
   exposed-modules:
       Telegram.Bot.API
@@ -111,12 +116,16 @@ executable example-echo-bot
     , servant-multipart-client
     , split
     , stm
-    , telegram-bot-simple
     , template-haskell
     , text
     , time
     , transformers
     , unordered-containers
+  if flag(examples)
+    build-depends:
+        telegram-bot-simple
+  else
+    buildable: False
   default-language: Haskell2010
 
 executable example-game-bot
@@ -128,43 +137,46 @@ executable example-game-bot
       aeson
     , aeson-pretty
     , base >=4.9 && <5
-    , blaze-html
     , bytestring
     , cron >=0.7.0
-    , cookie
-    , dhall
     , filepath
     , hashable
     , http-api-data
     , http-client
     , http-client-tls
-    , http-types
     , monad-control
     , mtl
-    , optparse-applicative
     , pretty-show
-    , prettyprinter
     , profunctors
-    , QuickCheck
-    , random
     , servant
-    , servant-blaze
     , servant-client
-    , servant-multipart
     , servant-multipart-api
     , servant-multipart-client
-    , servant-server
     , split
     , stm
-    , telegram-bot-simple
     , template-haskell
     , text
     , time
     , transformers
     , unordered-containers
-    , unix
-    , uuid
-    , warp
+  if flag(examples)
+    build-depends:
+        QuickCheck
+      , blaze-html
+      , cookie
+      , dhall
+      , http-types
+      , optparse-applicative
+      , prettyprinter
+      , random
+      , servant-blaze
+      , servant-server
+      , telegram-bot-simple
+      , unix
+      , uuid
+      , warp
+  else
+    buildable: False
   default-language: Haskell2010
 
 executable example-todo-bot
@@ -193,10 +205,14 @@ executable example-todo-bot
     , servant-multipart-client
     , split
     , stm
-    , telegram-bot-simple
     , template-haskell
     , text
     , time
     , transformers
     , unordered-containers
+  if flag(examples)
+    build-depends:
+        telegram-bot-simple
+  else
+    buildable: False
   default-language: Haskell2010

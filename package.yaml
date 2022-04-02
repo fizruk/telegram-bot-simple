@@ -19,6 +19,12 @@ category:            Web
 # common to point users to the README.md file.
 description:         Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
 
+flags:
+  examples:
+    description: Build examples
+    manual: True
+    default: False
+
 dependencies:
 - base >= 4.9 && <5
 - aeson
@@ -55,7 +61,12 @@ library:
 executables:
   example-echo-bot:
     main: examples/EchoBot.hs
-    dependencies: telegram-bot-simple
+    when:
+      condition: flag(examples)
+      then:
+        dependencies: telegram-bot-simple
+      else:
+        buildable: false
     ghc-options:
       - -threaded
       - -rtsopts
@@ -63,7 +74,12 @@ executables:
 
   example-todo-bot:
     main: examples/TodoBot.hs
-    dependencies: telegram-bot-simple
+    when:
+      condition: flag(examples)
+      then:
+        dependencies: telegram-bot-simple
+      else:
+        buildable: false
     ghc-options:
       - -threaded
       - -rtsopts
@@ -71,21 +87,26 @@ executables:
 
   example-game-bot:
     main: examples/GameBot.hs
-    dependencies:
-      - blaze-html
-      - cookie
-      - dhall
-      - http-types
-      - optparse-applicative
-      - prettyprinter
-      - QuickCheck
-      - random
-      - servant-blaze
-      - servant-server
-      - telegram-bot-simple
-      - unix
-      - uuid
-      - warp
+    when:
+      condition: flag(examples)
+      then:
+        dependencies:
+          - blaze-html
+          - cookie
+          - dhall
+          - http-types
+          - optparse-applicative
+          - prettyprinter
+          - QuickCheck
+          - random
+          - servant-blaze
+          - servant-server
+          - telegram-bot-simple
+          - unix
+          - uuid
+          - warp
+      else:
+        buildable: false
     ghc-options:
       - -threaded
       - -rtsopts
