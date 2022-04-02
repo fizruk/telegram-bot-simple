@@ -17,7 +17,6 @@ import Data.Aeson (ToJSON(..), FromJSON(..), Value(..), object, KeyValue ((.=)),
 import Data.Aeson.Types (Parser, Pair, Object)
 import Data.Aeson.Text (encodeToLazyText)
 import Data.Coerce (coerce)
-import Data.Int (Int32)
 import Data.Bool (bool)
 import Data.Maybe (catMaybes)
 import Data.Functor ((<&>))
@@ -36,7 +35,7 @@ import Telegram.Bot.API.Internal.Utils
 
 type RequiredQueryParam = QueryParam' '[Required , Strict]
 
-newtype Seconds = Seconds Int32
+newtype Seconds = Seconds Int
   deriving (Eq, Show, Num, ToJSON, FromJSON)
 
 -- * Available types
@@ -196,8 +195,8 @@ newtype MediaGroupId = MediaGroupId Text
 -- | This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
 data MessageEntity = MessageEntity
   { messageEntityType   :: MessageEntityType -- ^ Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), underline (underlined text), strikethrough, code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames)
-  , messageEntityOffset :: Int32 -- ^ Offset in UTF-16 code units to the start of the entity
-  , messageEntityLength :: Int32 -- ^ Length of the entity in UTF-16 code units
+  , messageEntityOffset :: Int -- ^ Offset in UTF-16 code units to the start of the entity
+  , messageEntityLength :: Int -- ^ Length of the entity in UTF-16 code units
   , messageEntityUrl    :: Maybe Text -- ^ For “text_link” only, url that will be opened after user taps on the text
   , messageEntityUser   :: Maybe User -- ^ For “text_mention” only, the mentioned user
   , messageEntityLanguage :: Maybe Text -- ^ For “pre” only, the programming language of the entity text.
@@ -230,9 +229,9 @@ data MessageEntityType
 data PhotoSize = PhotoSize
   { photoSizeFileId       :: FileId      -- ^ Unique identifier for this file.
   , photoSizeFileUniqueId :: FileId      -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , photoSizeWidth        :: Int32       -- ^ Photo width
-  , photoSizeHeight       :: Int32       -- ^ Photo height
-  , photoSizeFileSize     :: Maybe Int32 -- ^ File size
+  , photoSizeWidth        :: Int       -- ^ Photo width
+  , photoSizeHeight       :: Int       -- ^ Photo height
+  , photoSizeFileSize     :: Maybe Int -- ^ File size
   }
   deriving (Generic, Show)
 
@@ -249,13 +248,13 @@ instance ToHttpApiData FileId where
 data Animation = Animation
   { animationFileId       :: FileId          -- ^ Identifier for this file, which can be used to download or reuse the file.
   , animationFileUniqueId :: FileId          -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , animationWidth        :: Int32           -- ^ Video width as defined by sender.
-  , animationHeight       :: Int32           -- ^ Video height as defined by sender.
+  , animationWidth        :: Int           -- ^ Video width as defined by sender.
+  , animationHeight       :: Int           -- ^ Video height as defined by sender.
   , animationDuration     :: Seconds         -- ^ Duration of the video in seconds as defined by sender.
   , animationThumb        :: Maybe PhotoSize -- ^ Animation thumbnail as defined by sender.
   , animationFileName     :: Maybe Text      -- ^ Original animation filename as defined by sender.
   , animationMimeType     :: Maybe Text      -- ^ MIME type of the file as defined by sender.
-  , animationFileSize     :: Maybe Int32     -- ^ File size in bytes.
+  , animationFileSize     :: Maybe Int     -- ^ File size in bytes.
   }
   deriving (Generic, Show)
 
@@ -270,7 +269,7 @@ data Audio = Audio
   , audioTitle     :: Maybe Text -- ^ Title of the audio as defined by sender or by audio tags.
   , audioFileName  :: Maybe Text -- ^ Original filename as defined by sender.
   , audioMimeType  :: Maybe Text -- ^ MIME type of the file as defined by sender.
-  , audioFileSize  :: Maybe Int32 -- ^ File size in bytes.
+  , audioFileSize  :: Maybe Int -- ^ File size in bytes.
   , audioThumb     :: Maybe PhotoSize -- ^ Thumbnail of the album cover to which the music file belongs.
   }
   deriving (Generic, Show)
@@ -284,7 +283,7 @@ data Document = Document
   , documentThumb    :: Maybe PhotoSize -- ^ Document thumbnail as defined by sender.
   , documentFileName :: Maybe Text -- ^ Original filename as defined by sender.
   , documentMimeType :: Maybe Text -- ^ MIME type of the file as defined by sender.
-  , documentFileSize :: Maybe Int32 -- ^ File size in bytes. 
+  , documentFileSize :: Maybe Int -- ^ File size in bytes. 
   }
   deriving (Generic, Show)
 
@@ -294,13 +293,13 @@ data Document = Document
 data Video = Video
   { videoFileId       :: FileId -- ^ Unique identifier for this file.
   , videoFileUniqueId :: FileId -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , videoWidth        :: Int32 -- ^ Video width as defined by sender.
-  , videoHeight       :: Int32 -- ^ Video height as defined by sender.
+  , videoWidth        :: Int -- ^ Video width as defined by sender.
+  , videoHeight       :: Int -- ^ Video height as defined by sender.
   , videoDuration     :: Seconds -- ^ Duration of the video in seconds as defined by sender.
   , videoThumb        :: Maybe PhotoSize -- ^ Video thumbnail.
   , videoFileName     :: Maybe Text -- ^ Original filename as defined by sender.
   , videoMimeType     :: Maybe Text -- ^ Mime type of a file as defined by sender.
-  , videoFileSize     :: Maybe Int32 -- ^ File size in bytes.
+  , videoFileSize     :: Maybe Int -- ^ File size in bytes.
   }
   deriving (Generic, Show)
 
@@ -310,10 +309,10 @@ data Video = Video
 data VideoNote = VideoNote
   { videoNoteFileId   :: FileId -- ^ Unique identifier for this file.
   , videoNoteFileUniqueId :: FileId -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , videoNoteLength   :: Int32 -- ^ Video width and height as defined by sender.
+  , videoNoteLength   :: Int -- ^ Video width and height as defined by sender.
   , videoNoteDuration :: Seconds -- ^ Duration of the video in seconds as defined by sender.
   , videoNoteThumb    :: Maybe PhotoSize -- ^ Video thumbnail.
-  , videoNoteFileSize :: Maybe Int32 -- ^ File size in bytes.
+  , videoNoteFileSize :: Maybe Int -- ^ File size in bytes.
   }
   deriving (Generic, Show)
 
@@ -325,7 +324,7 @@ data Voice = Voice
   , voiceFileUniqueId :: FileId -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
   , voiceDuration :: Seconds -- ^ Duration of the audio in seconds as defined by sender.
   , voiceMimeType :: Maybe Text -- ^ MIME type of the file as defined by sender.
-  , voiceFileSize :: Maybe Int32 -- ^ File size in bytes.
+  , voiceFileSize :: Maybe Int -- ^ File size in bytes.
   }
   deriving (Generic, Show)
 
@@ -379,7 +378,7 @@ data Poll = Poll
   { pollId                    :: PollId                -- ^ Unique poll identifier.
   , pollQuestion              :: Text                  -- ^ Poll question, 1-300 characters.
   , pollOptions               :: [PollOption]          -- ^ List of poll options.
-  , pollTotalVoterCount       :: Int32                 -- ^ Total number of users that voted in the poll.
+  , pollTotalVoterCount       :: Int                 -- ^ Total number of users that voted in the poll.
   , pollIsClosed              :: Bool                  -- ^ 'True', if the poll is closed.
   , pollIsAnonymous           :: Bool                  -- ^ 'True', if the poll is anonymous.
   , pollType                  :: PollType              -- ^ Poll type, currently can be “regular” or “quiz”.
@@ -425,7 +424,7 @@ data Venue = Venue
 data ProximityAlertTriggered = ProximityAlertTriggered
   { proximityAlertTriggeredTraveler :: User  -- ^ User that triggered the alert.
   , proximityAlertTriggeredWatcher  :: User  -- ^ User that set the alert.
-  , proximityAlertTriggeredDistance :: Int32 -- ^ The distance between the users.
+  , proximityAlertTriggeredDistance :: Int -- ^ The distance between the users.
   }
   deriving (Generic, Show)
 
@@ -469,7 +468,7 @@ data VoiceChatParticipantsInvited = VoiceChatParticipantsInvited
 
 -- | This object represent a user's profile pictures.
 data UserProfilePhotos = UserProfilePhotos
-  { userProfilePhotosTotalCount :: Int32 -- ^ Total number of profile pictures the target user has
+  { userProfilePhotosTotalCount :: Int -- ^ Total number of profile pictures the target user has
   , userProfilePhotosPhotos     :: [[PhotoSize]] -- ^ Requested profile pictures (in up to 4 sizes each)
   }
   deriving (Generic, Show)
@@ -483,7 +482,7 @@ data UserProfilePhotos = UserProfilePhotos
 data File = File
   { fileFileId       :: FileId      -- ^ Unique identifier for this file.
   , fileFileUniqueId :: FileId      -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , fileFileSize     :: Maybe Int32 -- ^ File size in bytes, if known.
+  , fileFileSize     :: Maybe Int -- ^ File size in bytes, if known.
   , fileFilePath     :: Maybe Text  -- ^ File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
   }
   deriving (Generic, Show)
@@ -664,8 +663,8 @@ data ChatInviteLink = ChatInviteLink
   , chatInviteLinkIsRevoked               :: Bool            -- ^ 'True', if the link is revoked.
   , chatInviteLinkName                    :: Maybe Text      -- ^ Invite link name.
   , chatInviteLinkExpireDate              :: Maybe POSIXTime -- ^ Point in time (Unix timestamp) when the link will expire or has been expired.
-  , chatInviteLinkMemberLimit             :: Maybe Int32     -- ^ Maximum number of users that can be members of the chat simultaneously after joining the chat via this invite link; 1-99999.
-  , chatInviteLinkPendingJoinRequestCount :: Maybe Int32     -- ^ Number of pending join requests created using this link.
+  , chatInviteLinkMemberLimit             :: Maybe Int     -- ^ Maximum number of users that can be members of the chat simultaneously after joining the chat via this invite link; 1-99999.
+  , chatInviteLinkPendingJoinRequestCount :: Maybe Int     -- ^ Number of pending join requests created using this link.
   }
   deriving (Generic, Show)
 
@@ -778,8 +777,8 @@ data ResponseParameters = ResponseParameters
 data Sticker = Sticker
   { stickerFileId       :: FileId             -- ^ Identifier for this file, which can be used to download or reuse the file.
   , stickerFileUniqueId :: FileId             -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , stickerWidth        :: Int32              -- ^ Sticker width.
-  , stickerHeight       :: Int32              -- ^ Sticker height.
+  , stickerWidth        :: Int              -- ^ Sticker width.
+  , stickerHeight       :: Int              -- ^ Sticker height.
   , stickerIsAnimated   :: Bool               -- ^ 'True', if the sticker is animated.
   , stickerIsVideo      :: Bool               -- ^ 'True', if the sticker is a video sticker.
   , stickerThumb        :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
@@ -822,7 +821,7 @@ data MaskPosition = MaskPosition
 -- | This object represents a portion of the price for goods or services.
 data LabeledPrice = LabelPrice
   { labeledPriceLabel  :: Text  -- ^ Portion label.
-  , labeledPriceAmount :: Int32 -- ^ Price of the product in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
+  , labeledPriceAmount :: Int -- ^ Price of the product in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
   }
   deriving (Generic, Show)
 
@@ -834,7 +833,7 @@ data Invoice = Invoice
   , invoiceDescription    :: Text  -- ^ Product description.
   , invoiceStartParameter :: Text  -- ^ Unique bot deep-linking parameter that can be used to generate this invoice.
   , invoiceCurrency       :: Text  -- ^ Three-letter ISO 4217 currency code.
-  , invoiceTotalAmount    :: Int32 -- ^ Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
+  , invoiceTotalAmount    :: Int -- ^ Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
   }
   deriving (Generic, Show)
 
@@ -880,7 +879,7 @@ newtype ShippingOptionId = ShippingOptionId Text
 -- | This object contains basic information about a successful payment.
 data SuccessfulPayment = SuccessfulPayment
   { successfulPaymentCurrency                :: Text                   -- ^ Three-letter ISO 4217 currency code.
-  , successfulPaymentTotalAmount             :: Int32                  -- ^ Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
+  , successfulPaymentTotalAmount             :: Int                  -- ^ Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
   , successfulPaymentInvoicePayload          :: Text                   -- ^ Bot specified invoice payload.
   , successfulPaymentShippingOptionId        :: Maybe ShippingOptionId -- ^ Identifier of the shipping option chosen by the user.
   , successfulPaymentOrderInfo               :: Maybe OrderInfo        -- ^ Order info provided by the user.
@@ -907,7 +906,7 @@ data PreCheckoutQuery = PreCheckoutQuery
   { preCheckoutQueryId               :: Text                   -- ^ Unique query identifier.
   , preCheckoutQueryFrom             :: User                   -- ^ User who sent the query.
   , preCheckoutQueryCurrency         :: Text                   -- ^ Three-letter ISO 4217 currency code
-  , preCheckoutQueryTotalAmount      :: Int32                  -- ^ Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
+  , preCheckoutQueryTotalAmount      :: Int                  -- ^ Total price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45 pass amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
   , preCheckoutQueryInvoicePayload   :: Text                   -- ^ Bot specified invoice payload
   , preCheckoutQueryShippingOptionId :: Maybe ShippingOptionId -- ^ Identifier of the shipping option chosen by the user.
   , preCheckoutQueryOrderInfo        :: Maybe OrderInfo        -- ^ Order info provided by the user.
@@ -933,7 +932,7 @@ data PassportData = PassportData
 data PassportFile = PassportFile
   { passportFileFileId       :: FileId    -- ^ Identifier for this file, which can be used to download or reuse the file.
   , passportFileFileUniqueId :: FileId    -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , passportFileFileSize     :: Int32     -- ^ File size in bytes.
+  , passportFileFileSize     :: Int     -- ^ File size in bytes.
   , passportFileFileDate     :: POSIXTime -- ^ Unix time when the file was uploaded.
   }
   deriving (Generic, Show)
@@ -1046,9 +1045,9 @@ newtype CallbackGame = CallbackGame Object
 
 -- | This object represents one row of the high scores table for a game.
 data GameHighScore = GameHighScore
-  { gameHighScorePosition :: Int32 -- ^ Position in high score table for the game.
+  { gameHighScorePosition :: Int -- ^ Position in high score table for the game.
   , gameHighScoreUser     :: User  -- ^ User.
-  , gameHighScoreScore    :: Int32 -- ^ Score.
+  , gameHighScoreScore    :: Int -- ^ Score.
   }
   deriving (Generic, Show)
 
