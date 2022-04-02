@@ -18,6 +18,8 @@ The supplementary materials for the workshop is available at https://github.com/
 See bot examples here: https://github.com/fizruk/telegram-bot-simple/tree/master/examples
 
 Use `cabal build -fexamples` to build it.
+If you are building with stack then use `stack build --flag telegram-bot-simple:examples`.
+
 ## Contributing
 
 Contributions are welcome!

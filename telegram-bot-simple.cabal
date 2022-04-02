@@ -133,39 +133,46 @@ executable example-game-bot
   other-modules:
       Paths_telegram_bot_simple
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.9 && <5
+    , bytestring
+    , cron >=0.7.0
+    , filepath
+    , hashable
+    , http-api-data
+    , http-client
+    , http-client-tls
+    , monad-control
+    , mtl
+    , pretty-show
+    , profunctors
+    , servant
+    , servant-client
+    , servant-multipart-api
+    , servant-multipart-client
+    , split
+    , stm
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , unordered-containers
   if flag(examples)
     build-depends:
-      QuickCheck
-      , aeson
-      , aeson-pretty
-      , base >=4.9 && <5
-      , bytestring
+        QuickCheck
+      , blaze-html
       , cookie
-      , cron >=0.7.0
       , dhall
-      , filepath
-      , hashable
-      , http-api-data
-      , http-client
-      , http-client-tls
-      , monad-control
-      , mtl
-      , pretty-show
-      , profunctors
+      , http-types
+      , optparse-applicative
+      , prettyprinter
       , random
-      , servant
-      , servant-client
-      , servant-multipart-api
-      , servant-multipart-client
+      , servant-blaze
       , servant-server
       , signal
-      , split
-      , stm
-      , template-haskell
-      , text
-      , time
-      , transformers
-      , unordered-containers
+      , telegram-bot-simple
       , uuid
       , warp
   else
