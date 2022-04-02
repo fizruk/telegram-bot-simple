@@ -1,4 +1,10 @@
+0.4.4
+---
+
+- Fix build on Windows (see [#107](https://github.com/fizruk/telegram-bot-simple/pull/107));
+
 0.4.3
+---
 
 - Add support `spoiler` message type and `protect_content` field for various methods (see [#103](https://github.com/fizruk/telegram-bot-simple/pull/103));
 

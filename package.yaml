@@ -1,5 +1,5 @@
 name:                telegram-bot-simple
-version:             0.4.3
+version:             0.4.4
 github:              "fizruk/telegram-bot-simple"
 license:             BSD3
 author:              "Nickolay Kudasov"
@@ -83,9 +83,9 @@ executables:
       - servant-blaze
       - servant-server
       - telegram-bot-simple
-      - unix
       - uuid
       - warp
+      - signal
     ghc-options:
       - -threaded
       - -rtsopts

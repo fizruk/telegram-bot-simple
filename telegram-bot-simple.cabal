@@ -1,11 +1,11 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.6.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 
 name:           telegram-bot-simple
-version:        0.4.3
+version:        0.4.4
 synopsis:       Easy to use library for building Telegram bots.
 description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
 category:       Web
@@ -125,13 +125,14 @@ executable example-game-bot
       Paths_telegram_bot_simple
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson
+      QuickCheck
+    , aeson
     , aeson-pretty
     , base >=4.9 && <5
     , blaze-html
     , bytestring
-    , cron >=0.7.0
     , cookie
+    , cron >=0.7.0
     , dhall
     , filepath
     , hashable
@@ -145,15 +146,14 @@ executable example-game-bot
     , pretty-show
     , prettyprinter
     , profunctors
-    , QuickCheck
     , random
     , servant
     , servant-blaze
     , servant-client
-    , servant-multipart
     , servant-multipart-api
     , servant-multipart-client
     , servant-server
+    , signal
     , split
     , stm
     , telegram-bot-simple
@@ -162,7 +162,6 @@ executable example-game-bot
     , time
     , transformers
     , unordered-containers
-    , unix
     , uuid
     , warp
   default-language: Haskell2010

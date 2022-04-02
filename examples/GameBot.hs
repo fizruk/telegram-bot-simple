@@ -43,7 +43,8 @@ import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import qualified Data.UUID as UUID
 import qualified Options.Applicative as Optparse (command)
-import qualified System.Posix.Signals as Sig
+-- import qualified System.Posix.Signals as Sig
+import qualified System.Signal as Sig
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
@@ -194,10 +195,10 @@ runServer :: IO ()
 runServer = do
   serverSettings <- loadServerSettings
   env <- loadEnv serverSettings
-  let shutdownHandler closeSocket = void $ Sig.installHandler Sig.sigTERM handler Nothing
+  let shutdownHandler closeSocket = void $ Sig.installHandler Sig.sigTERM handler
         where
           shutdownAction = storeEnv env
-          handler = Sig.Catch $ shutdownAction >> closeSocket
+          handler _sig = shutdownAction >> closeSocket
       warpSettings = defaultSettings
         & setPort port
         & setInstallShutdownHandler shutdownHandler
