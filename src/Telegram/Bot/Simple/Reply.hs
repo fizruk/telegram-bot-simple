@@ -37,7 +37,7 @@ updateEditMessageId update
 -- This is just like 'SendMessageRequest' but without 'SomeChatId' specified.
 data ReplyMessage = ReplyMessage
   { replyMessageText                  :: Text -- ^ Text of the message to be sent.
-  , replyMessageParseMode             :: Maybe ParseMode -- ^ Send 'Markdown' or 'HTML', if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
+  , replyMessageParseMode             :: Maybe ParseMode -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , replyMessageEntities              :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
   , replyMessageDisableWebPagePreview :: Maybe Bool -- ^ Disables link previews for links in this message.
   , replyMessageDisableNotification   :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
