@@ -919,7 +919,7 @@ data PromoteChatMemberRequest = PromoteChatMemberRequest
   , promoteChatMemberCanPostMessages :: Maybe Bool -- ^ Pass True, if the administrator can create channel posts, channels only
   , promoteChatMemberCanEditMessages :: Maybe Bool -- ^ Pass True, if the administrator can edit messages of other users and can pin messages, channels only
   , promoteChatMemberCanDeleteMessages :: Maybe Bool -- ^ Pass True, if the administrator can delete messages of other users
-  , promoteChatMemberCanManageVoiceChats :: Maybe Bool -- ^ Pass True, if the administrator can manage voice chats
+  , promoteChatMemberCanManageVideoChats :: Maybe Bool -- ^ Pass True, if the administrator can manage video chats
   , promoteChatMemberCanRestrictMembers :: Maybe Bool -- ^ Pass True, if the administrator can restrict, ban or unban chat members
   , promoteChatMemberCanPromoteMembers :: Maybe Bool -- ^ Pass True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by him)
   , promoteChatMemberCanChangeInfo :: Maybe Bool -- ^ Pass True, if the administrator can change chat title, photo and other settings
@@ -1312,8 +1312,40 @@ data GetMyCommandsRequest = GetMyCommandsRequest
   }
   deriving Generic
 
+-- | Request parameters for 'setChatMenuButton'
+
+data SetChatMenuButtonRequest = SetChatMenuButtonRequest
+  { setChatMenuButtonRequestChatId     :: Maybe ChatId     -- ^ Unique identifier for the target private chat. If not specified, default bot's menu button will be changed.
+  , setChatMenuButtonRequestMenuButton :: Maybe MenuButton -- ^ A JSON-serialized object for the new bot's menu button. Defaults to @MenuButtonDefault@.
+  }
+  deriving Generic
+
+-- | Request parameters for 'getChatMenuButton'
+
+data GetChatMenuButtonRequest = GetChatMenuButtonRequest
+  { getChatMenuButtonRequestChatId     :: Maybe ChatId     -- ^ Unique identifier for the target private chat. If not specified, default bot's menu button will be returned.
+  }
+  deriving Generic
+
+-- | Request parameters for 'setMyDefaultAdministratorRights'
+data SetMyDefaultAdministratorRightsRequest = SetMyDefaultAdministratorRightsRequest
+  { setMyDefaultAdministratorRightsRequestRights      :: Maybe ChatAdministratorRights -- ^ A JSON-serialized object describing new default administrator rights. If not specified, the default administrator rights will be cleared.
+  , setMyDefaultAdministratorRightsRequestForChannels :: Maybe Bool -- ^ Pass 'True' to change the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
+  }
+  deriving Generic
+
+-- | Request parameters for 'getMyDefaultAdministratorRights'
+data GetMyDefaultAdministratorRightsRequest = GetMyDefaultAdministratorRightsRequest
+  { getMyDefaultAdministratorRightsRequestForChannels :: Maybe Bool -- ^ Pass 'True' to get default administrator rights of the bot in channels. Otherwise, default administrator rights of the bot for groups and supergroups will be returned.
+  }
+  deriving Generic
+
 foldMap deriveJSON'
-  [ ''GetMyCommandsRequest
+  [ ''SetMyDefaultAdministratorRightsRequest
+  , ''GetMyDefaultAdministratorRightsRequest
+  , ''GetChatMenuButtonRequest
+  , ''SetChatMenuButtonRequest
+  , ''GetMyCommandsRequest
   , ''DeleteMyCommandsRequest
   , ''SetMyCommandsRequest
   , ''AnswerCallbackQueryRequest
@@ -1616,3 +1648,41 @@ type GetMyCommands = "getMyCommands"
 --   is returned.
 getMyCommands :: GetMyCommandsRequest -> ClientM (Response [BotCommand])
 getMyCommands = client (Proxy @GetMyCommands)
+
+type SetChatMenuButton = "setChatMenuButton"
+  :> ReqBody '[JSON] SetChatMenuButtonRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to change the bot's menu button in a private chat,
+--  or the default menu button. Returns True on success.
+setChatMenuButton :: SetChatMenuButtonRequest -> ClientM (Response Bool)
+setChatMenuButton = client (Proxy @SetChatMenuButton)
+
+type GetChatMenuButton = "getChatMenuButton"
+  :> ReqBody '[JSON] GetChatMenuButtonRequest
+  :> Post '[JSON] (Response MenuButton)
+
+-- | Use this method to get the current value
+--  of the bot's menu button in a private chat, or the default menu button.
+-- Returns @MenuButton@ on success.
+getChatMenuButton :: GetChatMenuButtonRequest -> ClientM (Response MenuButton)
+getChatMenuButton = client (Proxy @GetChatMenuButton)
+
+type SetMyDefaultAdministratorRights = "setMyDefaultAdministratorRights"
+  :> ReqBody '[JSON] SetMyDefaultAdministratorRightsRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to change the default administrator rights requested by the bot when it's added as an administrator to groups or channels. These rights will be suggested to users, but they are are free to modify the list before adding the bot. Returns 'True' on success.
+setMyDefaultAdministratorRights
+  :: SetMyDefaultAdministratorRightsRequest -> ClientM (Response Bool)
+setMyDefaultAdministratorRights = client (Proxy @SetMyDefaultAdministratorRights)
+
+type GetMyDefaultAdministratorRights = "getMyDefaultAdministratorRights"
+  :> ReqBody '[JSON] GetMyDefaultAdministratorRightsRequest
+  :> Post '[JSON] (Response ChatAdministratorRights)
+
+-- | Use this method to get the current default administrator rights of the bot.
+-- Returns 'ChatAdministratorRights' on success.
+getMyDefaultAdministratorRights
+  :: GetMyDefaultAdministratorRightsRequest -> ClientM (Response ChatAdministratorRights)
+getMyDefaultAdministratorRights = client (Proxy @GetMyDefaultAdministratorRights)

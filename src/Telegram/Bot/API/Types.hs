@@ -171,10 +171,11 @@ data Message = Message
   , messageConnectedWebsite      :: Maybe Text -- ^ The domain name of the website on which the user has logged in.
   , messagePassportData          :: Maybe PassportData -- ^ Telegram Passport data.
   , messageProximityAlertTriggered :: Maybe ProximityAlertTriggered -- ^ Service message. A user in the chat triggered another user's proximity alert while sharing Live Location.
-  , messageVoiceChatScheduled    :: Maybe VoiceChatScheduled -- ^ Service message: voice chat scheduled.
-  , messageVoiceChatStarted      :: Maybe VoiceChatStarted -- ^ Service message: voice chat started
-  , messageVoiceChatEnded        :: Maybe VoiceChatEnded -- ^ Service message: voice chat ended.
-  , messageVoiceChatParticipantsInvited :: Maybe VoiceChatParticipantsInvited -- ^ Service message: new participants invited to a voice chat.
+  , messageVideoChatScheduled    :: Maybe VideoChatScheduled -- ^ Service message: video chat scheduled.
+  , messageVideoChatStarted      :: Maybe VideoChatStarted -- ^ Service message: video chat started
+  , messageVideoChatEnded        :: Maybe VideoChatEnded -- ^ Service message: video chat ended.
+  , messageVideoChatParticipantsInvited :: Maybe VideoChatParticipantsInvited -- ^ Service message: new participants invited to a video chat.
+  , messageWebAppData            :: Maybe WebAppData -- ^ Service message: data sent by a Web App.
   , messageReplyMarkup           :: Maybe InlineKeyboardMarkup -- ^ Inline keyboard attached to the message. `login_url` buttons are represented as ordinary `url` buttons.
   }
   deriving (Generic, Show)
@@ -436,31 +437,31 @@ data MessageAutoDeleteTimerChanged = MessageAutoDeleteTimerChanged
   }
   deriving (Generic, Show)
 
--- ** 'VoiceChatScheduled'
+-- ** 'VideoChatScheduled'
 
--- | This object represents a service message about a voice chat scheduled in the chat.
-data VoiceChatScheduled = VoiceChatScheduled
-  { voiceChatScheduledStartDate :: POSIXTime -- ^ Point in time (Unix timestamp) when the voice chat is supposed to be started by a chat administrator.
+-- | This object represents a service message about a video chat scheduled in the chat.
+data VideoChatScheduled = VideoChatScheduled
+  { videoChatScheduledStartDate :: POSIXTime -- ^ Point in time (Unix timestamp) when the video chat is supposed to be started by a chat administrator.
   }
   deriving (Generic, Show)
 
--- ** 'VoiceChatStarted'
+-- ** 'VideoChatStarted'
 
--- | This object represents a service message about a voice chat started in the chat. Currently holds no information.
-data VoiceChatStarted = VoiceChatStarted
+-- | This object represents a service message about a video chat started in the chat. Currently holds no information.
+data VideoChatStarted = VideoChatStarted
   deriving (Generic, Show)
 
--- ** 'VoiceChatEnded'
+-- ** 'VideoChatEnded'
 
--- | This object represents a service message about a voice chat ended in the chat.
-data VoiceChatEnded = VoiceChatEnded
-  { voiceChatEndedDuration :: Seconds -- ^ Voice chat duration in seconds.
+-- | This object represents a service message about a video chat ended in the chat.
+data VideoChatEnded = VideoChatEnded
+  { videoChatEndedDuration :: Seconds -- ^ Video chat duration in seconds.
   }
   deriving (Generic, Show)
 
--- ** 'VoiceChatParticipantsInvited'
-data VoiceChatParticipantsInvited = VoiceChatParticipantsInvited
-  { voiceChatParticipantsInvitedUsers :: Maybe [User] -- ^ New members that were invited to the voice chat.
+-- ** 'VideoChatParticipantsInvited'
+data VideoChatParticipantsInvited = VideoChatParticipantsInvited
+  { videoChatParticipantsInvitedUsers :: Maybe [User] -- ^ New members that were invited to the video chat.
   }
   deriving (Generic, Show)
 
@@ -470,6 +471,14 @@ data VoiceChatParticipantsInvited = VoiceChatParticipantsInvited
 data UserProfilePhotos = UserProfilePhotos
   { userProfilePhotosTotalCount :: Int -- ^ Total number of profile pictures the target user has
   , userProfilePhotosPhotos     :: [[PhotoSize]] -- ^ Requested profile pictures (in up to 4 sizes each)
+  }
+  deriving (Generic, Show)
+
+-- ** 'WebAppData'
+
+data WebAppData = WebAppData
+  { webAppDataData       :: Text -- ^ The data. Be aware that a bad client can send arbitrary data in this field.
+  , webAppDataButtonText :: Text -- ^ Text of the @web_app@ keyboard button, from which the Web App was opened. Be aware that a bad client can send arbitrary data in this field.
   }
   deriving (Generic, Show)
 
@@ -515,6 +524,9 @@ data ReplyKeyboardMarkup = ReplyKeyboardMarkup
 
 -- ** 'KeyboardButton'
 
+newtype WebAppInfo = WebAppInfo { webAppInfoUrl :: Text }
+  deriving (Generic, Show)
+
 -- | This object represents one button of the reply keyboard.
 -- For simple text buttons String can be used instead of this object
 -- to specify text of the button. Optional fields are mutually exclusive.
@@ -523,11 +535,39 @@ data KeyboardButton = KeyboardButton
   , keyboardButtonRequestContact  :: Maybe Bool -- ^ If 'True', the user's phone number will be sent as a contact when the button is pressed. Available in private chats only.
   , keyboardButtonRequestLocation :: Maybe Bool -- ^ If 'True', the user's current location will be sent when the button is pressed. Available in private chats only.
   , keyboardButtonRequestPoll     :: Maybe PollType -- ^ If specified, the user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only.
+  , keyboardButtonWebApp          :: Maybe WebAppInfo -- ^ If specified, the described Web App will be launched when the button is pressed. The Web App will be able to send a “web_app_data” service message. Available in private chats only.
   }
   deriving (Generic, Show)
 
 instance IsString KeyboardButton where
-  fromString s = KeyboardButton (fromString s) Nothing Nothing Nothing
+  fromString s = KeyboardButton (fromString s) Nothing Nothing Nothing Nothing
+
+-- ** 'MenuButton'
+
+-- | This object describes the bot's menu button in a private chat.
+-- If a menu button other than @MenuButtonDefault@ is set for a private chat, then it is applied in the chat. Otherwise the default menu button is applied. By default, the menu button opens the list of bot commands.
+data MenuButton
+  = MenuButtonCommands -- ^ Represents a menu button, which opens the bot's list of commands.
+  | MenuButtonWebApp -- ^ Represents a menu button, which launches a Web App.
+      { menuButtonWebAppText :: Text
+      , menuButtonWebAppWebApp :: WebAppInfo
+      } 
+  | MenuButtonDefault -- ^ Describes that no specific value for the menu button was set.
+  deriving Generic
+
+instance ToJSON MenuButton where
+  toJSON = \case
+    MenuButtonCommands ->
+      object $ addType "commands" []
+    MenuButtonWebApp txt wai ->
+      object $ addType "web_app" ["text" .= txt, "web_app_info" .= wai]
+    MenuButtonDefault ->
+      object $ addType "default" []
+
+instance FromJSON MenuButton where
+  parseJSON = gparseJSON
+
+-- ** 'PollType'
 
 data PollType =
   PollTypeQuiz | PollTypeRegular
@@ -577,6 +617,7 @@ data InlineKeyboardButton = InlineKeyboardButton
   { inlineKeyboardButtonText              :: Text -- ^ Label text on the button
   , inlineKeyboardButtonUrl               :: Maybe Text -- ^ HTTP url to be opened when button is pressed
   , inlineKeyboardButtonCallbackData      :: Maybe Text -- ^ Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes
+  , inlineKeyboardButtonWebApp            :: Maybe WebAppInfo -- ^ Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method @answerWebAppQuery@. Available only in private chats between a user and the bot.
   , inlineKeyboardButtonSwitchInlineQuery :: Maybe Text -- ^ If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot‘s username and the specified inline query in the input field. Can be empty, in which case just the bot’s username will be inserted.
   , inlineKeyboardButtonSwitchInlineQueryCurrentChat :: Maybe Text -- ^ If set, pressing the button will insert the bot‘s username and the specified inline query in the current chat's input field. Can be empty, in which case only the bot’s username will be inserted.
 
@@ -586,7 +627,7 @@ data InlineKeyboardButton = InlineKeyboardButton
   deriving (Generic, Show)
 
 labeledInlineKeyboardButton :: Text -> InlineKeyboardButton
-labeledInlineKeyboardButton label = InlineKeyboardButton label Nothing Nothing Nothing Nothing Nothing Nothing
+labeledInlineKeyboardButton label = InlineKeyboardButton label Nothing Nothing Nothing Nothing Nothing Nothing Nothing
 
 -- ** 'LoginUrl'
 
@@ -668,7 +709,23 @@ data ChatInviteLink = ChatInviteLink
   }
   deriving (Generic, Show)
 
+-- ** 'ChatAdministratorRights'
 
+-- | Represents the rights of an administrator in a chat.
+data ChatAdministratorRights = ChatAdministratorRights
+  { chatAdministratorRightsIsAnonymous         :: Bool -- ^ 'True', if the user's presence in the chat is hidden.
+  , chatAdministratorRightsCanManageChat       :: Bool -- ^ 'True', if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege.
+  , chatAdministratorRightsCanDeleteMessages   :: Bool -- ^ 'True', if the administrator can delete messages of other users.
+  , chatAdministratorRightsCanManageVideoChats :: Bool -- ^ 'True', if the administrator can manage video chats.
+  , chatAdministratorRightsCanRestrictMembers  :: Bool -- ^ 'True', if the administrator can restrict, ban or unban chat members.
+  , chatAdministratorRightsCanPromoteMembers   :: Bool -- ^ 'True', if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user).
+  , chatAdministratorRightsCanChangeInfo       :: Bool -- ^ 'True', if the user is allowed to change the chat title, photo and other settings.
+  , chatAdministratorRightsCanInviteUsers      :: Bool -- ^ 'True', if the user is allowed to invite new users to the chat.
+  , chatAdministratorRightsCanPostMessages     :: Maybe Bool -- ^ 'True', if the administrator can post in the channel; channels only.
+  , chatAdministratorRightsCanEditMessages     :: Maybe Bool -- ^ 'True', if the administrator can edit messages of other users and can pin messages; channels only.
+  , chatAdministratorRightsCanPinMessages      :: Maybe Bool -- ^ 'True', if the user is allowed to pin messages; groups and supergroups only
+  }
+  deriving (Generic, Show)
 
 -- ** 'ChatMember'
 
@@ -688,24 +745,24 @@ data ChatMember = ChatMember
   , chatMemberCanBeEdited           :: Maybe Bool -- ^ Administrators only. True, if the bot is allowed to edit administrator privileges of that user
   , chatMemberCanManageChat         :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege.
   , chatMemberCanDeleteMessages     :: Maybe Bool -- ^ Administrators only. True, if the administrator can delete messages of other users.
-  , chatMemberCanManageVoiceChats   :: Maybe Bool -- ^ Administrators only. True, if the administrator can manage voice chats
-  , chatMemberCanRestrictMembers    :: Maybe Bool -- ^ Administrators only. True, if the administrator can restrict, ban or unban chat members
-  , chatMemberCanPromoteMembers     :: Maybe Bool -- ^ Administrators only. True, if the administrator can add new administrators with a subset of his own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user)
-  , chatMemberCanChangeInfo         :: Maybe Bool -- ^ Administrators only. True, if the administrator can change the chat title, photo and other settings
-  , chatMemberCanPostMessages       :: Maybe Bool -- ^ Administrators only. True, if the administrator can post in the channel, channels only
-  , chatMemberCanEditMessages       :: Maybe Bool -- ^ Administrators only. True, if the administrator can edit messages of other users and can pin messages, channels only
+  , chatMemberCanManageVideoChats   :: Maybe Bool -- ^ Administrators only. True, if the administrator can manage video (previously, voice) chats.
+  , chatMemberCanRestrictMembers    :: Maybe Bool -- ^ Administrators only. True, if the administrator can restrict, ban or unban chat members.
+  , chatMemberCanPromoteMembers     :: Maybe Bool -- ^ Administrators only. True, if the administrator can add new administrators with a subset of his own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user).
+  , chatMemberCanChangeInfo         :: Maybe Bool -- ^ Administrators only. True, if the administrator can change the chat title, photo and other settings.
+  , chatMemberCanPostMessages       :: Maybe Bool -- ^ Administrators only. True, if the administrator can post in the channel, channels only.
+  , chatMemberCanEditMessages       :: Maybe Bool -- ^ Administrators only. True, if the administrator can edit messages of other users and can pin messages, channels only.
 
   -- administrator, restricted
-  , chatMemberCanInviteUsers        :: Maybe Bool -- ^ Administrators and restricted only. True, if the administrator can invite new users to the chat
-  , chatMemberCanPinMessages        :: Maybe Bool -- ^ Administrators and restricted only. True, if the administrator can pin messages, supergroups only
+  , chatMemberCanInviteUsers        :: Maybe Bool -- ^ Administrators and restricted only. True, if the administrator can invite new users to the chat.
+  , chatMemberCanPinMessages        :: Maybe Bool -- ^ Administrators and restricted only. True, if the administrator can pin messages, supergroups only.
 
   -- restricted
   , chatMemberIsMember              :: Maybe Bool -- ^ Restricted only. True, if the user is a member of the chat at the moment of the request.
-  , chatMemberCanSendMessages       :: Maybe Bool -- ^ Restricted only. True, if the user can send text messages, contacts, locations and venues
-  , chatMemberCanSendMediaMessages  :: Maybe Bool -- ^ Restricted only. True, if the user can send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages
+  , chatMemberCanSendMessages       :: Maybe Bool -- ^ Restricted only. True, if the user can send text messages, contacts, locations and venues.
+  , chatMemberCanSendMediaMessages  :: Maybe Bool -- ^ Restricted only. True, if the user can send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages.
   , chatMemberCanSendPolls          :: Maybe Bool -- ^ Restricted only. True, if the user is allowed to send polls.
-  , chatMemberCanSendOtherMessages  :: Maybe Bool -- ^ Restricted only. True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
-  , chatMemberCanAddWebPagePreviews :: Maybe Bool -- ^ Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages
+  , chatMemberCanSendOtherMessages  :: Maybe Bool -- ^ Restricted only. True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages.
+  , chatMemberCanAddWebPagePreviews :: Maybe Bool -- ^ Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages.
   }
   deriving (Generic, Show)
 
@@ -1083,6 +1140,7 @@ data BotCommandScope
 
 addType :: Text -> [Pair] -> [Pair]
 addType name xs = ("type" .= name) : xs
+
 instance ToJSON BotCommandScope where
   toJSON = \case
     BotCommandScopeDefault ->
@@ -1201,10 +1259,10 @@ foldMap deriveJSON'
   , ''PassportErrorSource
   , ''EncryptedCredentials
   , ''ProximityAlertTriggered
-  , ''VoiceChatScheduled
-  , ''VoiceChatStarted
-  , ''VoiceChatEnded
-  , ''VoiceChatParticipantsInvited
+  , ''VideoChatScheduled
+  , ''VideoChatStarted
+  , ''VideoChatEnded
+  , ''VideoChatParticipantsInvited
   , ''ChatPermissions
   , ''ChatLocation
   , ''StickerSet
@@ -1214,6 +1272,9 @@ foldMap deriveJSON'
   , ''ShippingOption
   , ''ShippingQuery
   , ''PreCheckoutQuery
+  , ''WebAppData
+  , ''WebAppInfo
+  , ''ChatAdministratorRights
   ]
 
 instance ToJSON InputMediaGeneric where toJSON = gtoJSON
@@ -1327,7 +1388,6 @@ instance ToMultipart Tmp InputMedia where
          \t -> Input "disable_content_type_detection" (bool "false" "true" t)
       ]) (toMultipart imgt)
 
-
 -- | Multipart file helper
 makeFile :: Text -> InputFile ->  MultipartData Tmp ->  MultipartData Tmp
 makeFile name (InputFile path ct) (MultipartData fields files) = 
@@ -1339,3 +1399,5 @@ makeFile name file (MultipartData fields files) =
   MultipartData 
     (Input name (TL.toStrict $ encodeToLazyText file) : fields) 
     files
+
+
