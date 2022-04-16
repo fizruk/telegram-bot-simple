@@ -1,3 +1,17 @@
+0.5
+---
+
+- Add `MarkdownV2` to `ParseMode` haddock suggestion (see [#110](https://github.com/fizruk/telegram-bot-simple/pull/110));
+- Make package complaint with Telegram Bot API 6.0 (breaking changes included) (see [#112](https://github.com/fizruk/telegram-bot-simple/pull/112)):
+
+    - `WebAppInfo` data type added. `KeyboardButton`, `InlineKeyboardButton` extended with `web_app` record.
+    - `SentWebAppMessage` data type added. `answerWebAppQuery` method added.
+    - `MenuButton` data type added. `setChatMenuButton`, `getChatMenuButton` methods added.
+    - `ChatAdministratorRights` data type added. `setMyDefaultAdministratorRights`, `getMyDefaultAdministratorRights` methods added.
+    - :warning: `ChatMember` records changed: `can_manage_voice_chats` renamed to `can_manage_video_chat`.
+    - :warning: `PromoteChatMemberRequest` records changed: `can_manage_voice_chats` renamed to `can_manage_video_chats`.
+    - :warning: `Message` records changed: `voice_chat_scheduled`, `voice_chat_started`, `voice_chat_ended`, and `voice_chat_participants_invited` renamed to `video_chat_scheduled`, `video_chat_started`, `video_chat_ended`, and `video_chat_participants_invited` correspondingly.
+
 0.4.5
 ---
 
