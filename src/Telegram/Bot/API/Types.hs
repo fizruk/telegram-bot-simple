@@ -1108,6 +1108,15 @@ data GameHighScore = GameHighScore
   }
   deriving (Generic, Show)
 
+-- ** 'CopyMessageId'
+
+-- | This object represents result of copyMessage request.
+data CopyMessageId = CopyMessageId
+  { copyMessageIdMessageId :: MessageId -- ^ the MessageId of the sent message.
+  }
+  deriving (Generic, Show)
+
+
 -- | Unique identifier for the target chat
 -- or username of the target channel (in the format @\@channelusername@).
 data SomeChatId
@@ -1275,6 +1284,7 @@ foldMap deriveJSON'
   , ''WebAppData
   , ''WebAppInfo
   , ''ChatAdministratorRights
+  , ''CopyMessageId
   ]
 
 instance ToJSON InputMediaGeneric where toJSON = gtoJSON
