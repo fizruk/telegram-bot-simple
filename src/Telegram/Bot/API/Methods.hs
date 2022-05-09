@@ -1372,7 +1372,7 @@ foldMap deriveJSON'
 type CopyMessage
   = "copyMessage"
   :> ReqBody '[JSON] CopyMessageRequest
-  :> Post '[JSON] (Response MessageId)
+  :> Post '[JSON] (Response CopyMessageId)
 
 -- | Use this method to copy messages of any kind.
 --   Service messages and invoice messages can't be
@@ -1380,7 +1380,7 @@ type CopyMessage
 --   forwardMessage, but the copied message doesn't
 --   have a link to the original message.
 --   Returns the MessageId of the sent message on success.
-copyMessage :: CopyMessageRequest ->  ClientM (Response MessageId)
+copyMessage :: CopyMessageRequest ->  ClientM (Response CopyMessageId)
 copyMessage = client (Proxy @CopyMessage)
 
 type SendLocation = "sendLocation"
