@@ -1,7 +1,7 @@
 0.5.1
 ---
 
-- Fix Haddock inconsistency around `ParseMode` (see [#114](https://github.com/fizruk/telegram-bot-simple/pull/114));
+- Fix inconsistency around `ParseMode` (see [#114](https://github.com/fizruk/telegram-bot-simple/pull/114));
 - Fix `copyMessage` method (see [#116](https://github.com/fizruk/telegram-bot-simple/pull/116));
 - Add CI via GitHub Actions (see [#119](https://github.com/fizruk/telegram-bot-simple/pull/119));
 - Fix GHC 9.0 compilation regression (see [#120](https://github.com/fizruk/telegram-bot-simple/pull/120));
