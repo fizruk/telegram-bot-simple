@@ -555,18 +555,6 @@ data MenuButton
   | MenuButtonDefault -- ^ Describes that no specific value for the menu button was set.
   deriving Generic
 
-instance ToJSON MenuButton where
-  toJSON = \case
-    MenuButtonCommands ->
-      object $ addType "commands" []
-    MenuButtonWebApp txt wai ->
-      object $ addType "web_app" ["text" .= txt, "web_app_info" .= wai]
-    MenuButtonDefault ->
-      object $ addType "default" []
-
-instance FromJSON MenuButton where
-  parseJSON = gparseJSON
-
 -- ** 'PollType'
 
 data PollType =
@@ -1410,4 +1398,14 @@ makeFile name file (MultipartData fields files) =
     (Input name (TL.toStrict $ encodeToLazyText file) : fields) 
     files
 
+instance ToJSON MenuButton where
+  toJSON = \case
+    MenuButtonCommands ->
+      object $ addType "commands" []
+    MenuButtonWebApp txt wai ->
+      object $ addType "web_app" ["text" .= txt, "web_app_info" .= wai]
+    MenuButtonDefault ->
+      object $ addType "default" []
 
+instance FromJSON MenuButton where
+  parseJSON = gparseJSON
