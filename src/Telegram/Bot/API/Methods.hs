@@ -157,7 +157,7 @@ data SendDocumentRequest = SendDocumentRequest
   , sendDocumentDocument :: DocumentFile -- ^ Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
   , sendDocumentThumb :: Maybe FilePath -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
   , sendDocumentCaption :: Maybe Text -- ^ Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
-  , sendDocumentParseMode :: Maybe ParseMode -- ^ Mode for parsing entities in the document caption.
+  , sendDocumentParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendDocumentCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
   , sendDocumentDisableContentTypeDetection :: Maybe Bool -- ^ Disables automatic server-side content type detection for files uploaded using @multipart/form-data@.
   , sendDocumentDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
@@ -267,7 +267,7 @@ data SendPhotoRequest = SendPhotoRequest
   , sendPhotoPhoto :: PhotoFile -- ^ Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
   , sendPhotoThumb :: Maybe FilePath -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
   , sendPhotoCaption :: Maybe Text -- ^ Photo caption (may also be used when resending Photos by file_id), 0-1024 characters after entities parsing
-  , sendPhotoParseMode :: Maybe ParseMode -- ^ Mode for parsing entities in the Photo caption.
+  , sendPhotoParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendPhotoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
   , sendPhotoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendPhotoProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.  
@@ -320,7 +320,7 @@ data CopyMessageRequest = CopyMessageRequest
   , copyMessageFromChatId :: SomeChatId -- ^ Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
   , copyMessageMessageId :: MessageId -- ^ Message identifier in the chat specified in from_chat_id
   , copyMessageCaption :: Maybe Text -- ^ New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
-  , copyMessageParseMode :: Maybe Text -- ^ Mode for parsing entities in the new caption. See formatting options for more details.
+  , copyMessageParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , copyMessageCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
   , copyMessageDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , copyMessageProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
@@ -339,7 +339,7 @@ data SendAudioRequest = SendAudioRequest
   , sendAudioTitle :: Maybe Text -- ^ Track name
   , sendAudioThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
   , sendAudioCaption :: Maybe Text -- ^ Audio caption (may also be used when resending audios by file_id), 0-1024 characters after entities parsing
-  , sendAudioParseMode :: Maybe Text -- ^ Mode for parsing entities in the audio caption. See formatting options for more details.
+  , sendAudioParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendAudioCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
   , sendAudioDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendAudioProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
@@ -364,7 +364,7 @@ instance ToMultipart Tmp SendAudioRequest where
       [ sendAudioCaption <&>
         \t -> Input "caption" t
       , sendAudioParseMode <&>
-        \t -> Input "parse_mode" t
+        \t -> Input "parse_mode" (TL.toStrict $ encodeToLazyText t)
       , sendAudioCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendAudioDuration <&>
@@ -423,7 +423,7 @@ data SendVideoRequest = SendVideoRequest
   , sendVideoHeight :: Maybe Int -- ^ Video height
   , sendVideoThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
   , sendVideoCaption :: Maybe Text -- ^ Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
-  , sendVideoParseMode :: Maybe Text -- ^ Mode for parsing entities in the video caption. See formatting options for more details.
+  , sendVideoParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendVideoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
   , sendVideoSupportsStreaming :: Maybe Bool -- ^ Pass True, if the uploaded video is suitable for streaming
   , sendVideoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
@@ -449,7 +449,7 @@ instance ToMultipart Tmp SendVideoRequest where
       [ sendVideoCaption <&>
         \t -> Input "caption" t
       , sendVideoParseMode <&>
-        \t -> Input "parse_mode" t
+        \t -> Input "parse_mode" (TL.toStrict $ encodeToLazyText t)
       , sendVideoCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendVideoDuration <&>
@@ -507,7 +507,7 @@ data SendAnimationRequest = SendAnimationRequest
   , sendAnimationHeight :: Maybe Int -- ^ Animation height
   , sendAnimationThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
   , sendAnimationCaption :: Maybe Text -- ^ Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
-  , sendAnimationParseMode :: Maybe Text -- ^ Mode for parsing entities in the animation caption. See formatting options for more details.
+  , sendAnimationParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendAnimationCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
   , sendAnimationDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendAnimationProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
@@ -532,7 +532,7 @@ instance ToMultipart Tmp SendAnimationRequest where
       [ sendAnimationCaption <&>
         \t -> Input "caption" t
       , sendAnimationParseMode <&>
-        \t -> Input "parse_mode" t
+        \t -> Input "parse_mode" (TL.toStrict $ encodeToLazyText t)
       , sendAnimationCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendAnimationDuration <&>
@@ -583,7 +583,7 @@ data SendVoiceRequest = SendVoiceRequest
   { sendVoiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
   , sendVoiceVoice :: InputFile -- ^ Audio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More info on Sending Files »
   , sendVoiceCaption :: Maybe Text -- ^ Voice message caption, 0-1024 characters after entities parsing
-  , sendVoiceParseMode :: Maybe Text -- ^ Mode for parsing entities in the voice message caption. See formatting options for more details.
+  , sendVoiceParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendVoiceCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
   , sendVoiceDuration :: Maybe Int -- ^ Duration of the voice message in seconds
   , sendVoiceDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
@@ -608,7 +608,7 @@ instance ToMultipart Tmp SendVoiceRequest where
       [ sendVoiceCaption <&>
         \t -> Input "caption" t
       , sendVoiceParseMode <&>
-        \t -> Input "parse_mode" t
+        \t -> Input "parse_mode" (TL.toStrict $ encodeToLazyText t)
       , sendVoiceCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendVoiceDuration <&>
@@ -824,7 +824,7 @@ data SendPollRequest = SendPollRequest
   , sendPollAllowsMultipleAnswers :: Maybe Bool -- ^ True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
   , sendPollCorrectOptionId :: Maybe Int -- ^ 0-based identifier of the correct answer option, required for polls in quiz mode
   , sendPollExplanation :: Maybe Text -- ^ Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing
-  , sendPollExplanationParseMode :: Maybe Text -- ^ Mode for parsing entities in the explanation. See formatting options for more details.
+  , sendPollExplanationParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendPollExplanationEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the poll explanation, which can be specified instead of parse_mode
   , sendPollOpenPeriod :: Maybe Int -- ^ Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date.
   , sendPollCloseDate :: Maybe Int -- ^ Point in time (Unix timestamp) when the poll will be automatically closed. Must be at least 5 and no more than 600 seconds in the future. Can't be used together with open_period.
