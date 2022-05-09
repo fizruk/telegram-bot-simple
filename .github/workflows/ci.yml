@@ -1,0 +1,41 @@
+name: ci
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  cabal:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        ghc: ["8.6.5", "8.8.4", "8.10.7", "9.0.2"]
+        cabal: ["3.6.2.0"]
+        os: [ubuntu-latest, macOS-latest]
+    name: build and test (cabal)
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Haskell
+        uses: haskell/actions/setup@v1
+        with:
+          ghc-version: ${{ matrix.ghc }}
+          cabal-version: ${{ matrix.cabal }}
+      - run: |
+          cabal build --enable-tests && cabal test
+
+  stack:
+    name: build and test (stack)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: haskell/actions/setup@v1
+        with:
+          ghc-version: "9.0.2"
+          enable-stack: true
+          stack-version: "latest"
+      - run: |
+          stack build && stack test
