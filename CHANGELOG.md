@@ -1,7 +1,7 @@
 0.5.2
 ---
 
-- `text` helper from `UpdateParser` module fixed, `commandWithBotName` added (see [#121](https://github.com/fizruk/telegram-bot-simple/pull/121));
+- Helpers from `UpdateParser` module fixed, `commandWithBotName` added (see [#121](https://github.com/fizruk/telegram-bot-simple/pull/121));
 
 0.5.1
 ---
