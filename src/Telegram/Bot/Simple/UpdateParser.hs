@@ -48,7 +48,7 @@ parseUpdate :: UpdateParser a -> Update -> Maybe a
 parseUpdate = runUpdateParser
 
 text :: UpdateParser Text
-text = UpdateParser (updateMessage >=> messageText)
+text = UpdateParser (extractUpdateMessage >=> messageText)
 
 plainText :: UpdateParser Text
 plainText = do
@@ -62,6 +62,14 @@ command name = do
   t <- text
   case Text.words t of
     (w:ws) | w == "/" <> name
+      -> pure (Text.unwords ws)
+    _ -> fail "not that command"
+
+commandWithBotName :: Text -> Text -> UpdateParser Text
+commandWithBotName botname commandname = do
+  t <- text
+  case Text.words t of
+    (w:ws)| w `elem` ["/" <> commandname <> "@" <> botname, "/" <> commandname]
       -> pure (Text.unwords ws)
     _ -> fail "not that command"
 
