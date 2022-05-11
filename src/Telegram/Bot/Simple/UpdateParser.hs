@@ -80,8 +80,8 @@ callbackQueryDataRead = mkParser $ \update -> do
   readMaybe (Text.unpack data_)
 
 updateMessageText :: Update -> Maybe Text
-updateMessageText = updateMessage >=> messageText
+updateMessageText = extractUpdateMessage >=> messageText
 
 
 updateMessageSticker :: Update -> Maybe Sticker
-updateMessageSticker = updateMessage >=> messageSticker 
+updateMessageSticker = extractUpdateMessage >=> messageSticker
