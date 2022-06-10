@@ -287,7 +287,7 @@ instance ToMultipart Tmp SendPhotoRequest where
       ] <>
       (   (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendPhotoThumb)
         $ (maybe id (\t -> ((Input "caption" t):)) sendPhotoCaption)
-        $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoParseMode)
+        $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)):)) sendPhotoParseMode)
         $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoCaptionEntities)
         $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendPhotoDisableNotification)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyToMessageId)
