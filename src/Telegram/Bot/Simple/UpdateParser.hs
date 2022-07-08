@@ -11,11 +11,13 @@ import           Control.Monad.Reader
 import           Data.Monoid                     ((<>))
 #endif
 #endif
+import qualified Data.Char            as Char
 import           Data.Text            (Text)
 import qualified Data.Text            as Text
 import           Text.Read            (readMaybe)
 
 import           Telegram.Bot.API
+
 
 newtype UpdateParser a = UpdateParser
   { runUpdateParser :: Update -> Maybe a
@@ -60,18 +62,18 @@ plainText = do
 command :: Text -> UpdateParser Text
 command name = do
   t <- text
-  case Text.words t of
-    (w:ws) | w == "/" <> name
-      -> pure (Text.unwords ws)
-    _ -> fail "not that command"
+  let (cmd, rest) = Text.break Char.isSpace t
+  if cmd == "/" <> name
+    then pure $ Text.stripStart rest
+    else fail "not that command"
 
 commandWithBotName :: Text -> Text -> UpdateParser Text
 commandWithBotName botname commandname = do
   t <- text
-  case Text.words t of
-    (w:ws)| w `elem` ["/" <> commandname <> "@" <> botname, "/" <> commandname]
-      -> pure (Text.unwords ws)
-    _ -> fail "not that command"
+  let (cmd, rest) = Text.break Char.isSpace t
+  if cmd `elem` ["/" <> commandname <> "@" <> botname, "/" <> commandname]
+    then pure $ Text.stripStart rest
+    else fail "not that command"
 
 callbackQueryDataRead :: Read a => UpdateParser a
 callbackQueryDataRead = mkParser $ \update -> do
