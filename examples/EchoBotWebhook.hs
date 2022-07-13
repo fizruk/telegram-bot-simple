@@ -74,11 +74,11 @@ handleAction action model = case action of
 run :: Token -> IO ()
 run token = do
   env <- defaultTelegramClientEnv token
-  startBotWebHooks bot tlsOpts warpOpts certFile env
+  startBotWebHooks_ bot tlsOpts warpOpts certFile env
   where 
     bot = conversationBot updateChatId todoBot3
     tlsOpts = tlsSettings "cert.pem" "key.pem"
-    warpOpts = setPort 8443 defaultSettings
+    warpOpts = setPort 8443 $ setHost "127.0.0.1" defaultSettings
     certFile = Just $ InputFile "cert.pem" "application/x-pem-file"
 
 main :: IO ()
