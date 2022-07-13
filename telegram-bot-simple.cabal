@@ -136,6 +136,47 @@ executable example-echo-bot
     buildable: False
   default-language: Haskell2010
 
+executable example-echo-bot-webhook
+  main-is: examples/EchoBotWebhook.hs
+  other-modules:
+      Paths_telegram_bot_simple
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.9 && <5
+    , bytestring
+    , cron >=0.7.0
+    , filepath
+    , hashable
+    , http-api-data
+    , http-client
+    , http-client-tls
+    , monad-control
+    , mtl
+    , pretty-show
+    , profunctors
+    , servant
+    , servant-client
+    , servant-multipart-api
+    , servant-multipart-client
+    , servant-server
+    , split
+    , stm
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , unordered-containers
+    , warp
+    , warp-tls
+  if flag(examples)
+    build-depends:
+        telegram-bot-simple
+  else
+    buildable: False
+  default-language: Haskell2010
+
 executable example-game-bot
   main-is: examples/GameBot.hs
   other-modules:
