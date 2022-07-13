@@ -8,6 +8,8 @@ module Telegram.Bot.Simple.BotApp (
   startBotAsync,
   startBotAsync_,
 
+  startBotWebHooks,
+
   getEnvToken,
 ) where
 
@@ -19,6 +21,11 @@ import           System.Environment                  (getEnv)
 
 import qualified Telegram.Bot.API                    as Telegram
 import           Telegram.Bot.Simple.BotApp.Internal
+import           Network.Wai.Handler.WarpTLS
+import           Network.Wai.Handler.Warp
+import           Telegram.Bot.API.WebHooks(setUpWebhook, webhookApp, deleteWebhook)
+import           Data.Either (isLeft)
+import           Control.Exception (finally)
 
 -- | Start bot with asynchronous polling.
 -- The result is a function that allows you to send actions
@@ -44,6 +51,19 @@ startBot bot env = do
 -- | Like 'startBot', but ignores result.
 startBot_ :: BotApp model action -> ClientEnv -> IO ()
 startBot_ bot = void . startBot bot
+
+-- | Start bot with webhook on update in the main thread.
+-- Port must be one of 443, 80, 88, 8443
+-- certPath must be provided if using self signed certificate.
+startBotWebHooks :: BotApp model action -> TLSSettings -> Settings -> Maybe Telegram.InputFile -> ClientEnv -> IO (Either ClientError ())
+startBotWebHooks bot tlsOpts warpOpts certPath env= do
+  botEnv <- startBotEnv bot env
+  res <- setUpWebhook warpOpts certPath env
+  if isLeft res
+    then return res
+    else Right <$> runTLS tlsOpts warpOpts (webhookApp botEnv)
+  `finally`
+    deleteWebhook env
 
 -- | Get a 'Telegram.Token' from environment variable.
 --
