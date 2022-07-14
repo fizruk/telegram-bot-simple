@@ -9,7 +9,13 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Telegram.Bot.API.WebHooks (setUpWebhook, webhookApp, deleteWebhook) where
+module Telegram.Bot.API.WebHooks
+  ( setUpWebhook,
+    webhookApp,
+    deleteWebhook,
+    SetWebhookRequest (..),
+  )
+where
 
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM
@@ -17,7 +23,7 @@ import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Aeson (ToJSON (toJSON))
 import Data.Bool (bool)
 import Data.Functor (void, (<&>))
-import Data.Maybe (catMaybes, fromJust)
+import Data.Maybe (catMaybes, fromJust, isJust)
 import qualified Data.Text as Text
 import GHC.Generics (Generic)
 import Network.Wai.Handler.Warp (Settings)
@@ -101,26 +107,15 @@ type SetWebhookJson =
 type DeleteWebhook =
   "deleteWebhook" :> ReqBody '[JSON] DeleteWebhookRequest :> Get '[JSON] (Response Bool)
 
-setUpWebhook :: Settings -> Maybe InputFile -> String -> ClientEnv -> IO (Either ClientError ())
-setUpWebhook warpOpts certFile ip = (void <$>) <$> runClientM setUpWebhookRequest
+setUpWebhook :: SetWebhookRequest -> ClientEnv -> IO (Either ClientError ())
+setUpWebhook requestData = (void <$>) <$> runClientM setUpWebhookRequest
   where
-    port = settingsPort warpOpts
-    url = "https://" ++ ip ++ ":" ++ show port
-    requestData =
-      SetWebhookRequest
-        { setWebhookUrl = url,
-          setWebhookCertificate = certFile,
-          setWebhookIpAddress = Nothing,
-          setWebhookMaxConnections = Nothing,
-          setWebhookAllowedUpdates = Nothing,
-          setWebhookDropPendingUpdates = Nothing,
-          setWebhookSecretToken = Nothing
-        }
-    setUpWebhookRequest = case certFile of
-      Just _ -> do
-        boundary <- liftIO genBoundary
-        client (Proxy @SetWebhookForm) (boundary, requestData)
-      Nothing -> client (Proxy @SetWebhookJson) requestData
+    setUpWebhookRequest =
+      if isJust $ setWebhookCertificate requestData
+        then do
+          boundary <- liftIO genBoundary
+          client (Proxy @SetWebhookForm) (boundary, requestData)
+        else client (Proxy @SetWebhookJson) requestData
 
 deleteWebhook :: ClientEnv -> IO (Either ClientError ())
 deleteWebhook = (void <$>) <$> runClientM deleteWebhookRequest

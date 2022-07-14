@@ -1,6 +1,8 @@
+{-# LANGUAGE RecordWildCards #-}
 module Telegram.Bot.Simple.BotApp (
   BotApp(..),
   BotJob(..),
+  WebhookConfig(..),
 
   startBot,
   startBot_,
@@ -24,7 +26,7 @@ import qualified Telegram.Bot.API                    as Telegram
 import           Telegram.Bot.Simple.BotApp.Internal
 import           Network.Wai.Handler.WarpTLS
 import           Network.Wai.Handler.Warp
-import           Telegram.Bot.API.WebHooks(setUpWebhook, webhookApp, deleteWebhook)
+import           Telegram.Bot.API.WebHooks(setUpWebhook, webhookApp, deleteWebhook, SetWebhookRequest)
 import           Data.Either (isLeft)
 import           Control.Exception (finally)
 
@@ -53,23 +55,29 @@ startBot bot env = do
 startBot_ :: BotApp model action -> ClientEnv -> IO ()
 startBot_ bot = void . startBot bot
 
+data WebhookConfig = WebhookConfig 
+  { webhookConfigTlsSettings         :: TLSSettings,
+    webhookConfigTlsWarpSettings     :: Settings,
+    webhookConfigSetWebhookRequest   :: SetWebhookRequest
+  }
+
 -- | Start bot with webhook on update in the main thread.
 -- Port must be one of 443, 80, 88, 8443
 -- certPath must be provided if using self signed certificate.
-startBotWebHooks :: BotApp model action -> TLSSettings -> Settings -> Maybe Telegram.InputFile -> String -> ClientEnv -> IO (Either ClientError ())
-startBotWebHooks bot tlsOpts warpOpts certPath ip env = do
+startBotWebHooks :: BotApp model action -> WebhookConfig -> ClientEnv -> IO (Either ClientError ())
+startBotWebHooks bot (WebhookConfig{..}) env = do
   botEnv <- startBotEnv bot env
-  res <- setUpWebhook warpOpts certPath ip env
+  res <- setUpWebhook webhookConfigSetWebhookRequest env
   if isLeft res
     then return res
-    else Right <$> runTLS tlsOpts warpOpts (webhookApp bot botEnv)
+    else Right <$> runTLS webhookConfigTlsSettings webhookConfigTlsWarpSettings (webhookApp bot botEnv)
   `finally`
     deleteWebhook env
 
 
 -- | Like 'startBotWebHooks', but ignores result.
-startBotWebHooks_ :: BotApp model action -> TLSSettings -> Settings -> Maybe Telegram.InputFile -> String -> ClientEnv -> IO ()
-startBotWebHooks_ bot tlsOpts warpOpts certPath ip = void . startBotWebHooks bot tlsOpts warpOpts certPath ip
+startBotWebHooks_ :: BotApp model action -> WebhookConfig -> ClientEnv -> IO ()
+startBotWebHooks_ bot webhookConfig = void . startBotWebHooks bot webhookConfig
 
 -- | Get a 'Telegram.Token' from environment variable.
 --

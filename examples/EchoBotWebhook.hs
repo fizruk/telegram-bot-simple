@@ -63,14 +63,15 @@ import qualified Data.Text                        as Text
 import           Data.Maybe
 
 import           Telegram.Bot.API
+import           Telegram.Bot.API.WebHooks
 import           Telegram.Bot.Simple
+import           Telegram.Bot.Simple.BotApp (WebhookConfig(WebhookConfig))
 import           Telegram.Bot.Simple.UpdateParser (updateMessageText, updateMessageSticker)
 import           Telegram.Bot.API.InlineMode.InlineQueryResult
 import           Telegram.Bot.API.InlineMode.InputMessageContent (defaultInputTextMessageContent)
 
 import           Network.Wai.Handler.Warp (setPort, setHost, defaultSettings, Port)
 import           Network.Wai.Handler.WarpTLS (tlsSettings, TLSSettings (onInsecure), OnInsecure (AllowInsecure))
-
 
 type Model = ()
 
@@ -135,13 +136,29 @@ handleAction action model = case action of
 run :: Token -> FilePath -> FilePath -> Port -> String -> IO ()
 run token certPath keyPath port ip = do
   env <- defaultTelegramClientEnv token
-  res <- startBotWebHooks bot tlsOpts warpOpts certFile ip env
+  res <- startBotWebHooks bot config env
   print res
   where 
     bot = conversationBot updateChatId echoBot
     tlsOpts = (tlsSettings certPath keyPath) {onInsecure = AllowInsecure}
     warpOpts = setPort port $ setHost "0.0.0.0" defaultSettings
     certFile = Just $ InputFile certPath "application/x-pem-file"
+    url = "https://" ++ ip ++ ":" ++ show port
+    config = WebhookConfig
+               { webhookConfigTlsSettings       = tlsOpts,
+                 webhookConfigTlsWarpSettings   = warpOpts,
+                 webhookConfigSetWebhookRequest = requestData
+               } 
+    requestData =
+      SetWebhookRequest
+        { setWebhookUrl                 = url,
+          setWebhookCertificate         = certFile,
+          setWebhookIpAddress           = Nothing,
+          setWebhookMaxConnections      = Nothing,
+          setWebhookAllowedUpdates      = Just ["message"],
+          setWebhookDropPendingUpdates  = Nothing,
+          setWebhookSecretToken         = Nothing
+        }
 
 main :: IO ()
 main = do
