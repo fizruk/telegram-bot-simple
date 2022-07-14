@@ -1,6 +1,6 @@
+{-# LANGUAGE CPP               #-}
 {-# LANGUAGE DeriveFunctor     #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE CPP #-}
 module Telegram.Bot.Simple.UpdateParser where
 
 import           Control.Applicative
@@ -8,7 +8,7 @@ import           Control.Monad.Reader
 #if defined(MIN_VERSION_GLASGOW_HASKELL)
 #if MIN_VERSION_GLASGOW_HASKELL(8,6,2,0)
 #else
-import           Data.Monoid                     ((<>))
+import           Data.Monoid          ((<>))
 #endif
 #endif
 import           Data.Text            (Text)
