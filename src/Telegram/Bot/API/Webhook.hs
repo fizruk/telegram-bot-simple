@@ -1,13 +1,13 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeApplications      #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Telegram.Bot.API.Webhook
   ( setUpWebhook,
@@ -17,29 +17,26 @@ module Telegram.Bot.API.Webhook
   )
 where
 
-import Control.Concurrent (forkIO)
-import Control.Concurrent.STM
-import Control.Monad.IO.Class (MonadIO (liftIO))
-import Data.Aeson (ToJSON (toJSON))
-import Data.Bool (bool)
-import Data.Functor (void, (<&>))
-import Data.Maybe (catMaybes, fromJust, isJust)
-import qualified Data.Text as Text
-import GHC.Generics (Generic)
-import Servant
-import Servant.Client
-  ( ClientEnv,
-    ClientError,
-    client,
-    runClientM,
-  )
-import Servant.Multipart.API
-import Servant.Multipart.Client (genBoundary)
-import Telegram.Bot.API.GettingUpdates (Update)
-import Telegram.Bot.API.Internal.Utils (gtoJSON)
-import Telegram.Bot.API.MakingRequests (Response)
-import Telegram.Bot.API.Types (InputFile, makeFile)
-import Telegram.Bot.Simple.BotApp.Internal
+import           Control.Concurrent                  (forkIO)
+import           Control.Concurrent.STM
+import           Control.Monad.IO.Class              (MonadIO (liftIO))
+import           Data.Aeson                          (ToJSON (toJSON))
+import           Data.Bool                           (bool)
+import           Data.Functor                        (void, (<&>))
+import           Data.Maybe                          (catMaybes, fromJust,
+                                                      isJust)
+import qualified Data.Text                           as Text
+import           GHC.Generics                        (Generic)
+import           Servant
+import           Servant.Client                      (ClientEnv, ClientError,
+                                                      client, runClientM)
+import           Servant.Multipart.API
+import           Servant.Multipart.Client            (genBoundary)
+import           Telegram.Bot.API.GettingUpdates     (Update)
+import           Telegram.Bot.API.Internal.Utils     (gtoJSON)
+import           Telegram.Bot.API.MakingRequests     (Response)
+import           Telegram.Bot.API.Types              (InputFile, makeFile)
+import           Telegram.Bot.Simple.BotApp.Internal
 
 type WebhookAPI = ReqBody '[JSON] Update :> Post '[JSON] ()
 
@@ -52,7 +49,7 @@ server BotApp {..} botEnv@BotEnv {..} =
     handleUpdate update = liftIO . void . forkIO $ do
       maction <- botAction update <$> readTVarIO botModelVar
       case maction of
-        Nothing -> return ()
+        Nothing     -> return ()
         Just action -> issueAction botEnv (Just update) (Just action)
 
 webhookAPI :: Proxy WebhookAPI
@@ -62,13 +59,13 @@ app :: BotApp model action -> BotEnv model action -> Application
 app botApp botEnv = serve webhookAPI $ server botApp botEnv
 
 data SetWebhookRequest = SetWebhookRequest
-  { setWebhookUrl :: String,
-    setWebhookCertificate :: Maybe InputFile,
-    setWebhookIpAddress :: Maybe String,
-    setWebhookMaxConnections :: Maybe Int,
-    setWebhookAllowedUpdates :: Maybe [String],
+  { setWebhookUrl                :: String,
+    setWebhookCertificate        :: Maybe InputFile,
+    setWebhookIpAddress          :: Maybe String,
+    setWebhookMaxConnections     :: Maybe Int,
+    setWebhookAllowedUpdates     :: Maybe [String],
     setWebhookDropPendingUpdates :: Maybe Bool,
-    setWebhookSecretToken :: Maybe String
+    setWebhookSecretToken        :: Maybe String
   }
   deriving (Generic)
 

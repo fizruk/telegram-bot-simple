@@ -1,20 +1,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import           Data.Text                        (Text)
-import qualified Data.Text                        as Text
 import           Data.Maybe
+import           Data.Text                                       (Text)
+import qualified Data.Text                                       as Text
 
 import           Telegram.Bot.API
-import           Telegram.Bot.API.Webhook
-import           Telegram.Bot.Simple
-import           Telegram.Bot.Simple.BotApp (WebhookConfig(WebhookConfig))
-import           Telegram.Bot.Simple.UpdateParser (updateMessageText, updateMessageSticker)
 import           Telegram.Bot.API.InlineMode.InlineQueryResult
 import           Telegram.Bot.API.InlineMode.InputMessageContent (defaultInputTextMessageContent)
+import           Telegram.Bot.API.Webhook
+import           Telegram.Bot.Simple
+import           Telegram.Bot.Simple.BotApp                      (WebhookConfig (WebhookConfig))
+import           Telegram.Bot.Simple.UpdateParser                (updateMessageSticker,
+                                                                  updateMessageText)
 
-import           Network.Wai.Handler.Warp (setPort, defaultSettings, Port)
-import           Network.Wai.Handler.WarpTLS (tlsSettings, TLSSettings (onInsecure), OnInsecure (AllowInsecure))
+import           Network.Wai.Handler.Warp                        (Port,
+                                                                  defaultSettings,
+                                                                  setPort)
+import           Network.Wai.Handler.WarpTLS                     (OnInsecure (AllowInsecure),
+                                                                  TLSSettings (onInsecure),
+                                                                  tlsSettings)
 
 type Model = ()
 
@@ -62,15 +67,15 @@ handleAction action model = case action of
     _ <- liftClientM (answerInlineQuery answerInlineQueryRequest)
     return ()
   StickerEcho file chat -> model <# do
-    _ <- liftClientM 
-      (sendSticker 
-        (SendStickerRequest 
-          (SomeChatId chat) 
-          file 
+    _ <- liftClientM
+      (sendSticker
+        (SendStickerRequest
+          (SomeChatId chat)
+          file
           Nothing
           Nothing
-          Nothing 
-          Nothing 
+          Nothing
+          Nothing
           Nothing))
     return ()
   Echo msg -> model <# do
@@ -81,7 +86,7 @@ run token certPath keyPath port ip = do
   env <- defaultTelegramClientEnv token
   res <- startBotWebhook bot config env
   print res
-  where 
+  where
     bot = conversationBot updateChatId echoBot
     tlsOpts = (tlsSettings certPath keyPath) {onInsecure = AllowInsecure}
     warpOpts = setPort port defaultSettings
@@ -91,7 +96,7 @@ run token certPath keyPath port ip = do
                { webhookConfigTlsSettings       = tlsOpts,
                  webhookConfigTlsWarpSettings   = warpOpts,
                  webhookConfigSetWebhookRequest = requestData
-               } 
+               }
     requestData =
       SetWebhookRequest
         { setWebhookUrl                 = url,

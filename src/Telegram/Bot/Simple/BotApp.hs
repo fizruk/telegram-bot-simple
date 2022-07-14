@@ -22,13 +22,15 @@ import           Data.String                         (fromString)
 import           Servant.Client
 import           System.Environment                  (getEnv)
 
-import qualified Telegram.Bot.API                    as Telegram
-import           Telegram.Bot.Simple.BotApp.Internal
-import           Network.Wai.Handler.WarpTLS
+import           Control.Exception                   (finally)
+import           Data.Either                         (isLeft)
 import           Network.Wai.Handler.Warp
-import           Telegram.Bot.API.Webhook (setUpWebhook, webhookApp, deleteWebhook, SetWebhookRequest)
-import           Data.Either (isLeft)
-import           Control.Exception (finally)
+import           Network.Wai.Handler.WarpTLS
+import qualified Telegram.Bot.API                    as Telegram
+import           Telegram.Bot.API.Webhook            (SetWebhookRequest,
+                                                      deleteWebhook,
+                                                      setUpWebhook, webhookApp)
+import           Telegram.Bot.Simple.BotApp.Internal
 
 -- | Start bot with asynchronous polling.
 -- The result is a function that allows you to send actions
@@ -55,10 +57,10 @@ startBot bot env = do
 startBot_ :: BotApp model action -> ClientEnv -> IO ()
 startBot_ bot = void . startBot bot
 
-data WebhookConfig = WebhookConfig 
-  { webhookConfigTlsSettings         :: TLSSettings,
-    webhookConfigTlsWarpSettings     :: Settings,
-    webhookConfigSetWebhookRequest   :: SetWebhookRequest
+data WebhookConfig = WebhookConfig
+  { webhookConfigTlsSettings       :: TLSSettings,
+    webhookConfigTlsWarpSettings   :: Settings,
+    webhookConfigSetWebhookRequest :: SetWebhookRequest
   }
 
 -- | Start bot with webhook on update in the main thread.
