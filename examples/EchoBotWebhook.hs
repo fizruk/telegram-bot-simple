@@ -13,7 +13,7 @@ import           Telegram.Bot.Simple.UpdateParser (updateMessageText, updateMess
 import           Telegram.Bot.API.InlineMode.InlineQueryResult
 import           Telegram.Bot.API.InlineMode.InputMessageContent (defaultInputTextMessageContent)
 
-import           Network.Wai.Handler.Warp (setPort, setHost, defaultSettings, Port)
+import           Network.Wai.Handler.Warp (setPort, defaultSettings, Port)
 import           Network.Wai.Handler.WarpTLS (tlsSettings, TLSSettings (onInsecure), OnInsecure (AllowInsecure))
 
 type Model = ()
@@ -84,7 +84,7 @@ run token certPath keyPath port ip = do
   where 
     bot = conversationBot updateChatId echoBot
     tlsOpts = (tlsSettings certPath keyPath) {onInsecure = AllowInsecure}
-    warpOpts = setPort port $ setHost "0.0.0.0" defaultSettings
+    warpOpts = setPort port defaultSettings
     certFile = Just $ InputFile certPath "application/x-pem-file"
     url = "https://" ++ ip ++ ":" ++ show port
     config = WebhookConfig
