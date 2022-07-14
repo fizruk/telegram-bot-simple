@@ -1,3 +1,60 @@
+-- {-# LANGUAGE DataKinds #-}
+-- {-# LANGUAGE TypeOperators #-}
+-- {-# LANGUAGE DeriveGeneric #-}
+-- import Network.Wai
+-- import Network.Wai.Handler.Warp
+-- import Network.Wai.Handler.WarpTLS
+-- import Servant
+-- import Servant.API.Generic (Generic)
+-- import Data.Aeson (ToJSON, FromJSON)
+-- import Data.List (intercalate)
+
+-- type API = ReqBody '[JSON] () :> Get '[JSON] Email
+
+
+-- data ClientInfo = ClientInfo
+--   { 
+--   } deriving Generic
+
+-- instance FromJSON ClientInfo
+-- instance ToJSON ClientInfo
+
+-- data Email = Email
+--   { from :: String
+--   , to :: String
+--   , subject :: String
+--   , body :: String
+--   } deriving Generic
+
+-- instance ToJSON Email
+
+-- emailForClient :: () -> Email
+-- emailForClient c = Email from' to' subject' body'
+
+--   where from'    = "great@company.com"
+--         to'      = "xD"
+--         subject' = "Hey " ++ "ja" ++ ", we miss you!"
+--         body'    = "Hi " ++ "ja" ++ ",\n\n"
+--                 ++ "Since you've recently turned " ++ show 2137
+--                 ++ ", have you checked out our latest "
+--                 ++ intercalate ", " []
+--                 ++ " products? Give us a visit!"
+
+-- server3 :: Server API
+-- server3 = marketing
+
+--   where 
+--         marketing :: () -> Handler Email
+--         marketing clientinfo = return (emailForClient clientinfo)
+
+-- userAPI :: Proxy API
+-- userAPI = Proxy
+
+-- main :: IO ()
+-- main = runTLS tlsOpts warpOpts $ serve userAPI server3
+--   where tlsOpts = tlsSettings "../cert.pem" "../key.pem"
+--         warpOpts = setPort 8443 defaultSettings
+
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
@@ -11,8 +68,8 @@ import           Telegram.Bot.Simple.UpdateParser (updateMessageText, updateMess
 import           Telegram.Bot.API.InlineMode.InlineQueryResult
 import           Telegram.Bot.API.InlineMode.InputMessageContent (defaultInputTextMessageContent)
 
-import           Network.Wai.Handler.Warp (setPort, setHost, defaultSettings)
-import           Network.Wai.Handler.WarpTLS (tlsSettings)
+import           Network.Wai.Handler.Warp (setPort, setHost, defaultSettings, Port)
+import           Network.Wai.Handler.WarpTLS (tlsSettings, TLSSettings (onInsecure), OnInsecure (AllowInsecure))
 
 
 type Model = ()
@@ -75,18 +132,27 @@ handleAction action model = case action of
   Echo msg -> model <# do
     pure msg -- or replyText msg
 
-run :: Token -> IO ()
-run token = do
+run :: Token -> FilePath -> FilePath -> Port -> String -> IO ()
+run token certPath keyPath port ip = do
   env <- defaultTelegramClientEnv token
-  startBotWebHooks_ bot tlsOpts warpOpts certFile env
+  res <- startBotWebHooks bot tlsOpts warpOpts certFile ip env
+  print res
   where 
     bot = conversationBot updateChatId echoBot
-    tlsOpts = tlsSettings "cert.pem" "key.pem"
-    warpOpts = setPort 8443 $ setHost "127.0.0.1" defaultSettings
-    certFile = Just $ InputFile "cert.pem" "application/x-pem-file"
+    tlsOpts = (tlsSettings certPath keyPath) {onInsecure = AllowInsecure}
+    warpOpts = setPort port $ setHost "0.0.0.0" defaultSettings
+    certFile = Just $ InputFile certPath "application/x-pem-file"
 
 main :: IO ()
 main = do
   putStrLn "Please, enter Telegram bot's API token:"
   token <- Token . Text.pack <$> getLine
-  run token
+  putStrLn "Please, enter a path to certificate:"
+  cert <- getLine
+  putStrLn "Please, enter a path to key:"
+  key <- getLine
+  putStrLn "Please, enter port(80, 88, 443, 8443):"
+  port <- read <$> getLine
+  putStrLn "Please, enter ip:"
+  ip <- getLine
+  run token cert key port ip

@@ -56,20 +56,20 @@ startBot_ bot = void . startBot bot
 -- | Start bot with webhook on update in the main thread.
 -- Port must be one of 443, 80, 88, 8443
 -- certPath must be provided if using self signed certificate.
-startBotWebHooks :: BotApp model action -> TLSSettings -> Settings -> Maybe Telegram.InputFile -> ClientEnv -> IO (Either ClientError ())
-startBotWebHooks bot tlsOpts warpOpts certPath env = do
+startBotWebHooks :: BotApp model action -> TLSSettings -> Settings -> Maybe Telegram.InputFile -> String -> ClientEnv -> IO (Either ClientError ())
+startBotWebHooks bot tlsOpts warpOpts certPath ip env = do
   botEnv <- startBotEnv bot env
-  res <- setUpWebhook warpOpts certPath env
+  res <- setUpWebhook warpOpts certPath ip env
   if isLeft res
     then return res
-    else Right <$> runTLS tlsOpts warpOpts (webhookApp botEnv)
+    else Right <$> runTLS tlsOpts warpOpts (webhookApp bot botEnv)
   `finally`
     deleteWebhook env
 
 
 -- | Like 'startBotWebHooks', but ignores result.
-startBotWebHooks_ :: BotApp model action -> TLSSettings -> Settings -> Maybe Telegram.InputFile -> ClientEnv -> IO ()
-startBotWebHooks_ bot tlsOpts warpOpts certPath = void . startBotWebHooks bot tlsOpts warpOpts certPath
+startBotWebHooks_ :: BotApp model action -> TLSSettings -> Settings -> Maybe Telegram.InputFile -> String -> ClientEnv -> IO ()
+startBotWebHooks_ bot tlsOpts warpOpts certPath ip = void . startBotWebHooks bot tlsOpts warpOpts certPath ip
 
 -- | Get a 'Telegram.Token' from environment variable.
 --

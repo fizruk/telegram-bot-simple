@@ -11,47 +11,51 @@
 
 module Telegram.Bot.API.WebHooks (setUpWebhook, webhookApp, deleteWebhook) where
 
-import Control.Monad.IO.Class
-import Data.Aeson
-import Data.Functor (void)
-import Debug.Trace
-import GHC.Generics
-import Network.HTTP.Client.MultipartFormData
-import Network.Wai.Handler.Warp
-import Network.Wai.Handler.Warp.Internal
-  ( Settings (settingsHost, settingsPort),
-  )
+import Control.Concurrent (forkIO)
+import Control.Concurrent.STM
+import Control.Monad.IO.Class (MonadIO (liftIO))
+import Data.Aeson (ToJSON (toJSON))
+import Data.Bool (bool)
+import Data.Functor (void, (<&>))
+import Data.Maybe (catMaybes, fromJust)
+import qualified Data.Text as Text
+import GHC.Generics (Generic)
+import Network.Wai.Handler.Warp (Settings)
+import Network.Wai.Handler.Warp.Internal (Settings (settingsPort))
 import Servant
 import Servant.Client
+  ( ClientEnv,
+    ClientError,
+    client,
+    runClientM,
+  )
 import Servant.Multipart.API
-import Servant.Multipart.Client
-import Telegram.Bot.API (InputFile, Update)
-import Telegram.Bot.API.Internal.Utils (gparseJSON, gtoJSON)
+import Servant.Multipart.Client (genBoundary)
+import Telegram.Bot.API.GettingUpdates (Update)
+import Telegram.Bot.API.Internal.Utils (gtoJSON)
+import Telegram.Bot.API.MakingRequests (Response)
+import Telegram.Bot.API.Types (InputFile, makeFile)
 import Telegram.Bot.Simple.BotApp.Internal
 
-type WebhookAPI = ReqBody '[JSON] Update :> Get '[JSON] ()
+type WebhookAPI = ReqBody '[JSON] Update :> Post '[JSON] ()
 
-server :: Server WebhookAPI
-server =
+server :: BotApp model action -> BotEnv model action -> Server WebhookAPI
+server BotApp {..} botEnv@BotEnv {..} =
   updateHandler
   where
     updateHandler :: Update -> Handler ()
-    updateHandler update = trace (show update) return ()
+    updateHandler update = liftIO $ handleUpdate update
+    handleUpdate update = liftIO . void . forkIO $ do
+      maction <- botAction update <$> readTVarIO botModelVar
+      case maction of
+        Nothing -> return ()
+        Just action -> issueAction botEnv (Just update) (Just action)
 
-userAPI :: Proxy WebhookAPI
-userAPI = Proxy
+webhookAPI :: Proxy WebhookAPI
+webhookAPI = Proxy
 
-app :: Application
-app = serve userAPI server
-
--- url	String	Yes	HTTPS URL to send updates to. Use an empty string to remove webhook integration
--- certificate	InputFile	Optional	Upload your public key certificate so that the root certificate in use can be checked. See our self-signed guide for details.
--- ip_address	String	Optional	The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS
--- max_connections	Integer	Optional	The maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput.
--- allowed_updates	Array of String	Optional	A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used.
--- Please note that this parameter doesn't affect updates created before the call to the setWebhook, so unwanted updates may be received for a short period of time.
--- drop_pending_updates	Boolean	Optional	Pass True to drop all pending updates
--- secret_token	String	Optional	A secret token to be sent in a header “X-Telegram-Bot-Api-Secret-Token” in every webhook request, 1-256 characters. Only characters A-Z, a-z, 0-9, _ and - are allowed. The header is useful to ensure that the request comes from a webhook set by you.
+app :: BotApp model action -> BotEnv model action -> Application
+app botApp botEnv = serve webhookAPI $ server botApp botEnv
 
 data SetWebhookRequest = SetWebhookRequest
   { setWebhookUrl :: String,
@@ -74,38 +78,33 @@ newtype DeleteWebhookRequest = DeleteWebhookRequest
 instance ToJSON DeleteWebhookRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp SetWebhookRequest where
-  toMultipart SetWebhookRequest {..} = error ""
-
---   makeFile "sticker" sendStickerSticker (MultipartData fields []) where
---   fields =
---     [ Input "chat_id" $ case sendStickerChatId of
---         SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
---         SomeChatUsername txt -> txt
---     ] <> catMaybes
---     [ sendStickerDisableNotification <&>
---       \t -> Input "disable_notification" (bool "false" "true" t)
---     , sendStickerReplyToMessageId <&>
---       \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
---     , sendStickerAllowSendingWithoutReply <&>
---       \t -> Input "allow_sending_without_reply" (bool "false" "true" t)
---     , sendStickerReplyMarkup <&>
---       \t -> Input "reply_markup" (TL.toStrict $ encodeToLazyText t)
---     ]
+  toMultipart SetWebhookRequest {..} =
+    makeFile "certificate" (fromJust setWebhookCertificate) (MultipartData fields [])
+    where
+      fields =
+        [Input "url" $ Text.pack setWebhookUrl]
+          <> catMaybes
+            [ setWebhookSecretToken <&> \t -> Input "secret_token" $ Text.pack t,
+              setWebhookIpAddress <&> \t -> Input "ip_address" $ Text.pack t,
+              setWebhookMaxConnections <&> \t -> Input "max_connections" $ Text.pack $ show t,
+              setWebhookDropPendingUpdates <&> \t -> Input "drop_pending_updates" (bool "false" "true" t),
+              setWebhookAllowedUpdates <&> \t -> Input "allowed_updates" (arrToJson t)
+            ]
+      arrToJson arr = Text.intercalate "" ["[", Text.intercalate "," (map (\s -> Text.pack $ "\"" ++ s ++ "\"") arr), "]"]
 
 type SetWebhookForm =
-  "setWebhook" :> MultipartForm Tmp SetWebhookRequest :> Get '[JSON] Bool
+  "setWebhook" :> MultipartForm Tmp SetWebhookRequest :> Get '[JSON] (Response Bool)
 
 type SetWebhookJson =
-  "setWebhook" :> ReqBody '[JSON] SetWebhookRequest :> Get '[JSON] Bool
+  "setWebhook" :> ReqBody '[JSON] SetWebhookRequest :> Get '[JSON] (Response Bool)
 
 type DeleteWebhook =
-  "deleteWebhook" :> ReqBody '[JSON] DeleteWebhookRequest :> Get '[JSON] Bool
+  "deleteWebhook" :> ReqBody '[JSON] DeleteWebhookRequest :> Get '[JSON] (Response Bool)
 
-setUpWebhook :: Settings -> Maybe InputFile  -> ClientEnv -> IO (Either ClientError ())
-setUpWebhook warpOpts certFile = (void <$>) <$> runClientM setUpWebhookRequest
+setUpWebhook :: Settings -> Maybe InputFile -> String -> ClientEnv -> IO (Either ClientError ())
+setUpWebhook warpOpts certFile ip = (void <$>) <$> runClientM setUpWebhookRequest
   where
     port = settingsPort warpOpts
-    ip = show $ settingsHost warpOpts
     url = "https://" ++ ip ++ ":" ++ show port
     requestData =
       SetWebhookRequest
@@ -117,7 +116,6 @@ setUpWebhook warpOpts certFile = (void <$>) <$> runClientM setUpWebhookRequest
           setWebhookDropPendingUpdates = Nothing,
           setWebhookSecretToken = Nothing
         }
-    setUpWebhookRequest :: ClientM Bool
     setUpWebhookRequest = case certFile of
       Just _ -> do
         boundary <- liftIO genBoundary
@@ -130,5 +128,5 @@ deleteWebhook = (void <$>) <$> runClientM deleteWebhookRequest
     requestData = DeleteWebhookRequest {deleteWebhookDropPendingUpdates = Nothing}
     deleteWebhookRequest = client (Proxy @DeleteWebhook) requestData
 
-webhookApp :: BotEnv model action -> Application
-webhookApp _ = app
+webhookApp :: BotApp model action -> BotEnv model action -> Application
+webhookApp = app
