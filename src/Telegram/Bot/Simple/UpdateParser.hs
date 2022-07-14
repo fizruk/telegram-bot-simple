@@ -65,6 +65,9 @@ command name = do
       -> pure (Text.unwords ws)
     _ -> fail "not that command"
 
+commandBotName :: Text -> Text -> UpdateParser Text
+commandBotName name botName = command name <|> command (Text.intercalate "@" [name, botName])
+
 commandWithBotName :: Text -> Text -> UpdateParser Text
 commandWithBotName botname commandname = do
   t <- text
