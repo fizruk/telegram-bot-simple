@@ -26,8 +26,6 @@ import Data.Functor (void, (<&>))
 import Data.Maybe (catMaybes, fromJust, isJust)
 import qualified Data.Text as Text
 import GHC.Generics (Generic)
-import Network.Wai.Handler.Warp (Settings)
-import Network.Wai.Handler.Warp.Internal (Settings (settingsPort))
 import Servant
 import Servant.Client
   ( ClientEnv,
