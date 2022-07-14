@@ -6,7 +6,7 @@ import qualified Data.Text                        as Text
 import           Data.Maybe
 
 import           Telegram.Bot.API
-import           Telegram.Bot.API.WebHooks
+import           Telegram.Bot.API.Webhook
 import           Telegram.Bot.Simple
 import           Telegram.Bot.Simple.BotApp (WebhookConfig(WebhookConfig))
 import           Telegram.Bot.Simple.UpdateParser (updateMessageText, updateMessageSticker)
@@ -79,7 +79,7 @@ handleAction action model = case action of
 run :: Token -> FilePath -> FilePath -> Port -> String -> IO ()
 run token certPath keyPath port ip = do
   env <- defaultTelegramClientEnv token
-  res <- startBotWebHooks bot config env
+  res <- startBotWebhook bot config env
   print res
   where 
     bot = conversationBot updateChatId echoBot

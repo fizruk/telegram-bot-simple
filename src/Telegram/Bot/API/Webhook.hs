@@ -9,7 +9,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Telegram.Bot.API.WebHooks
+module Telegram.Bot.API.Webhook
   ( setUpWebhook,
     webhookApp,
     deleteWebhook,

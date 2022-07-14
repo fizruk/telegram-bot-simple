@@ -48,7 +48,7 @@ library
       Telegram.Bot.API.Types
       Telegram.Bot.API.UpdatingMessages
       Telegram.Bot.API.WebApps
-      Telegram.Bot.API.WebHooks
+      Telegram.Bot.API.Webhook
       Telegram.Bot.Simple
       Telegram.Bot.Simple.BotApp
       Telegram.Bot.Simple.BotApp.Internal

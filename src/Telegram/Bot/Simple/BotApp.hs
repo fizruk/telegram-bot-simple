@@ -10,8 +10,8 @@ module Telegram.Bot.Simple.BotApp (
   startBotAsync,
   startBotAsync_,
 
-  startBotWebHooks,
-  startBotWebHooks_,
+  startBotWebhook,
+  startBotWebhook_,
 
   getEnvToken,
 ) where
@@ -26,7 +26,7 @@ import qualified Telegram.Bot.API                    as Telegram
 import           Telegram.Bot.Simple.BotApp.Internal
 import           Network.Wai.Handler.WarpTLS
 import           Network.Wai.Handler.Warp
-import           Telegram.Bot.API.WebHooks(setUpWebhook, webhookApp, deleteWebhook, SetWebhookRequest)
+import           Telegram.Bot.API.Webhook (setUpWebhook, webhookApp, deleteWebhook, SetWebhookRequest)
 import           Data.Either (isLeft)
 import           Control.Exception (finally)
 
@@ -64,8 +64,8 @@ data WebhookConfig = WebhookConfig
 -- | Start bot with webhook on update in the main thread.
 -- Port must be one of 443, 80, 88, 8443
 -- certPath must be provided if using self signed certificate.
-startBotWebHooks :: BotApp model action -> WebhookConfig -> ClientEnv -> IO (Either ClientError ())
-startBotWebHooks bot (WebhookConfig{..}) env = do
+startBotWebhook :: BotApp model action -> WebhookConfig -> ClientEnv -> IO (Either ClientError ())
+startBotWebhook bot (WebhookConfig{..}) env = do
   botEnv <- startBotEnv bot env
   res <- setUpWebhook webhookConfigSetWebhookRequest env
   if isLeft res
@@ -75,9 +75,9 @@ startBotWebHooks bot (WebhookConfig{..}) env = do
     deleteWebhook env
 
 
--- | Like 'startBotWebHooks', but ignores result.
-startBotWebHooks_ :: BotApp model action -> WebhookConfig -> ClientEnv -> IO ()
-startBotWebHooks_ bot webhookConfig = void . startBotWebHooks bot webhookConfig
+-- | Like 'startBotWebhook', but ignores result.
+startBotWebhook_ :: BotApp model action -> WebhookConfig -> ClientEnv -> IO ()
+startBotWebhook_ bot webhookConfig = void . startBotWebhook bot webhookConfig
 
 -- | Get a 'Telegram.Token' from environment variable.
 --
