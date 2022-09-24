@@ -1,3 +1,20 @@
+0.6
+---
+
+- Fix newlines unexpected removing in `UpdateParser` module (see [#124](https://github.com/fizruk/telegram-bot-simple/pull/124));
+- Add WebHooks support (see [#127](https://github.com/fizruk/telegram-bot-simple/pull/127));
+- Fix `parse_mode` encoding in `sendPhoto`, `sendDocument`, `sendVideo` and `sendAnimation` methods (see [#123](https://github.com/fizruk/telegram-bot-simple/pull/123) and [5ee5289](https://github.com/fizruk/telegram-bot-simple/commit/5ee5289f711381a1f1e0daf540bc6c041e3cb275));
+- Make package complaint with Telegram Bot API 6.2 (breaking changes included) (see [fab1aee](https://github.com/fizruk/telegram-bot-simple/commit/fab1aee308afc59663013a796ebff7a3f99c8201)):
+
+    - Added `createInvoiceLink` method;
+    - Added `getCustomEmojiStickers` method;
+    - `User` extended with `is_premium` and `added_to_attachment_menu`;
+    - `Chat` extended with `has_restricted_voice_and_video_messages`, `join_to_send_messages`, `join_by_request`;
+    - `MessageEntityType` extended with `custom_emoji`;
+    `file_size` field for `Animation`, `Audio`, `Document`, `Video`, `VideoNote` `Voice`, `File` changed from `Int` to `Integer`;
+    - `SticketSet` modified: `contains_masks` is optional now and becoming a subject of further deprecation in a future, `type` added;
+    - Added `StickerSetType`: could be `regular`, `mask` and `custom_emoji`.
+
 0.5.2
 ---
 
