@@ -44,6 +44,7 @@ dependencies:
 - servant-client
 - servant-multipart-client
 - servant-multipart-api
+- servant-server
 - split
 - stm
 - template-haskell
@@ -51,6 +52,8 @@ dependencies:
 - time
 - transformers
 - unordered-containers
+- warp
+- warp-tls
 
 ghc-options:
 - -Wall
@@ -61,6 +64,19 @@ library:
 executables:
   example-echo-bot:
     main: examples/EchoBot.hs
+    when:
+      condition: flag(examples)
+      then:
+        dependencies: telegram-bot-simple
+      else:
+        buildable: false
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N # -N option provides concurrent running on all available cores.
+
+  example-echo-bot-webhook:
+    main: examples/EchoBotWebhook.hs
     when:
       condition: flag(examples)
       then:

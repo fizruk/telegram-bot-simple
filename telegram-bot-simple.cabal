@@ -48,6 +48,7 @@ library
       Telegram.Bot.API.Types
       Telegram.Bot.API.UpdatingMessages
       Telegram.Bot.API.WebApps
+      Telegram.Bot.API.Webhook
       Telegram.Bot.Simple
       Telegram.Bot.Simple.BotApp
       Telegram.Bot.Simple.BotApp.Internal
@@ -82,6 +83,7 @@ library
     , servant-client
     , servant-multipart-api
     , servant-multipart-client
+    , servant-server
     , split
     , stm
     , template-haskell
@@ -89,6 +91,8 @@ library
     , time
     , transformers
     , unordered-containers
+    , warp
+    , warp-tls
   default-language: Haskell2010
 
 executable example-echo-bot
@@ -115,6 +119,7 @@ executable example-echo-bot
     , servant-client
     , servant-multipart-api
     , servant-multipart-client
+    , servant-server
     , split
     , stm
     , template-haskell
@@ -122,6 +127,49 @@ executable example-echo-bot
     , time
     , transformers
     , unordered-containers
+    , warp
+    , warp-tls
+  if flag(examples)
+    build-depends:
+        telegram-bot-simple
+  else
+    buildable: False
+  default-language: Haskell2010
+
+executable example-echo-bot-webhook
+  main-is: examples/EchoBotWebhook.hs
+  other-modules:
+      Paths_telegram_bot_simple
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.9 && <5
+    , bytestring
+    , cron >=0.7.0
+    , filepath
+    , hashable
+    , http-api-data
+    , http-client
+    , http-client-tls
+    , monad-control
+    , mtl
+    , pretty-show
+    , profunctors
+    , servant
+    , servant-client
+    , servant-multipart-api
+    , servant-multipart-client
+    , servant-server
+    , split
+    , stm
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , unordered-containers
+    , warp
+    , warp-tls
   if flag(examples)
     build-depends:
         telegram-bot-simple
@@ -153,6 +201,7 @@ executable example-game-bot
     , servant-client
     , servant-multipart-api
     , servant-multipart-client
+    , servant-server
     , split
     , stm
     , template-haskell
@@ -160,6 +209,8 @@ executable example-game-bot
     , time
     , transformers
     , unordered-containers
+    , warp
+    , warp-tls
   if flag(examples)
     build-depends:
         QuickCheck
@@ -204,6 +255,7 @@ executable example-todo-bot
     , servant-client
     , servant-multipart-api
     , servant-multipart-client
+    , servant-server
     , split
     , stm
     , template-haskell
@@ -211,6 +263,8 @@ executable example-todo-bot
     , time
     , transformers
     , unordered-containers
+    , warp
+    , warp-tls
   if flag(examples)
     build-depends:
         telegram-bot-simple
