@@ -364,7 +364,7 @@ instance ToMultipart Tmp SendAudioRequest where
       [ sendAudioCaption <&>
         \t -> Input "caption" t
       , sendAudioParseMode <&>
-        \t -> Input "parse_mode" (TL.toStrict $ encodeToLazyText t)
+        \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
       , sendAudioCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendAudioDuration <&>
@@ -449,7 +449,7 @@ instance ToMultipart Tmp SendVideoRequest where
       [ sendVideoCaption <&>
         \t -> Input "caption" t
       , sendVideoParseMode <&>
-        \t -> Input "parse_mode" (TL.toStrict $ encodeToLazyText t)
+        \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
       , sendVideoCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendVideoDuration <&>
@@ -532,7 +532,7 @@ instance ToMultipart Tmp SendAnimationRequest where
       [ sendAnimationCaption <&>
         \t -> Input "caption" t
       , sendAnimationParseMode <&>
-        \t -> Input "parse_mode" (TL.toStrict $ encodeToLazyText t)
+        \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
       , sendAnimationCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendAnimationDuration <&>
@@ -608,7 +608,7 @@ instance ToMultipart Tmp SendVoiceRequest where
       [ sendVoiceCaption <&>
         \t -> Input "caption" t
       , sendVoiceParseMode <&>
-        \t -> Input "parse_mode" (TL.toStrict $ encodeToLazyText t)
+        \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
       , sendVoiceCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
       , sendVoiceDuration <&>
