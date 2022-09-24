@@ -17,6 +17,7 @@ import Data.Aeson.Key (fromText)
 #endif
 import Data.Aeson.Text
 import Data.Bool
+import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import Data.Proxy
@@ -47,6 +48,8 @@ stickerLabel = \case
 
 -- | Sticker file with static/animated label.
 data StickerFile = StickerFile {stickerFileSticker :: InputFile, stickerFileLabel :: StickerType}
+
+-- ** 'sendSticker'
 
 -- | Request parameters for 'sendSticker'.
 data SendStickerRequest = SendStickerRequest
@@ -100,6 +103,22 @@ sendSticker r =
       client (Proxy @SendStickerContent) (boundary, r)
     _ -> client (Proxy @SendStickerLink) r
 
+-- ** 'getCustomEmojiStickers'
+
+-- | Request parameters for 'getCustomEmojiStickers'.
+data GetCustomEmojiStickersRequest = GetCustomEmojiStickersRequest
+  { getCustomEmojiStickersRequestCustomEmojiIds :: [Text] -- ^ List of custom emoji identifiers. At most 200 custom emoji identifiers can be specified.
+  }
+  deriving Generic
+
+instance ToJSON GetCustomEmojiStickersRequest where toJSON = gtoJSON
+
+type GetCustomEmojiStickers
+  = "getCustomEmojiStickers"
+  :> ReqBody '[JSON] GetCustomEmojiStickersRequest
+  :> Post '[JSON] (Response [Sticker])
+
+-- ** 'uploadStickerFile'
 
 -- | Request parameters for 'uploadStickerFile'.
 data UploadStickerFileRequest = UploadStickerFileRequest
@@ -136,6 +155,8 @@ uploadStickerFile r =
       client (Proxy @UploadStickerFileContent) (boundary, r)
     _ -> client (Proxy @UploadStickerFileLink) r
 
+
+-- ** 'createNewStickerSet'
 
 -- | Request parameters for 'createNewStickerSet'.
 data CreateNewStickerSetRequest = CreateNewStickerSetRequest
@@ -204,6 +225,8 @@ createNewStickerSet r =
       client (Proxy @CreateNewStickerSetContent) (boundary, r)
     _ -> client (Proxy @CreateNewStickerSetLink) r
 
+-- ** 'addStickerToSet'
+
 -- | Request parameters for 'addStickerToSet'.
 data AddStickerToSetRequest = AddStickerToSetRequest
   { addStickerToSetUserId :: UserId -- ^ User identifier of sticker set owner
@@ -267,6 +290,8 @@ addStickerToSet r =
     _ -> client (Proxy @AddStickerToSetLink) r
 
 
+-- ** 'getStickerSet'
+
 type GetStickerSet
   = "getStickerSet"
   :> RequiredQueryParam "name" T.Text
@@ -276,6 +301,8 @@ type GetStickerSet
 getStickerSet :: T.Text -- ^ Name of the sticker set
   -> ClientM (Response StickerSet)
 getStickerSet = client (Proxy @GetStickerSet)
+
+-- ** 'setStickerPositionInSet'
 
 type SetStickerPositionInSet
   = "setStickerPositionInSet"
@@ -291,6 +318,8 @@ setStickerPositionInSet :: T.Text -- ^ File identifier of the sticker
 setStickerPositionInSet = client (Proxy @SetStickerPositionInSet)
 
 
+-- ** 'deleteStickerFromSet'
+
 type DeleteStickerFromSet
   = "deleteStickerFromSet"
   :> RequiredQueryParam "sticker" T.Text
@@ -301,6 +330,8 @@ type DeleteStickerFromSet
 deleteStickerFromSet :: T.Text -- ^ File identifier of the sticker
   -> ClientM (Response Bool)
 deleteStickerFromSet = client (Proxy @DeleteStickerFromSet)
+
+-- ** 'setStickerSetThumb'
 
 -- | Request parameters for 'setStickerSetThumb'.
 data SetStickerSetThumbRequest = SetStickerSetThumbRequest

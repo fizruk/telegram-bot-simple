@@ -52,6 +52,8 @@ data User = User
   , userLastName     :: Maybe Text -- ^ User‘s or bot’s last name.
   , userUsername     :: Maybe Text -- ^ User‘s or bot’s username.
   , userLanguageCode :: Maybe Text -- ^ IETF language tag of the user's language.
+  , userIsPremium    :: Maybe Bool -- ^ 'True', if this user is a Telegram Premium user.
+  , userAddedToAttachmentMenu :: Maybe Bool -- ^ 'True', if this user added the bot to the attachment menu.
   , userCanJoinGroups :: Maybe Bool -- ^ 'True', if the bot can be invited to groups. Returned only in `getMe`.
   , userCanReadAllGroupMessages :: Maybe Bool -- ^ 'True', if privacy mode is disabled for the bot. Returned only in `getMe`.
   , userSupportsInlineQueries :: Maybe Bool -- ^ 'True', if the bot supports inline queries. Returned only in `getMe`.
@@ -80,6 +82,9 @@ data Chat = Chat
   , chatPhoto            :: Maybe ChatPhoto -- ^ Chat photo. Returned only in getChat.
   , chatBio              :: Maybe Text      -- ^ Bio of the other party in a private chat. Returned only in `getChat`.
   , chatHasPrivateForwards :: Maybe Bool    -- ^ 'True', if privacy settings of the other party in the private chat allows to use `tg://user?id=<user_id>` links only in chats with the user. Returned only in getChat.
+  , chatHasRestrictedVoiceAndVideoMessages :: Maybe Bool -- ^ 'True', if the privacy settings of the other party restrict sending voice and video note messages in the private chat. Returned only in 'getChat'.
+  , chatJoinToSendMessages :: Maybe Bool    -- ^ 'True', if users need to join the supergroup before they can send messages. Returned only in 'getChat'.
+  , chatJoinByRequest    :: Maybe Bool      -- ^ 'True', if all users directly joining the supergroup need to be approved by supergroup administrators. Returned only in 'getChat'.
   , chatDescription      :: Maybe Text      -- ^ Description, for supergroups and channel chats. Returned only in getChat.
   , chatInviteLink       :: Maybe Text      -- ^ Chat invite link, for supergroups and channel chats. Returned only in getChat.
   , chatPinnedMessage    :: Maybe Message   -- ^ Pinned message, for supergroups. Returned only in getChat.
@@ -201,6 +206,7 @@ data MessageEntity = MessageEntity
   , messageEntityUrl    :: Maybe Text -- ^ For “text_link” only, url that will be opened after user taps on the text
   , messageEntityUser   :: Maybe User -- ^ For “text_mention” only, the mentioned user
   , messageEntityLanguage :: Maybe Text -- ^ For “pre” only, the programming language of the entity text.
+  , messageEntityCustomEmojiId :: Maybe Text -- ^ For “custom_emoji” only, unique identifier of the custom emoji. Use @getCustomEmojiStickers@ to get full information about the sticker.
   }
   deriving (Generic, Show)
 
@@ -222,6 +228,7 @@ data MessageEntityType
   | MessageEntityCashtag -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_cashtag.html>.
   | MessageEntityPhoneNumber -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_phone_number.html>.
   | MessageEntitySpoiler
+  | MessageEntityCustomEmoji
   deriving (Eq, Show, Generic)
 
 -- ** 'PhotoSize'
@@ -255,7 +262,7 @@ data Animation = Animation
   , animationThumb        :: Maybe PhotoSize -- ^ Animation thumbnail as defined by sender.
   , animationFileName     :: Maybe Text      -- ^ Original animation filename as defined by sender.
   , animationMimeType     :: Maybe Text      -- ^ MIME type of the file as defined by sender.
-  , animationFileSize     :: Maybe Int     -- ^ File size in bytes.
+  , animationFileSize     :: Maybe Integer   -- ^ File size in bytes.
   }
   deriving (Generic, Show)
 
@@ -270,7 +277,7 @@ data Audio = Audio
   , audioTitle     :: Maybe Text -- ^ Title of the audio as defined by sender or by audio tags.
   , audioFileName  :: Maybe Text -- ^ Original filename as defined by sender.
   , audioMimeType  :: Maybe Text -- ^ MIME type of the file as defined by sender.
-  , audioFileSize  :: Maybe Int -- ^ File size in bytes.
+  , audioFileSize  :: Maybe Integer -- ^ File size in bytes.
   , audioThumb     :: Maybe PhotoSize -- ^ Thumbnail of the album cover to which the music file belongs.
   }
   deriving (Generic, Show)
@@ -284,7 +291,7 @@ data Document = Document
   , documentThumb    :: Maybe PhotoSize -- ^ Document thumbnail as defined by sender.
   , documentFileName :: Maybe Text -- ^ Original filename as defined by sender.
   , documentMimeType :: Maybe Text -- ^ MIME type of the file as defined by sender.
-  , documentFileSize :: Maybe Int -- ^ File size in bytes. 
+  , documentFileSize :: Maybe Integer -- ^ File size in bytes. 
   }
   deriving (Generic, Show)
 
@@ -300,7 +307,7 @@ data Video = Video
   , videoThumb        :: Maybe PhotoSize -- ^ Video thumbnail.
   , videoFileName     :: Maybe Text -- ^ Original filename as defined by sender.
   , videoMimeType     :: Maybe Text -- ^ Mime type of a file as defined by sender.
-  , videoFileSize     :: Maybe Int -- ^ File size in bytes.
+  , videoFileSize     :: Maybe Integer -- ^ File size in bytes.
   }
   deriving (Generic, Show)
 
@@ -313,7 +320,7 @@ data VideoNote = VideoNote
   , videoNoteLength   :: Int -- ^ Video width and height as defined by sender.
   , videoNoteDuration :: Seconds -- ^ Duration of the video in seconds as defined by sender.
   , videoNoteThumb    :: Maybe PhotoSize -- ^ Video thumbnail.
-  , videoNoteFileSize :: Maybe Int -- ^ File size in bytes.
+  , videoNoteFileSize :: Maybe Integer -- ^ File size in bytes.
   }
   deriving (Generic, Show)
 
@@ -325,7 +332,7 @@ data Voice = Voice
   , voiceFileUniqueId :: FileId -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
   , voiceDuration :: Seconds -- ^ Duration of the audio in seconds as defined by sender.
   , voiceMimeType :: Maybe Text -- ^ MIME type of the file as defined by sender.
-  , voiceFileSize :: Maybe Int -- ^ File size in bytes.
+  , voiceFileSize :: Maybe Integer -- ^ File size in bytes.
   }
   deriving (Generic, Show)
 
@@ -491,7 +498,7 @@ data WebAppData = WebAppData
 data File = File
   { fileFileId       :: FileId      -- ^ Unique identifier for this file.
   , fileFileUniqueId :: FileId      -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , fileFileSize     :: Maybe Int -- ^ File size in bytes, if known.
+  , fileFileSize     :: Maybe Integer -- ^ File size in bytes, if known.
   , fileFilePath     :: Maybe Text  -- ^ File path. Use https://api.telegram.org/file/bot<token>/<file_path> to get the file.
   }
   deriving (Generic, Show)
@@ -829,7 +836,9 @@ data Sticker = Sticker
   , stickerThumb        :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
   , stickerEmoji        :: Maybe Text         -- ^ Emoji associated with the sticker.
   , stickerSetName      :: Maybe Text         -- ^ Name of the sticker set to which the sticker belongs.
+  , stickerPremiumAnimation :: Maybe File    -- ^ For premium regular stickers, premium animation for the sticker.
   , stickerMaskPosition :: Maybe MaskPosition -- ^ For mask stickers, the position where the mask should be placed.
+  , stickerCustomEmojiId :: Maybe Text        -- ^ For custom emoji stickers, unique identifier of the custom emoji.
   , stickerFileSize     :: Maybe Integer      -- ^ File size in bytes.
   }
   deriving (Generic, Show)
@@ -840,13 +849,21 @@ data Sticker = Sticker
 data StickerSet = StickerSet
   { stickerSetName          :: Text            -- ^ Sticker set name.
   , stickerSetTitle         :: Text            -- ^ Sticker set title.
+  , stickerSetType          :: StickerSetType  -- ^ Type of stickers in the set, currently one of “regular”, “mask”, “custom_emoji”.
   , stickerSetIsAnimated    :: Bool            -- ^ 'True', if the sticker set contains animated stickers.
   , stickerSetIsVideo       :: Bool            -- ^ 'True', if the sticker is a video sticker.
-  , stickerSetContainsMasks :: Bool            -- ^ True, if the sticker set contains masks.
+  , stickerSetContainsMasks :: Maybe Bool      -- ^ True, if the sticker set contains masks.
   , stickerSetStickers      :: [Sticker]       -- ^ List of all set stickers.
   , stickerSetThumb         :: Maybe PhotoSize -- ^ Sticker set thumbnail in the .WEBP or .TGS format.
   }
   deriving (Generic, Show)
+
+-- | Type of stickers in the set, currently one of “regular”, “mask”, “custom_emoji”.
+data StickerSetType
+  = StickerSetTypeRegular
+  | StickerSetTypeMask
+  | StickerSetTypeCustomEmoji
+  deriving (Eq, Show, Generic)
 
 -- ** 'MaskPosition'
 
@@ -1217,6 +1234,7 @@ foldMap deriveJSON'
   , ''PhotoSize
   , ''Audio
   , ''Document
+  , ''StickerSetType
   , ''Sticker
   , ''Video
   , ''Voice
