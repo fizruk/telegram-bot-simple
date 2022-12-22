@@ -17,6 +17,16 @@ import           Telegram.Bot.API.MakingRequests
 import           Telegram.Bot.API.Methods
 import           Telegram.Bot.API.Types
 
+data EditMessageResponse
+  = EditedInlineMessage Bool
+  | EditedMessage Message
+  deriving (Show, Generic)
+
+instance FromJSON EditMessageResponse where
+  parseJSON (Data.Aeson.Bool b) = pure (EditedInlineMessage b)
+  parseJSON o@(Data.Aeson.Object _) = EditedMessage <$> parseJSON o
+  parseJSON _ = fail "Unable to parse EditMessageResponse: expected either a Bool or a Message"
+
 -- ** 'editMessageText'
 
 -- | Request parameters for 'editMessageText'.
@@ -79,26 +89,26 @@ foldMap deriveJSON'
 type EditMessageText
   = "editMessageText"
   :> ReqBody '[JSON] EditMessageTextRequest
-  :> Post '[JSON] (Response (Either Bool Message))
+  :> Post '[JSON] (Response EditMessageResponse)
 
 -- | Use this method to edit text and game messages. On success, if the edited message is not an inline message, the edited 'Message' is returned, otherwise 'True' is returned.
-editMessageText :: EditMessageTextRequest -> ClientM (Response (Either Bool Message))
+editMessageText :: EditMessageTextRequest -> ClientM (Response EditMessageResponse)
 editMessageText = client (Proxy @EditMessageText)
 
 type EditMessageCaption  = "editMessageCaption"
   :> ReqBody '[JSON] EditMessageCaptionRequest
-  :> Post '[JSON] (Response (Either Bool Message))
+  :> Post '[JSON] (Response EditMessageResponse)
 
 -- | Use this method to edit captions of messages.
 --   On success, if the edited message is not an
 --   inline message, the edited Message is returned,
 --   otherwise True is returned.
-editMessageCaption :: EditMessageCaptionRequest -> ClientM (Response (Either Bool Message))
+editMessageCaption :: EditMessageCaptionRequest -> ClientM (Response EditMessageResponse)
 editMessageCaption = client (Proxy @EditMessageCaption)
 
 type EditMessageMedia  = "editMessageMedia"
   :> ReqBody '[JSON] EditMessageMediaRequest
-  :> Post '[JSON] (Response (Either Bool Message))
+  :> Post '[JSON] (Response EditMessageResponse)
 
 -- | Use this method to edit animation, audio,
 --   document, photo, or video messages. If a
@@ -110,18 +120,18 @@ type EditMessageMedia  = "editMessageMedia"
 --   previously uploaded file via its file_id or specify a URL.
 --   On success, if the edited message is not an inline
 --   message, the edited Message is returned, otherwise True is returned.
-editMessageMedia :: EditMessageMediaRequest -> ClientM (Response (Either Bool Message))
+editMessageMedia :: EditMessageMediaRequest -> ClientM (Response EditMessageResponse)
 editMessageMedia = client (Proxy @EditMessageMedia)
 
 
 type EditMessageReplyMarkup = "editMessageReplyMarkup"
   :> ReqBody '[JSON] EditMessageReplyMarkupRequest
-  :> Post '[JSON] (Response (Either Bool Message))
+  :> Post '[JSON] (Response EditMessageResponse)
 
 -- | Use this method to edit only the reply markup of messages.
 --   On success, if the edited message is not an inline message,
 --   the edited Message is returned, otherwise True is returned.
-editMessageReplyMarkup :: EditMessageReplyMarkupRequest -> ClientM (Response (Either Bool Message))
+editMessageReplyMarkup :: EditMessageReplyMarkupRequest -> ClientM (Response EditMessageResponse)
 editMessageReplyMarkup = client (Proxy @EditMessageReplyMarkup)
 
 type StopPoll = "stopPoll"
