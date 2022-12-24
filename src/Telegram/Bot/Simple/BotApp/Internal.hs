@@ -139,7 +139,7 @@ startPolling handleUpdate = go Nothing
           offset = fmap inc lastUpdateId
       res <-
         (Right <$> Telegram.getUpdates
-          (Telegram.GetUpdatesRequest offset Nothing Nothing Nothing))
+          (Telegram.GetUpdatesRequest offset Nothing (Just 25) Nothing))
         `catchError` (pure . Left)
 
       nextUpdateId <- case res of
