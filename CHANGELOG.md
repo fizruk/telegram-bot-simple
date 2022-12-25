@@ -1,3 +1,9 @@
+0.6.1
+---
+
+- Fix response parsing in `UpdatingMessages` (see [#131](https://github.com/fizruk/telegram-bot-simple/pull/131));
+- Move from short polling to long polling (see [#129](https://github.com/fizruk/telegram-bot-simple/pull/129));
+
 0.6
 ---
 
