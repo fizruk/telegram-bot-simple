@@ -463,7 +463,7 @@ instance ToJSON VideoChatStarted where
 
 instance FromJSON VideoChatStarted where
   parseJSON (Data.Aeson.Object _) = pure VideoChatStarted
-  parseJSON _ = fail "Unable to parse VideoChatStarted: expected either an empty object"
+  parseJSON _ = fail "Unable to parse VideoChatStarted: expected an empty object"
 
 -- ** 'VideoChatEnded'
 
