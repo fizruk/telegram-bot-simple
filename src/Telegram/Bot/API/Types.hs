@@ -458,6 +458,13 @@ data VideoChatScheduled = VideoChatScheduled
 data VideoChatStarted = VideoChatStarted
   deriving (Generic, Show)
 
+instance ToJSON VideoChatStarted where
+  toJSON = gtoJSON
+
+instance FromJSON VideoChatStarted where
+  parseJSON (Data.Aeson.Object _) = pure VideoChatStarted
+  parseJSON _ = fail "Unable to parse VideoChatStarted: expected either an empty object"
+
 -- ** 'VideoChatEnded'
 
 -- | This object represents a service message about a video chat ended in the chat.
@@ -1275,7 +1282,6 @@ foldMap deriveJSON'
   , ''EncryptedCredentials
   , ''ProximityAlertTriggered
   , ''VideoChatScheduled
-  , ''VideoChatStarted
   , ''VideoChatEnded
   , ''VideoChatParticipantsInvited
   , ''ChatPermissions
