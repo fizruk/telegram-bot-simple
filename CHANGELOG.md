@@ -1,3 +1,8 @@
+0.6.2
+---
+
+- Fix decoding for `VideoChatStarted` (see [#132](https://github.com/fizruk/telegram-bot-simple/pull/132));
+
 0.6.1
 ---
 
