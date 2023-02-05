@@ -53,7 +53,8 @@ data StickerFile = StickerFile {stickerFileSticker :: InputFile, stickerFileLabe
 
 -- | Request parameters for 'sendSticker'.
 data SendStickerRequest = SendStickerRequest
-  { sendStickerChatId                   :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendStickerChatId                   :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendStickerMessageThreadId          :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendStickerSticker                  :: InputFile -- ^ Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a .WEBP file from the Internet, or upload a new one using multipart/form-data. 
   , sendStickerDisableNotification      :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendStickerProtectContent           :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
@@ -73,8 +74,12 @@ instance ToMultipart Tmp SendStickerRequest where
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
-      [ sendStickerDisableNotification <&>
+      [ sendStickerMessageThreadId <&>
+        \t -> Input "message_thread_id" (T.pack $ show t)
+      , sendStickerDisableNotification <&>
         \t -> Input "disable_notification" (bool "false" "true" t)
+      , sendStickerProtectContent <&>
+        \t -> Input "protect_content" (bool "false" "true" t)
       , sendStickerReplyToMessageId <&>
         \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
       , sendStickerAllowSendingWithoutReply <&>

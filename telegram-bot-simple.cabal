@@ -34,6 +34,7 @@ library
   exposed-modules:
       Telegram.Bot.API
       Telegram.Bot.API.Chat
+      Telegram.Bot.API.Forum
       Telegram.Bot.API.Games
       Telegram.Bot.API.GettingUpdates
       Telegram.Bot.API.InlineMode

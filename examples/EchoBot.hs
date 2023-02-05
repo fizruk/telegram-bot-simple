@@ -60,7 +60,8 @@ handleAction action model = case action of
     _ <- liftClientM 
       (sendSticker 
         (SendStickerRequest 
-          (SomeChatId chat) 
+          (SomeChatId chat)
+          Nothing
           file 
           Nothing
           Nothing

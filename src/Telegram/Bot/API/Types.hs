@@ -79,7 +79,10 @@ data Chat = Chat
   , chatUsername         :: Maybe Text      -- ^ Username, for private chats, supergroups and channels if available
   , chatFirstName        :: Maybe Text      -- ^ First name of the other party in a private chat
   , chatLastName         :: Maybe Text      -- ^ Last name of the other party in a private chat
+  , chatIsForum          :: Maybe Bool      -- ^ 'True', if the supergroup chat is a forum (has topics enabled).
   , chatPhoto            :: Maybe ChatPhoto -- ^ Chat photo. Returned only in getChat.
+  , chatActiveUsernames  :: Maybe Text      -- ^ If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in 'getChat'.
+  , chatEmojiStatusCustomEmojiId :: Maybe Text -- ^ Custom emoji identifier of emoji status of the other party in a private chat. Returned only in 'getChat'.
   , chatBio              :: Maybe Text      -- ^ Bio of the other party in a private chat. Returned only in `getChat`.
   , chatHasPrivateForwards :: Maybe Bool    -- ^ 'True', if privacy settings of the other party in the private chat allows to use `tg://user?id=<user_id>` links only in chats with the user. Returned only in getChat.
   , chatHasRestrictedVoiceAndVideoMessages :: Maybe Bool -- ^ 'True', if the privacy settings of the other party restrict sending voice and video note messages in the private chat. Returned only in 'getChat'.
@@ -124,6 +127,7 @@ instance FromJSON ChatType where
 -- | This object represents a message.
 data Message = Message
   { messageMessageId             :: MessageId -- ^ Unique message identifier inside this chat.
+  , messageMessageThreadId       :: Maybe MessageThreadId -- ^ Unique identifier of a message thread to which the message belongs; for supergroups only.
   , messageFrom                  :: Maybe User -- ^ Sender, empty for messages sent to channels.
   , messageSenderChat            :: Maybe Chat -- ^ Sender of the message, sent on behalf of a chat. For example, the channel itself for channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
   , messageDate                  :: POSIXTime -- ^ Date the message was sent in Unix time.
@@ -134,6 +138,7 @@ data Message = Message
   , messageForwardSignature      :: Maybe Text -- ^ For messages forwarded from channels, signature of the post author if present.
   , messageForwardSenderName     :: Maybe Text -- ^ Sender's name for messages forwarded from users who disallow adding a link to their account in forwarded messages.
   , messageForwardDate           :: Maybe POSIXTime -- ^ For forwarded messages, date the original message was sent in Unix time
+  , messageIsTopicMessage        :: Maybe Bool -- ^ 'True', if the message is sent to a forum topic.
   , messageIsAutomaticForward    :: Maybe Bool -- ^ 'True', if the message is a channel post that was automatically forwarded to the connected discussion group.
   , messageReplyToMessage        :: Maybe Message -- ^ For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
   , messageViaBot                :: Maybe User -- ^ Bot through which the message was sent.
@@ -176,6 +181,9 @@ data Message = Message
   , messageConnectedWebsite      :: Maybe Text -- ^ The domain name of the website on which the user has logged in.
   , messagePassportData          :: Maybe PassportData -- ^ Telegram Passport data.
   , messageProximityAlertTriggered :: Maybe ProximityAlertTriggered -- ^ Service message. A user in the chat triggered another user's proximity alert while sharing Live Location.
+  , messageForumTopicCreated     :: Maybe ForumTopicCreated -- ^ Service message: forum topic created.
+  , messageForumTopicClosed     :: Maybe ForumTopicClosed -- ^ Service message: forum topic closed.
+  , messageForumTopicReopened     :: Maybe ForumTopicReopened -- ^ Service message: forum topic reopened.
   , messageVideoChatScheduled    :: Maybe VideoChatScheduled -- ^ Service message: video chat scheduled.
   , messageVideoChatStarted      :: Maybe VideoChatStarted -- ^ Service message: video chat started
   , messageVideoChatEnded        :: Maybe VideoChatEnded -- ^ Service message: video chat ended.
@@ -187,6 +195,10 @@ data Message = Message
 
 -- | Unique message identifier inside this chat.
 newtype MessageId = MessageId Integer
+  deriving (Eq, Show, ToJSON, FromJSON, Hashable)
+
+-- | Unique identifier of a message thread to which the message belongs; for supergroups only.
+newtype MessageThreadId = MessageThreadId Integer
   deriving (Eq, Show, ToJSON, FromJSON, Hashable)
 
 instance ToHttpApiData MessageId where
@@ -442,6 +454,27 @@ data ProximityAlertTriggered = ProximityAlertTriggered
 data MessageAutoDeleteTimerChanged = MessageAutoDeleteTimerChanged
   { messageAutoDeleteTimerChangedMessageAutoDeleteTime :: Seconds -- ^ New auto-delete time for messages in the chat; in seconds
   }
+  deriving (Generic, Show)
+
+-- ** 'ForumTopicCreated'
+
+-- | This object represents a service message about a new forum topic created in the chat.
+data ForumTopicCreated = ForumTopicCreated
+  { forumTopicCreatedName              :: Text       -- ^ Name of the topic.
+  , forumTopicCreatedIconColor         :: Integer    -- ^ Color of the topic icon in RGB format.
+  , forumTopicCreatedIconCustomEmojiId :: Maybe Text -- ^ Unique identifier of the custom emoji shown as the topic icon.
+  }
+  deriving (Generic, Show)
+
+-- ** 'ForumTopicClosed'
+
+-- | This object represents a service message about a forum topic closed in the chat. Currently holds no information.
+newtype ForumTopicClosed = ForumTopicClosed Object
+  deriving (Generic, Show)
+
+-- ** 'ForumTopicReopened'
+
+newtype ForumTopicReopened = ForumTopicReopened Object
   deriving (Generic, Show)
 
 -- ** 'VideoChatScheduled'
@@ -726,6 +759,7 @@ data ChatAdministratorRights = ChatAdministratorRights
   , chatAdministratorRightsCanPostMessages     :: Maybe Bool -- ^ 'True', if the administrator can post in the channel; channels only.
   , chatAdministratorRightsCanEditMessages     :: Maybe Bool -- ^ 'True', if the administrator can edit messages of other users and can pin messages; channels only.
   , chatAdministratorRightsCanPinMessages      :: Maybe Bool -- ^ 'True', if the user is allowed to pin messages; groups and supergroups only
+  , chatAdministratorRightsCanManageTopics     :: Maybe Bool -- ^ 'True', if the user is allowed to create, rename, close, and reopen forum topics; supergroups only.
   }
   deriving (Generic, Show)
 
@@ -744,27 +778,28 @@ data ChatMember = ChatMember
   , chatMemberCustomTitle           :: Maybe Text -- ^ Owners and administrators only. Custom title for this user.
 
   -- administrator
-  , chatMemberCanBeEdited           :: Maybe Bool -- ^ Administrators only. True, if the bot is allowed to edit administrator privileges of that user
+  , chatMemberCanBeEdited           :: Maybe Bool -- ^ Administrators only. 'True', if the bot is allowed to edit administrator privileges of that user
   , chatMemberCanManageChat         :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege.
-  , chatMemberCanDeleteMessages     :: Maybe Bool -- ^ Administrators only. True, if the administrator can delete messages of other users.
-  , chatMemberCanManageVideoChats   :: Maybe Bool -- ^ Administrators only. True, if the administrator can manage video (previously, voice) chats.
-  , chatMemberCanRestrictMembers    :: Maybe Bool -- ^ Administrators only. True, if the administrator can restrict, ban or unban chat members.
-  , chatMemberCanPromoteMembers     :: Maybe Bool -- ^ Administrators only. True, if the administrator can add new administrators with a subset of his own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user).
-  , chatMemberCanChangeInfo         :: Maybe Bool -- ^ Administrators only. True, if the administrator can change the chat title, photo and other settings.
-  , chatMemberCanPostMessages       :: Maybe Bool -- ^ Administrators only. True, if the administrator can post in the channel, channels only.
-  , chatMemberCanEditMessages       :: Maybe Bool -- ^ Administrators only. True, if the administrator can edit messages of other users and can pin messages, channels only.
+  , chatMemberCanDeleteMessages     :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can delete messages of other users.
+  , chatMemberCanManageVideoChats   :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can manage video (previously, voice) chats.
+  , chatMemberCanRestrictMembers    :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can restrict, ban or unban chat members.
+  , chatMemberCanPromoteMembers     :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can add new administrators with a subset of his own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user).
+  , chatMemberCanChangeInfo         :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can change the chat title, photo and other settings.
+  , chatMemberCanPostMessages       :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can post in the channel, channels only.
+  , chatMemberCanEditMessages       :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can edit messages of other users and can pin messages, channels only.
 
   -- administrator, restricted
-  , chatMemberCanInviteUsers        :: Maybe Bool -- ^ Administrators and restricted only. True, if the administrator can invite new users to the chat.
-  , chatMemberCanPinMessages        :: Maybe Bool -- ^ Administrators and restricted only. True, if the administrator can pin messages, supergroups only.
+  , chatMemberCanInviteUsers        :: Maybe Bool -- ^ Administrators and restricted only. 'True', if the administrator can invite new users to the chat.
+  , chatMemberCanPinMessages        :: Maybe Bool -- ^ Administrators and restricted only. 'True', if the administrator can pin messages, supergroups only.
+  , chatMemberCanManageTopics       :: Maybe Bool -- ^ Administrators and restricted only. 'True', if the user is allowed to create, rename, close, and reopen forum topics; supergroups only.
 
   -- restricted
-  , chatMemberIsMember              :: Maybe Bool -- ^ Restricted only. True, if the user is a member of the chat at the moment of the request.
-  , chatMemberCanSendMessages       :: Maybe Bool -- ^ Restricted only. True, if the user can send text messages, contacts, locations and venues.
-  , chatMemberCanSendMediaMessages  :: Maybe Bool -- ^ Restricted only. True, if the user can send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages.
-  , chatMemberCanSendPolls          :: Maybe Bool -- ^ Restricted only. True, if the user is allowed to send polls.
-  , chatMemberCanSendOtherMessages  :: Maybe Bool -- ^ Restricted only. True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages.
-  , chatMemberCanAddWebPagePreviews :: Maybe Bool -- ^ Restricted only. True, if user may add web page previews to his messages, implies can_send_media_messages.
+  , chatMemberIsMember              :: Maybe Bool -- ^ Restricted only. 'True', if the user is a member of the chat at the moment of the request.
+  , chatMemberCanSendMessages       :: Maybe Bool -- ^ Restricted only. 'True', if the user can send text messages, contacts, locations and venues.
+  , chatMemberCanSendMediaMessages  :: Maybe Bool -- ^ Restricted only. 'True', if the user can send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages.
+  , chatMemberCanSendPolls          :: Maybe Bool -- ^ Restricted only. 'True', if the user is allowed to send polls.
+  , chatMemberCanSendOtherMessages  :: Maybe Bool -- ^ Restricted only. 'True', if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages.
+  , chatMemberCanAddWebPagePreviews :: Maybe Bool -- ^ Restricted only. 'True', if user may add web page previews to his messages, implies can_send_media_messages.
   }
   deriving (Generic, Show)
 
@@ -797,14 +832,15 @@ data ChatJoinRequest = ChatJoinRequest
 
 -- | Describes actions that a non-administrator user is allowed to take in a chat.
 data ChatPermissions = ChatPermissions
-  { chatPermissionsCanSendMessages :: Maybe Bool       -- ^ True, if the user is allowed to send text messages, contacts, locations and venues.
-  , chatPermissionsCanSendMediaMessages :: Maybe Bool  -- ^ True, if the user is allowed to send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages.
-  , chatPermissionsCanSendPolls :: Maybe Bool          -- ^ True, if the user is allowed to send polls, implies can_send_messages.
-  , chatPermissionsCanSendOtherMessages :: Maybe Bool  -- ^ True, if the user is allowed to send animations, games, stickers and use inline bots, implies can_send_media_messages.
-  , chatPermissionsCanAddWebPagePreviews :: Maybe Bool -- ^ True, if the user is allowed to add web page previews to their messages, implies can_send_media_messages.
-  , chatPermissionsCanChangeInfo :: Maybe Bool         -- ^ True, if the user is allowed to change the chat title, photo and other settings. Ignored in public supergroups
-  , chatPermissionsCanInviteUsers :: Maybe Bool        -- ^ True, if the user is allowed to invite new users to the chat.
-  , chatPermissionsCanPinMessages :: Maybe Bool        -- ^ True, if the user is allowed to pin messages. Ignored in public supergroups.
+  { chatPermissionsCanSendMessages :: Maybe Bool       -- ^ 'True', if the user is allowed to send text messages, contacts, locations and venues.
+  , chatPermissionsCanSendMediaMessages :: Maybe Bool  -- ^ 'True', if the user is allowed to send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages.
+  , chatPermissionsCanSendPolls :: Maybe Bool          -- ^ 'True', if the user is allowed to send polls, implies can_send_messages.
+  , chatPermissionsCanSendOtherMessages :: Maybe Bool  -- ^ 'True', if the user is allowed to send animations, games, stickers and use inline bots, implies can_send_media_messages.
+  , chatPermissionsCanAddWebPagePreviews :: Maybe Bool -- ^ 'True', if the user is allowed to add web page previews to their messages, implies can_send_media_messages.
+  , chatPermissionsCanChangeInfo :: Maybe Bool         -- ^ 'True', if the user is allowed to change the chat title, photo and other settings. Ignored in public supergroups
+  , chatPermissionsCanInviteUsers :: Maybe Bool        -- ^ 'True', if the user is allowed to invite new users to the chat.
+  , chatPermissionsCanPinMessages :: Maybe Bool        -- ^ 'True', if the user is allowed to pin messages. Ignored in public supergroups.
+  , chatPermissionsCanManageTopics :: Maybe Bool       -- ^ 'True', if the user is allowed to create forum topics. If omitted defaults to the value of can_pin_messages.
   }
   deriving (Generic, Show)
 
@@ -1143,6 +1179,15 @@ instance ToHttpApiData SomeChatId where
   toUrlPiece (SomeChatId chatid) = toUrlPiece chatid
   toUrlPiece (SomeChatUsername name) = name
   
+-- | This object represents a forum topic.
+data ForumTopic = ForumTopic
+  { forumTopicMessageThreadId   :: MessageThreadId -- ^ Unique identifier of the forum topic
+  , forumTopicName              :: Text            -- ^ Name of the topic
+  , forumTopicIconColor         :: Integer         -- ^ Color of the topic icon in RGB format.
+  , forumTopicIconCustomEmojiId :: Maybe Text      -- ^ Unique identifier of the custom emoji shown as the topic icon.
+  }
+  deriving Generic
+
 -- | This object represents a bot command.
 data BotCommand = BotCommand
   { botCommandCommand :: Text -- ^ Text of the command; 1-32 characters. Can contain only lowercase English letters, digits and underscores.
@@ -1269,6 +1314,9 @@ foldMap deriveJSON'
   , ''Poll
   , ''PollOption
   , ''MessageAutoDeleteTimerChanged
+  , ''ForumTopicCreated
+  , ''ForumTopicClosed
+  , ''ForumTopicReopened
   , ''Invoice
   , ''SuccessfulPayment
   , ''OrderInfo
@@ -1288,6 +1336,7 @@ foldMap deriveJSON'
   , ''ChatLocation
   , ''StickerSet
   , ''BotCommand
+  , ''ForumTopic
   , ''ChatInviteLink
   , ''LabeledPrice
   , ''ShippingOption

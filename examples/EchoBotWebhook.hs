@@ -71,6 +71,7 @@ handleAction action model = case action of
       (sendSticker
         (SendStickerRequest
           (SomeChatId chat)
+          Nothing
           file
           Nothing
           Nothing

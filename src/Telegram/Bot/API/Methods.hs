@@ -102,6 +102,7 @@ instance FromJSON ParseMode
 -- | Request parameters for 'sendMessage'.
 data SendMessageRequest = SendMessageRequest
   { sendMessageChatId                :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
+  , sendMessageMessageThreadId       :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendMessageText                  :: Text -- ^ Text of the message to be sent.
   , sendMessageParseMode             :: Maybe ParseMode -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendMessageEntities              :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
@@ -119,6 +120,7 @@ instance FromJSON SendMessageRequest where parseJSON = gparseJSON
 -- | Request parameters for 'forwardMessage'.
 data ForwardMessageRequest = ForwardMessageRequest
   { forwardMessageChatId              :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername).
+  , forwardMessageMessageThreadId     :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , forwardMessageFromChatId          :: SomeChatId -- ^ Unique identifier for the chat where the original message was sent (or channel username in the format @\@channelusername).
   , forwardMessageDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , forwardMessageProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
@@ -154,6 +156,7 @@ sendDocument r = do
 -- | Request parameters for 'sendDocument'
 data SendDocumentRequest = SendDocumentRequest
   { sendDocumentChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
+  , sendDocumentMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendDocumentDocument :: DocumentFile -- ^ Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
   , sendDocumentThumb :: Maybe FilePath -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
   , sendDocumentCaption :: Maybe Text -- ^ Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
@@ -190,12 +193,14 @@ instance ToMultipart Tmp SendDocumentRequest where
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <>
-      (   (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendDocumentThumb)
+      (   (maybe id (\t -> ((Input "message_thread_id") (T.pack $ show t):)) sendDocumentMessageThreadId)
+        $ (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendDocumentThumb)
         $ (maybe id (\t -> ((Input "caption" t):)) sendDocumentCaption)
         $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentParseMode)
         $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentCaptionEntities)
         $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendDocumentDisableNotification)
         $ (maybe id (\t -> ((Input "disable_content_type_detection" (bool "false" "true" t)):)) sendDocumentDisableContentTypeDetection)
+        $ (maybe id (\t -> ((Input "protect_content" (bool "false" "true" t)):)) sendDocumentProtectContent)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyToMessageId)
         $ (maybe id (\t -> ((Input "allow_sending_without_reply" (bool "false" "true" t)):)) sendDocumentAllowSendingWithoutReply)
         $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyMarkup)
@@ -213,6 +218,7 @@ instance ToJSON   SendDocumentRequest where toJSON = gtoJSON
 toSendDocument :: SomeChatId -> DocumentFile -> SendDocumentRequest
 toSendDocument ch df = SendDocumentRequest
   { sendDocumentChatId = ch
+  , sendDocumentMessageThreadId = Nothing
   , sendDocumentDocument = df
   , sendDocumentThumb = Nothing
   , sendDocumentCaption = Nothing
@@ -264,6 +270,7 @@ pattern PhotoFile x y = MakePhotoFile (InputFile x y)
 -- | Request parameters for 'sendPhoto'
 data SendPhotoRequest = SendPhotoRequest
   { sendPhotoChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
+  , sendPhotoMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendPhotoPhoto :: PhotoFile -- ^ Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
   , sendPhotoThumb :: Maybe FilePath -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
   , sendPhotoCaption :: Maybe Text -- ^ Photo caption (may also be used when resending Photos by file_id), 0-1024 characters after entities parsing
@@ -285,11 +292,13 @@ instance ToMultipart Tmp SendPhotoRequest where
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <>
-      (   (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendPhotoThumb)
+      (   (maybe id (\t -> ((Input "message_thread_id" (T.pack $ show t)):)) sendPhotoMessageThreadId)
+        $ (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendPhotoThumb)
         $ (maybe id (\t -> ((Input "caption" t):)) sendPhotoCaption)
         $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)):)) sendPhotoParseMode)
         $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoCaptionEntities)
         $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendPhotoDisableNotification)
+        $ (maybe id (\t -> ((Input "protect_content" (bool "false" "true" t)):)) sendPhotoProtectContent)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyToMessageId)
         $ (maybe id (\t -> ((Input "allow_sending_without_reply" (bool "false" "true" t)):)) sendPhotoAllowSendingWithoutReply)
         $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyMarkup)
@@ -316,7 +325,8 @@ sendPhoto r = do
 
 -- | Request parameters for 'copyMessage'.
 data CopyMessageRequest = CopyMessageRequest
-  { copyMessageChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { copyMessageChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , copyMessageMessageThreadId :: Maybe Message -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , copyMessageFromChatId :: SomeChatId -- ^ Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
   , copyMessageMessageId :: MessageId -- ^ Message identifier in the chat specified in from_chat_id
   , copyMessageCaption :: Maybe Text -- ^ New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
@@ -332,7 +342,8 @@ data CopyMessageRequest = CopyMessageRequest
 
 -- | Request parameters for 'sendAudio'.
 data SendAudioRequest = SendAudioRequest
-  { sendAudioChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendAudioChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendAudioMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendAudioAudio :: InputFile -- ^ Audio to send. Pass a file_id as String to send an audio that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a audio from the Internet, or upload a new audio using multipart/form-data. More info on Sending Files »
   , sendAudioDuration :: Maybe Int -- ^ Duration of sent audio in seconds
   , sendAudioPerformer :: Maybe Text -- ^ Performer
@@ -361,7 +372,9 @@ instance ToMultipart Tmp SendAudioRequest where
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
-      [ sendAudioCaption <&>
+      [ sendAudioMessageThreadId <&>
+        \t -> Input "message_thread_id" (T.pack $ show t)
+      , sendAudioCaption <&>
         \t -> Input "caption" t
       , sendAudioParseMode <&>
         \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
@@ -376,7 +389,7 @@ instance ToMultipart Tmp SendAudioRequest where
       , sendAudioDisableNotification <&>
         \t -> Input "disable_notification" (bool "false" "true" t)
       , sendAudioProtectContent <&>
-        \t -> Input "protected_content" (bool "false" "true" t)
+        \t -> Input "protect_content" (bool "false" "true" t)
       , sendAudioReplyToMessageId <&>
         \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
       , sendAudioAllowSendingWithoutReply <&>
@@ -417,6 +430,7 @@ sendAudio r = case (sendAudioAudio r, sendAudioThumb r) of
 -- | Request parameters for 'sendVideo'.
 data SendVideoRequest = SendVideoRequest
   { sendVideoChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  , sendVideoMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVideoVideo :: InputFile -- ^ Video to send. Pass a file_id as String to send an video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. More info on Sending Files »
   , sendVideoDuration :: Maybe Int -- ^ Duration of sent video in seconds
   , sendVideoWidth :: Maybe Int -- ^ Video width
@@ -446,7 +460,9 @@ instance ToMultipart Tmp SendVideoRequest where
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
-      [ sendVideoCaption <&>
+      [ sendVideoMessageThreadId <&>
+        \t -> Input "message_thread_id" (T.pack $ show t)
+      , sendVideoCaption <&>
         \t -> Input "caption" t
       , sendVideoParseMode <&>
         \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
@@ -463,7 +479,7 @@ instance ToMultipart Tmp SendVideoRequest where
       , sendVideoSupportsStreaming <&>
         \t -> Input "supports_streaming" (bool "false" "true" t)
       , sendVideoProtectContent <&>
-        \t -> Input "protected_content" (bool "false" "true" t)
+        \t -> Input "protect_content" (bool "false" "true" t)
       , sendVideoReplyToMessageId <&>
         \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
       , sendVideoAllowSendingWithoutReply <&>
@@ -501,6 +517,7 @@ sendVideo r = case (sendVideoVideo r, sendVideoThumb r) of
 -- | Request parameters for 'sendAnimation'.
 data SendAnimationRequest = SendAnimationRequest
   { sendAnimationChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  , sendAnimationMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendAnimationAnimation :: InputFile -- ^ Animation to send. Pass a file_id as String to send an animation that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an animation from the Internet, or upload a new animation using multipart/form-data. More info on Sending Files »
   , sendAnimationDuration :: Maybe Int -- ^ Duration of sent animation in seconds
   , sendAnimationWidth :: Maybe Int -- ^ Animation width
@@ -529,7 +546,9 @@ instance ToMultipart Tmp SendAnimationRequest where
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
-      [ sendAnimationCaption <&>
+      [ sendAnimationMessageThreadId <&>
+        \t -> Input "message_thread_id" (T.pack $ show t)
+      , sendAnimationCaption <&>
         \t -> Input "caption" t
       , sendAnimationParseMode <&>
         \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
@@ -544,7 +563,7 @@ instance ToMultipart Tmp SendAnimationRequest where
       , sendAnimationDisableNotification <&>
         \t -> Input "disable_notification" (bool "false" "true" t)
       , sendAnimationProtectContent <&>
-        \t -> Input "protected_content" (bool "false" "true" t)
+        \t -> Input "protect_content" (bool "false" "true" t)
       , sendAnimationReplyToMessageId <&>
         \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
       , sendAnimationAllowSendingWithoutReply <&>
@@ -580,7 +599,8 @@ sendAnimation r = case (sendAnimationAnimation r, sendAnimationThumb r) of
 
 -- | Request parameters for 'sendVoice'.
 data SendVoiceRequest = SendVoiceRequest
-  { sendVoiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendVoiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendVoiceMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVoiceVoice :: InputFile -- ^ Audio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More info on Sending Files »
   , sendVoiceCaption :: Maybe Text -- ^ Voice message caption, 0-1024 characters after entities parsing
   , sendVoiceParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
@@ -605,7 +625,9 @@ instance ToMultipart Tmp SendVoiceRequest where
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
-      [ sendVoiceCaption <&>
+      [ sendVoiceMessageThreadId <&>
+        \t -> Input "message_thread_id" (T.pack $ show t)
+      , sendVoiceCaption <&>
         \t -> Input "caption" t
       , sendVoiceParseMode <&>
         \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
@@ -614,7 +636,7 @@ instance ToMultipart Tmp SendVoiceRequest where
       , sendVoiceDuration <&>
         \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
       , sendVoiceProtectContent <&>
-        \t -> Input "protected_content" (bool "false" "true" t)
+        \t -> Input "protect_content" (bool "false" "true" t)
       , sendVoiceDisableNotification <&>
         \t -> Input "disable_notification" (bool "false" "true" t)
       , sendVoiceReplyToMessageId <&>
@@ -653,7 +675,8 @@ sendVoice r = case sendVoiceVoice r of
 
 -- | Request parameters for 'sendVideoNote'.
 data SendVideoNoteRequest = SendVideoNoteRequest
-  { sendVideoNoteChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendVideoNoteChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendVideoNoteMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVideoNoteVideoNote :: InputFile -- ^ Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. More info on Sending Files ». Sending video notes by a URL is currently unsupported
   , sendVideoNoteDuration :: Maybe Int -- ^ Duration of sent video in seconds
   , sendVideoNoteLength :: Maybe Int -- ^ Video width and height, i.e. diameter of the video message
@@ -678,10 +701,12 @@ instance ToMultipart Tmp SendVideoNoteRequest where
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
-      [ sendVideoNoteDisableNotification <&>
+      [ sendVideoNoteMessageThreadId <&>
+        \t -> Input "message_thread_id" (T.pack $ show t)
+      , sendVideoNoteDisableNotification <&>
         \t -> Input "disable_notification" (bool "false" "true" t)
       , sendVideoNoteProtectContent <&>
-        \t -> Input "protected_content" (bool "false" "true" t)
+        \t -> Input "protect_content" (bool "false" "true" t)
       , sendVideoNoteReplyToMessageId <&>
         \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
       , sendVideoNoteAllowSendingWithoutReply <&>
@@ -716,7 +741,8 @@ sendVideoNote r = case (sendVideoNoteVideoNote r, sendVideoNoteThumb r) of
 
 -- | Request parameters for 'sendMediaGroup'.
 data SendMediaGroupRequest = SendMediaGroupRequest
-  { sendMediaGroupChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendMediaGroupChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendMediaGroupMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendMediaGroupMedia :: [InputMedia] -- ^ A JSON-serialized array describing messages to be sent, must include 2-10 items. InputMediaAudio, InputMediaDocument, InputMediaPhoto or InputMediaVideo.
   , sendMediaGroupDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendMediaGroupProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
@@ -742,7 +768,8 @@ sendMediaGroup = client (Proxy @SendMediaGroup)
 
 -- | Request parameters for 'sendLocation'.
 data SendLocationRequest = SendLocationRequest
-  { sendLocationChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendLocationChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendLocationMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendLocationLatitude :: Float -- ^ Latitude of new location
   , sendLocationLongitude :: Float -- ^ Longitude of new location
   , sendLocationHorizontalAccuracy :: Maybe Float -- ^ The radius of uncertainty for the location, measured in meters; 0-1500
@@ -782,7 +809,8 @@ data StopMessageLiveLocationRequest = StopMessageLiveLocationRequest
 
 -- | Request parameters for 'sendVenue'.
 data SendVenueRequest = SendVenueRequest
-  { sendVenueChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendVenueChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendVenueMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVenueLatitude :: Float -- ^ Latitude of the venue
   , sendVenueLongitude :: Float -- ^ Longitude of the venue
   , sendVenueTitle :: Text -- ^ Name of the venue
@@ -801,7 +829,8 @@ data SendVenueRequest = SendVenueRequest
 
 -- | Request parameters for 'sendContact'.
 data SendContactRequest = SendContactRequest
-  { sendContactChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendContactChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendContactMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendContactPhoneNumber :: Text -- ^ Contact's phone number
   , sendContactFirstName  :: Text -- ^ Contact's first name
   , sendContactLastName  :: Text -- ^ Contact's last name
@@ -816,7 +845,8 @@ data SendContactRequest = SendContactRequest
 
 -- | Request parameters for 'sendPoll'.
 data SendPollRequest = SendPollRequest
-  { sendPollChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendPollChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendPollMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendPollQuestion :: Text -- ^ Poll question, 1-300 characters
   , sendPollOptions :: [Text] -- ^ A JSON-serialized list of answer options, 2-10 strings 1-100 characters each
   , sendPollIsAnonymous :: Maybe Bool -- ^ True, if the poll needs to be anonymous, defaults to True
@@ -839,7 +869,8 @@ data SendPollRequest = SendPollRequest
 
 -- | Request parameters for 'sendDice'.
 data SendDiceRequest = SendDiceRequest
-  { sendDiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendDiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendDiceMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendDiceEmoji :: Maybe Text -- ^ Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”. Dice can have values 1-6 for “🎲”, “🎯” and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults to “🎲”
   , sendDiceDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendDiceProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding
@@ -912,19 +943,20 @@ data RestrictChatMemberRequest = RestrictChatMemberRequest
 
 -- | Request parameters for 'promoteChatMember'.
 data PromoteChatMemberRequest = PromoteChatMemberRequest
-  { promoteChatMemberChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-  , promoteChatMemberUserId :: UserId -- ^ Unique identifier of the target user
-  , promoteChatMemberIsAnonymous :: Maybe Bool -- ^ Pass True, if the administrator's presence in the chat is hidden
-  , promoteChatMemberCanManageChat :: Maybe Bool -- ^ Pass True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege
-  , promoteChatMemberCanPostMessages :: Maybe Bool -- ^ Pass True, if the administrator can create channel posts, channels only
-  , promoteChatMemberCanEditMessages :: Maybe Bool -- ^ Pass True, if the administrator can edit messages of other users and can pin messages, channels only
-  , promoteChatMemberCanDeleteMessages :: Maybe Bool -- ^ Pass True, if the administrator can delete messages of other users
-  , promoteChatMemberCanManageVideoChats :: Maybe Bool -- ^ Pass True, if the administrator can manage video chats
-  , promoteChatMemberCanRestrictMembers :: Maybe Bool -- ^ Pass True, if the administrator can restrict, ban or unban chat members
-  , promoteChatMemberCanPromoteMembers :: Maybe Bool -- ^ Pass True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by him)
-  , promoteChatMemberCanChangeInfo :: Maybe Bool -- ^ Pass True, if the administrator can change chat title, photo and other settings
-  , promoteChatMemberCanInviteUsers :: Maybe Bool -- ^ Pass True, if the administrator can invite new users to the chat
-  , promoteChatMemberCanPinMessages :: Maybe Bool -- ^ Pass True, if the administrator can pin messages, supergroups only
+  { promoteChatMemberChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , promoteChatMemberUserId :: UserId -- ^ Unique identifier of the target user.
+  , promoteChatMemberIsAnonymous :: Maybe Bool -- ^ Pass 'True', if the administrator's presence in the chat is hidden.
+  , promoteChatMemberCanManageChat :: Maybe Bool -- ^ Pass 'True', if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege.
+  , promoteChatMemberCanPostMessages :: Maybe Bool -- ^ Pass 'True', if the administrator can create channel posts, channels only.
+  , promoteChatMemberCanEditMessages :: Maybe Bool -- ^ Pass 'True', if the administrator can edit messages of other users and can pin messages, channels only.
+  , promoteChatMemberCanDeleteMessages :: Maybe Bool -- ^ Pass 'True', if the administrator can delete messages of other users.
+  , promoteChatMemberCanManageVideoChats :: Maybe Bool -- ^ Pass 'True', if the administrator can manage video chats.
+  , promoteChatMemberCanRestrictMembers :: Maybe Bool -- ^ Pass 'True', if the administrator can restrict, ban or unban chat members.
+  , promoteChatMemberCanPromoteMembers :: Maybe Bool -- ^ Pass 'True', if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by him).
+  , promoteChatMemberCanChangeInfo :: Maybe Bool -- ^ Pass 'True', if the administrator can change chat title, photo and other settings.
+  , promoteChatMemberCanInviteUsers :: Maybe Bool -- ^ Pass 'True', if the administrator can invite new users to the chat.
+  , promoteChatMemberCanPinMessages :: Maybe Bool -- ^ Pass 'True', if the administrator can pin messages, supergroups only.
+  , promoteChatMemberCanManageTopics :: Maybe Bool -- ^ Pass 'True', if the user is allowed to create, rename, close, and reopen forum topics, supergroups only.
   }
   deriving Generic
 
