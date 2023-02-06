@@ -150,3 +150,94 @@ type UnpinAllForumTopicMessages
 -- | Use this method to clear the list of pinned messages in a forum topic. The bot must be an administrator in the chat for this to work and must have the @can_pin_messages@ administrator right in the supergroup. Returns 'True' on success.
 unpinAllForumTopicMessages :: UnpinAllForumTopicMessagesRequest -> ClientM (Response Bool)
 unpinAllForumTopicMessages = client (Proxy @UnpinAllForumTopicMessages)
+
+-- ** 'editGeneralForumTopic'
+
+data EditGeneralForumTopicRequest = EditGeneralForumTopicRequest
+  { editGeneralForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  , editGeneralForumTopicRequestName :: Text -- ^ New topic name, 1-128 characters.
+  }
+  deriving Generic
+
+instance ToJSON EditGeneralForumTopicRequest where toJSON = gtoJSON
+
+type EditGeneralForumTopic
+  = "editGeneralForumTopic"
+  :> ReqBody '[JSON] EditGeneralForumTopicRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to edit the name of the @General@ topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have @can_manage_topics@ administrator rights. Returns 'True' on success.
+editGeneralForumTopic :: EditGeneralForumTopicRequest -> ClientM (Response Bool)
+editGeneralForumTopic = client (Proxy @EditGeneralForumTopic)
+
+-- ** 'closeGeneralForumTopic'
+
+data CloseGeneralForumTopicRequest = CloseGeneralForumTopicRequest
+  { closeGeneralForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  }
+  deriving Generic
+
+instance ToJSON CloseGeneralForumTopicRequest where toJSON = gtoJSON
+
+type CloseGeneralForumTopic
+  = "closeGeneralForumTopic"
+  :> ReqBody '[JSON] CloseGeneralForumTopicRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to close an open @General@ topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the @can_manage_topics@ administrator rights. Returns 'True' on success.
+closeGeneralForumTopic :: CloseGeneralForumTopicRequest -> ClientM (Response Bool)
+closeGeneralForumTopic = client (Proxy @CloseGeneralForumTopic)
+
+-- ** 'reopenGeneralForumTopic'
+
+data ReopenGeneralForumTopicRequest = ReopenGeneralForumTopicRequest
+  { reopenGeneralForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  }
+  deriving Generic
+
+instance ToJSON ReopenGeneralForumTopicRequest where toJSON = gtoJSON
+
+type ReopenGeneralForumTopic
+  = "reopenGeneralForumTopic"
+  :> ReqBody '[JSON] ReopenGeneralForumTopicRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to reopen a closed @General@ topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the @can_manage_topics@ administrator rights. The topic will be automatically unhidden if it was hidden. Returns 'True' on success.
+reopenGeneralForumTopic :: ReopenGeneralForumTopicRequest -> ClientM (Response Bool)
+reopenGeneralForumTopic = client (Proxy @ReopenGeneralForumTopic)
+
+-- ** 'hideGeneralForumTopic'
+
+data HideGeneralForumTopicRequest = HideGeneralForumTopicRequest
+  { hideGeneralForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  }
+  deriving Generic
+
+instance ToJSON HideGeneralForumTopicRequest where toJSON = gtoJSON
+
+type HideGeneralForumTopic
+  = "hideGeneralForumTopic"
+  :> ReqBody '[JSON] HideGeneralForumTopicRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to hide the @General@ topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the @can_manage_topics@ administrator rights. The topic will be automatically closed if it was open. Returns 'True' on success.
+hideGeneralForumTopic :: HideGeneralForumTopicRequest -> ClientM (Response Bool)
+hideGeneralForumTopic = client (Proxy @HideGeneralForumTopic)
+
+-- ** 'unhideGeneralForumTopic'
+
+data UnhideGeneralForumTopicRequest = UnhideGeneralForumTopicRequest
+  { unhideGeneralForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+  }
+  deriving Generic
+
+instance ToJSON UnhideGeneralForumTopicRequest where toJSON = gtoJSON
+
+type UnhideGeneralForumTopic
+  = "unhideGeneralForumTopic"
+  :> ReqBody '[JSON] UnhideGeneralForumTopicRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Use this method to unhide the @General@ topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the @can_manage_topics@ administrator rights. Returns 'True' on success.
+unhideGeneralForumTopic :: UnhideGeneralForumTopicRequest -> ClientM (Response Bool)
+unhideGeneralForumTopic = client (Proxy @UnhideGeneralForumTopic)
