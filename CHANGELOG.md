@@ -1,3 +1,18 @@
+0.8
+---
+
+- Make package complaing with Telegram Bot API 6.4 (breaking changes included) (see [#134](https://github.com/fizruk/telegram-bot-simple/pull/134)):
+
+    - `ReplyKeyboardMarkup` extended with `is_persistent`;
+    - `Message` extended with `has_media_spoiler`;
+    - `Chat` extended with `has_hidden_members` and `has_aggressive_anti_spam_enabled`;
+    - `editForumTopic` method: fields `name` and `icon_custom_emoji_id` become optional;
+    - `has_spoiler` field added to:
+       - data constructors: `InputMediaPhoto`, `InputMediaVideo` and `InputMediaAnimation`;
+       - method: `sendPhoto`, `sendVideo` and `sendAnimation`;
+    - Following message events added `ForumTopicEdited`, `GeneralForumTopicHidden` and `GeneralForumTopicUnhidden`;
+    - General topic forum management, i.e. added following functions: `editGeneralForumTopic`, `closeGeneralForumTopic`, `reopenGeneralForumTopic`, `hideGeneralForumTopic` and `unhideGeneralForumTopic`;
+
 0.7
 ---
 
