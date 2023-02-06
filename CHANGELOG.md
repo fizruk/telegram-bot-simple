@@ -1,3 +1,16 @@
+0.7
+---
+
+- Make package complaint with Telegram Bot API 6.3 (breaking changes included) (see [#133](https://github.com/fizruk/telegram-bot-simple/pull/133)):
+
+    - `Chat` extended with `is_forum`, `active_usernames` and `emoji_status_custom_emoji_id`;
+    - `Message` extended with `forum_topic_created`, `forum_topic_closed` and `forum_topic_reopened`;
+    - Following message events added `ForumTopicCreated`, `ForumTopicClosed` and `ForumTopicReopened`;
+    - `can_manage_topics` field added to `ChatAdministratorRights`, `ChatPermissions` and `ChatMember` data types;
+    - `PromoteChatMemberRequest` extended with `can_manage_topics` too;
+    - `message_thread_id` field added to following methods requests: `sendMessage`, `sendPhoto`, `sendVideo`, `sendAnimation`, `sendAudio`, `sendDocument`, `sendSticker`, `sendVideoNote`, `sendVoice`, `sendLocation`, `sendVenue`, `sendContact`, `sendPoll`, `sendDice`, `sendInvoice`, `sendGame`, `sendMediaGroup`, `copyMessage` and `forwardMessage`;
+    - Forum management, i.e. added following functions: `createForumTopic`, `editForumTopic`, `closeForumTopic`, `reopenForumTopic`, `deleteForumTopic`, `unpinAllForumTopicMessages` and `getForumTopicIconStickers`;
+
 0.6.2
 ---
 
