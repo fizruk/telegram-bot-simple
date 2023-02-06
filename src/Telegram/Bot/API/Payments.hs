@@ -21,6 +21,7 @@ import Telegram.Bot.API.MakingRequests
 
 data SendInvoiceRequest = SendInvoiceRequest
   { sendInvoiceRequestChatId                    :: ChatId                     -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendInvoiceRequestMessageThreadId           :: Maybe MessageThreadId      -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendInvoiceRequestTitle                     :: Text                       -- ^ Product name, 1-32 characters.
   , sendInvoiceRequestDescription               :: Text                       -- ^ Product description, 1-255 characters.
   , sendInvoiceRequestPayload                   :: Text                       -- ^ Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.

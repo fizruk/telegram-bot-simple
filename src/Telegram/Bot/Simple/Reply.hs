@@ -37,6 +37,7 @@ updateEditMessageId update
 -- This is just like 'SendMessageRequest' but without 'SomeChatId' specified.
 data ReplyMessage = ReplyMessage
   { replyMessageText                  :: Text -- ^ Text of the message to be sent.
+  , replyMessageMessageThreadId       :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , replyMessageParseMode             :: Maybe ParseMode -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , replyMessageEntities              :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
   , replyMessageDisableWebPagePreview :: Maybe Bool -- ^ Disables link previews for links in this message.
@@ -53,11 +54,12 @@ instance IsString ReplyMessage where
 -- | Create a 'ReplyMessage' with just some 'Text' message.
 toReplyMessage :: Text -> ReplyMessage
 toReplyMessage text
-  = ReplyMessage text Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
+  = ReplyMessage text Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
 
 replyMessageToSendMessageRequest :: SomeChatId -> ReplyMessage -> SendMessageRequest
 replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageRequest
   { sendMessageChatId = someChatId
+  , sendMessageMessageThreadId = replyMessageMessageThreadId
   , sendMessageText = replyMessageText
   , sendMessageParseMode = replyMessageParseMode
   , sendMessageEntities = replyMessageEntities
