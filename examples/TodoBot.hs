@@ -107,6 +107,7 @@ todoBot3 = BotApp
       , replyKeyboardMarkupOneTimeKeyboard = Just True
       , replyKeyboardMarkupSelective = Nothing
       , replyKeyboardMarkupInputFieldSelector = Nothing
+      , replyKeyboardMarkupIsPersistent = Nothing
       }
 
 addItem :: Item -> Model -> Model

@@ -157,7 +157,8 @@ data Message = Message
   , messageVideoNote             :: Maybe VideoNote -- ^ Message is a video note, information about the video message
   , messageVoice                 :: Maybe Voice -- ^ Message is a voice message, information about the file
   , messageCaption               :: Maybe Text -- ^ Caption for the audio, document, photo, video or voice, 0-200 characters
-  , messageCaptionEntities       :: Maybe [MessageEntity] -- ^ For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption
+  , messageCaptionEntities       :: Maybe [MessageEntity] -- ^ For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption.
+  , messageHasMediaSpoiler       :: Maybe Bool -- ^ 'True', if the message media is covered by a spoiler animation.
   , messageContact               :: Maybe Contact -- ^ Message is a shared contact, information about the contact
   , messageDice                  :: Maybe Dice -- ^ Message is a dice with random value.
   , messageGame                  :: Maybe Game -- ^ Message is a game, information about the game. More about games »  , messageLocation              :: Maybe Location -- ^ Message is a shared location, information about the location
@@ -173,6 +174,8 @@ data Message = Message
   , messageSupergroupChatCreated :: Maybe Bool -- ^ Service message: the supergroup has been created. This field can‘t be received in a message coming through updates, because bot can’t be a member of a supergroup when it is created. It can only be found in reply_to_message if someone replies to a very first message in a directly created supergroup.
   , messageChannelChatCreated    :: Maybe Bool -- ^ Service message: the channel has been created. This field can‘t be received in a message coming through updates, because bot can’t be a member of a channel when it is created. It can only be found in reply_to_message if someone replies to a very first message in a channel.
   , messageAutoDeleteTimerChanged :: Maybe MessageAutoDeleteTimerChanged -- ^ Service message: auto-delete timer settings changed in the chat.
+  , messageHasAggressiveAntiSpamEnabled :: Maybe Bool -- ^ 'True', if aggressive anti-spam checks are enabled in the supergroup. The field is only available to chat administrators. Returned only in 'getChat'.
+  , messageHasHiddenMembers      :: Maybe Bool -- ^ 'True', if non-administrators can only get the list of bots and administrators in the chat. Returned only in 'getChat'.
   , messageMigrateToChatId       :: Maybe ChatId -- ^ The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
   , messageMigrateFromChatId     :: Maybe ChatId -- ^ The supergroup has been migrated from a group with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
   , messagePinnedMessage         :: Maybe Message -- ^ Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply.
@@ -197,11 +200,14 @@ data Message = Message
 newtype MessageId = MessageId Integer
   deriving (Eq, Show, ToJSON, FromJSON, Hashable)
 
+instance ToHttpApiData MessageId where
+  toUrlPiece a = pack . show @Integer $ coerce a
+
 -- | Unique identifier of a message thread to which the message belongs; for supergroups only.
 newtype MessageThreadId = MessageThreadId Integer
   deriving (Eq, Show, ToJSON, FromJSON, Hashable)
 
-instance ToHttpApiData MessageId where
+instance ToHttpApiData MessageThreadId where
   toUrlPiece a = pack . show @Integer $ coerce a
 
 -- | The unique identifier of a media message group a message belongs to.
@@ -472,9 +478,31 @@ data ForumTopicCreated = ForumTopicCreated
 newtype ForumTopicClosed = ForumTopicClosed Object
   deriving (Generic, Show)
 
+-- ** 'ForumTopicEdited'
+
+-- | This object represents a service message about an edited forum topic.
+data ForumTopicEdited = ForumTopicEdited
+  { forumTopicEditedName              :: Maybe Text -- ^ New name of the topic, if it was edited.
+  , forumTopicEditedIconCustomEmojiId :: Maybe Text -- ^ New identifier of the custom emoji shown as the topic icon, if it was edited; an empty string if the icon was removed.
+  }
+  deriving (Generic, Show)
+
 -- ** 'ForumTopicReopened'
 
+-- | This object represents a service message about a forum topic reopened in the chat. Currently holds no information.
 newtype ForumTopicReopened = ForumTopicReopened Object
+  deriving (Generic, Show)
+
+-- ** 'GeneralForumTopicHidden'
+
+-- | This object represents a service message about General forum topic hidden in the chat. Currently holds no information.
+newtype GeneralForumTopicHidden = GeneralForumTopicHidden Object
+  deriving (Generic, Show)
+
+-- ** 'GeneralForumTopicUnhidden'
+
+-- | This object represents a service message about General forum topic unhidden in the chat. Currently holds no information.
+newtype GeneralForumTopicUnhidden = GeneralForumTopicUnhidden Object
   deriving (Generic, Show)
 
 -- ** 'VideoChatScheduled'
@@ -559,7 +587,8 @@ instance ToJSON InputFile where
 
 -- | This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
 data ReplyKeyboardMarkup = ReplyKeyboardMarkup
-  { replyKeyboardMarkupKeyboard           :: [[KeyboardButton]] -- ^ Array of button rows, each represented by an Array of KeyboardButton objects
+  { replyKeyboardMarkupKeyboard           :: [[KeyboardButton]] -- ^ Array of button rows, each represented by an Array of KeyboardButton objects.
+  , replyKeyboardMarkupIsPersistent      :: Maybe Bool         -- ^ Requests clients to always show the keyboard when the regular keyboard is hidden. Defaults to 'False', in which case the custom keyboard can be hidden and opened with a keyboard icon.
   , replyKeyboardMarkupResizeKeyboard     :: Maybe Bool         -- ^ Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). Defaults to false, in which case the custom keyboard is always of the same height as the app's standard keyboard.
   , replyKeyboardMarkupOneTimeKeyboard    :: Maybe Bool         -- ^ Requests clients to hide the keyboard as soon as it's been used. The keyboard will still be available, but clients will automatically display the usual letter-keyboard in the chat – the user can press a special button in the input field to see the custom keyboard again. Defaults to false.
   , replyKeyboardMarkupInputFieldSelector :: Maybe Text         -- ^ The placeholder to be shown in the input field when the keyboard is active; 1-64 characters.
@@ -1252,19 +1281,24 @@ data InputMediaGenericThumb = InputMediaGenericThumb
   }
 
 data InputMedia
-  = InputMediaPhoto InputMediaGeneric -- ^ Represents a photo to be sent.
+  = InputMediaPhoto -- ^ Represents a photo to be sent.
+    { inputMediaPhotoGeneric :: InputMediaGeneric
+    , inputMediaPhotoHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the video needs to be covered with a spoiler animation.
+    }
   | InputMediaVideo -- ^ Represents a video to be sent.
     { inputMediaVideoGeneric :: InputMediaGenericThumb
     , inputMediaVideoWidth :: Maybe Integer -- ^ Video width
     , inputMediaVideoHeight :: Maybe Integer -- ^ Video height
     , inputMediaVideoDuration :: Maybe Integer -- ^ Video duration in seconds
-    , inputMediaVideoSupportsStreaming :: Maybe Bool -- ^ Pass True, if the uploaded video is suitable for streaming
+    , inputMediaVideoSupportsStreaming :: Maybe Bool -- ^ Pass 'True', if the uploaded video is suitable for streaming.
+    , inputMediaVideoHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the video needs to be covered with a spoiler animation.
     }
   | InputMediaAnimation -- ^ Represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent.
     { inputMediaAnimationGeneric :: InputMediaGenericThumb
     , inputMediaAnimationWidth :: Maybe Integer -- ^ Animation width
     , inputMediaAnimationHeight :: Maybe Integer -- ^ Animation height
     , inputMediaAnimationDuration :: Maybe Integer -- ^ Animation duration in seconds
+    , inputMediaAnimationHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the video needs to be covered with a spoiler animation.
     }
   | InputMediaAudio -- ^ Represents an audio file to be treated as music to be sent.
     { inputMediaAudioGeneric :: InputMediaGenericThumb
@@ -1315,8 +1349,11 @@ foldMap deriveJSON'
   , ''PollOption
   , ''MessageAutoDeleteTimerChanged
   , ''ForumTopicCreated
+  , ''ForumTopicEdited
   , ''ForumTopicClosed
   , ''ForumTopicReopened
+  , ''GeneralForumTopicHidden
+  , ''GeneralForumTopicUnhidden
   , ''Invoice
   , ''SuccessfulPayment
   , ''OrderInfo
@@ -1379,22 +1416,24 @@ instance ToMultipart Tmp InputMediaGenericThumb where
 
 instance ToJSON InputMedia where
   toJSON = \case
-    InputMediaPhoto img ->
-      addJsonFields (toJSON img) (addType "photo" [])
-    InputMediaVideo imgt width height duration streaming ->
+    InputMediaPhoto img spoiler ->
+      addJsonFields (toJSON img) (addType "photo" [ "has_spoiler" .= spoiler])
+    InputMediaVideo imgt width height duration streaming spoiler ->
       addJsonFields (toJSON imgt)
                 (addType "video"
                 [ "width" .= width
                 , "height" .= height
                 , "duration" .= duration
                 , "support_streaming" .= streaming
+                , "has_spoiler" .= spoiler
                 ])
-    InputMediaAnimation imgt width height duration ->
+    InputMediaAnimation imgt width height duration spoiler ->
       addJsonFields (toJSON imgt)
                 (addType "animation"
                 [ "width" .= width
                 , "height" .= height
                 , "duration" .= duration
+                , "has_spoiler" .= spoiler
                 ])
     InputMediaAudio imgt duration performer title ->
       addJsonFields (toJSON imgt)
@@ -1412,11 +1451,14 @@ instance ToJSON InputMedia where
 instance ToMultipart Tmp InputMedia where
   toMultipart = let
     in \case
-    InputMediaPhoto img ->
+    InputMediaPhoto img spoiler ->
       addMultipartFields
-      [ Input "type" "photo"
-      ] (toMultipart img)
-    InputMediaVideo imgt width height duration streaming ->
+      (Input "type" "photo"
+       : catMaybes
+        [ spoiler <&>
+          \t -> Input "has_spoiler" (bool "false" "true" t)
+        ]) (toMultipart img)
+    InputMediaVideo imgt width height duration streaming spoiler ->
       addMultipartFields
       (Input "type" "video"
       : catMaybes 
@@ -1428,8 +1470,10 @@ instance ToMultipart Tmp InputMedia where
         \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
       , streaming <&>
         \t -> Input "support_streaming" (bool "false" "true" t)
+      , spoiler <&>
+        \t -> Input "has_spoiler" (bool "false" "true" t)
       ]) (toMultipart imgt)
-    InputMediaAnimation imgt width height duration ->
+    InputMediaAnimation imgt width height duration spoiler ->
       addMultipartFields
       (Input "type" "animation"
       : catMaybes 
@@ -1439,6 +1483,8 @@ instance ToMultipart Tmp InputMedia where
         \t -> Input "height" (TL.toStrict $ encodeToLazyText t)
       , duration <&>
         \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
+      , spoiler <&>
+        \t -> Input "has_spoiler" (bool "false" "true" t)
       ]) (toMultipart imgt)
     InputMediaAudio imgt duration performer title ->
       addMultipartFields

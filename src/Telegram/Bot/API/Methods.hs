@@ -276,6 +276,7 @@ data SendPhotoRequest = SendPhotoRequest
   , sendPhotoCaption :: Maybe Text -- ^ Photo caption (may also be used when resending Photos by file_id), 0-1024 characters after entities parsing
   , sendPhotoParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendPhotoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
+  , sendPhotoHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the photo needs to be covered with a spoiler animation.
   , sendPhotoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendPhotoProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.  
   , sendPhotoReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
@@ -297,6 +298,7 @@ instance ToMultipart Tmp SendPhotoRequest where
         $ (maybe id (\t -> ((Input "caption" t):)) sendPhotoCaption)
         $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)):)) sendPhotoParseMode)
         $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoCaptionEntities)
+        $ (maybe id (\t -> ((Input "has_spoiler" (bool "false" "true" t)):)) sendPhotoHasSpoiler)
         $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendPhotoDisableNotification)
         $ (maybe id (\t -> ((Input "protect_content" (bool "false" "true" t)):)) sendPhotoProtectContent)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyToMessageId)
@@ -439,6 +441,7 @@ data SendVideoRequest = SendVideoRequest
   , sendVideoCaption :: Maybe Text -- ^ Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
   , sendVideoParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendVideoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+  , sendVideoHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the video needs to be covered with a spoiler animation.
   , sendVideoSupportsStreaming :: Maybe Bool -- ^ Pass True, if the uploaded video is suitable for streaming
   , sendVideoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendVideoProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
@@ -468,6 +471,8 @@ instance ToMultipart Tmp SendVideoRequest where
         \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
       , sendVideoCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
+      , sendVideoHasSpoiler <&>
+        \t -> Input "has_spoiler" (bool "false" "true" t)
       , sendVideoDuration <&>
         \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
       , sendVideoWidth <&>
@@ -526,6 +531,7 @@ data SendAnimationRequest = SendAnimationRequest
   , sendAnimationCaption :: Maybe Text -- ^ Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
   , sendAnimationParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendAnimationCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+  , sendAnimationHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the animation needs to be covered with a spoiler animation.
   , sendAnimationDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendAnimationProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendAnimationReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
@@ -554,6 +560,8 @@ instance ToMultipart Tmp SendAnimationRequest where
         \t -> Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)
       , sendAnimationCaptionEntities <&>
         \t -> Input "caption_entities" (TL.toStrict $ encodeToLazyText t)
+      , sendAnimationHasSpoiler <&>
+        \t -> Input "has_spoiler" (bool "false" "true" t)
       , sendAnimationDuration <&>
         \t -> Input "duration" (TL.toStrict $ encodeToLazyText t)
       , sendAnimationWidth <&>
@@ -882,6 +890,7 @@ data SendDiceRequest = SendDiceRequest
 
 type SendChatAction = "sendChatAction"
   :> RequiredQueryParam "chat_id" SomeChatId
+  :> QueryParam "message_thread_id" MessageThreadId
   :> RequiredQueryParam "action" Text
   :> Post '[JSON] (Response Bool)
 
@@ -902,7 +911,8 @@ type SendChatAction = "sendChatAction"
 --   We only recommend using this method when a
 --   response from the bot will take a noticeable
 --   amount of time to arrive.
-sendChatAction :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+sendChatAction :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  -> Maybe MessageThreadId -- ^ Unique identifier for the target message thread; supergroups only.
   -> Text -- ^ Type of action to broadcast. Choose one, depending on what the user is about to receive: typing for text messages, upload_photo for photos, record_video or upload_video for videos, record_voice or upload_voice for voice notes, upload_document for general files, choose_sticker for stickers, find_location for location data, record_video_note or upload_video_note for video notes.
   -> ClientM (Response  Bool)
 sendChatAction = client (Proxy @SendChatAction)
