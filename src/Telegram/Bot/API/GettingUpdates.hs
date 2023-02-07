@@ -33,7 +33,7 @@ data Update = Update
   , updateChannelPost       :: Maybe Message -- ^ New incoming channel post of any kind — text, photo, sticker, etc.
   , updateEditedChannelPost :: Maybe Message -- ^ New version of a channel post that is known to the bot and was edited
 
-  , updateInlineQuery :: Maybe InlineQuery -- ^ New incoming inline query
+  , updateInlineQuery       :: Maybe InlineQuery -- ^ New incoming inline query
 
   , updateChosenInlineResult :: Maybe ChosenInlineResult -- ^ The result of an inline query that was chosen by a user and sent to their chat partner. Please see our documentation on the feedback collecting for details on how to enable these updates for your bot.
 
@@ -41,6 +41,11 @@ data Update = Update
 
   , updateShippingQuery     :: Maybe ShippingQuery -- ^ New incoming shipping query. Only for invoices with flexible price
   , updatePreCheckoutQuery  :: Maybe PreCheckoutQuery -- ^ New incoming pre-checkout query. Contains full information about checkout
+  , updatePoll              :: Maybe Poll -- ^ New poll state. Bots receive only updates about stopped polls and polls, which are sent by the bot.
+  , updatePollAnswer        :: Maybe PollAnswer -- ^ A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself.
+  , updateMyChatMember      :: Maybe ChatMemberUpdated -- ^ The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
+  , updateChatMember        :: Maybe ChatMemberUpdated -- ^ A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
+  , updateChatJoinRequest   :: Maybe ChatJoinRequest -- ^ A request to join the chat has been sent. The bot must have the can_invite_users administrator right in the chat to receive these updates.
   } deriving (Generic, Show)
 
 instance ToJSON   Update where toJSON = gtoJSON
