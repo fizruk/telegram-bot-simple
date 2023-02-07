@@ -927,7 +927,12 @@ data ChatJoinRequest = ChatJoinRequest
 -- | Describes actions that a non-administrator user is allowed to take in a chat.
 data ChatPermissions = ChatPermissions
   { chatPermissionsCanSendMessages :: Maybe Bool       -- ^ 'True', if the user is allowed to send text messages, contacts, locations and venues.
-  , chatPermissionsCanSendMediaMessages :: Maybe Bool  -- ^ 'True', if the user is allowed to send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages.
+  , chatPermissionsCanSendAudios     :: Maybe Bool     -- ^ 'True', if the user is allowed to send audios.
+  , chatPermissionsCanSendDocuments  :: Maybe Bool     -- ^ 'True', if the user is allowed to send documents.
+  , chatPermissionsCanSendPhotos     :: Maybe Bool     -- ^ 'True', if the user is allowed to send photos.
+  , chatPermissionsCanSendVideos     :: Maybe Bool     -- ^ 'True', if the user is allowed to send videos.
+  , chatPermissionsCanSendVideoNotes :: Maybe Bool     -- ^ 'True', if the user is allowed to send video notes.
+  , chatPermissionsCanSendVoiceNotes :: Maybe Bool     -- ^ 'True', if the user is allowed to send voice notes.
   , chatPermissionsCanSendPolls :: Maybe Bool          -- ^ 'True', if the user is allowed to send polls, implies can_send_messages.
   , chatPermissionsCanSendOtherMessages :: Maybe Bool  -- ^ 'True', if the user is allowed to send animations, games, stickers and use inline bots, implies can_send_media_messages.
   , chatPermissionsCanAddWebPagePreviews :: Maybe Bool -- ^ 'True', if the user is allowed to add web page previews to their messages, implies can_send_media_messages.
