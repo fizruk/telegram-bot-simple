@@ -1,7 +1,26 @@
+0.9
+---
+
+- Make package complaint with Telegram Bot API 6.5 (breaking changes included) (see [#135](https://github.com/fizruk/telegram-bot-simple/pull/135)):
+
+    - `KeyboardButton` extended with `request_user` and `request_chat` fields;
+    - `KeyboardButtonRequestUser` and `KeyboardButtonRequestChat` types added;
+    - `Message` extended with `user_shared` and `chat_shared` fields;
+    - `ChatMember` and `ChatPermissions`: `can_send_media_messages` replaced with following fields:
+        - `can_send_audios`;
+        - `can_send_documents`;
+        - `can_send_photos`;
+        - `can_send_videos`;
+        - `can_send_video_notes`;
+        - `can_send_voice_notes`;
+    - `use_independent_chat_permissions` field added to `setChatPermissions` and `restrictChatMember` methods;
+    - `ChatJoinRequest` extended with `user_chat_id` field.
+    - `Update` type fixed and aligned with the spec.
+
 0.8
 ---
 
-- Make package complaing with Telegram Bot API 6.4 (breaking changes included) (see [#134](https://github.com/fizruk/telegram-bot-simple/pull/134)):
+- Make package complaint with Telegram Bot API 6.4 (breaking changes included) (see [#134](https://github.com/fizruk/telegram-bot-simple/pull/134)):
 
     - `ReplyKeyboardMarkup` extended with `is_persistent`;
     - `Message` extended with `has_media_spoiler`;
