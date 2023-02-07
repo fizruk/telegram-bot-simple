@@ -181,10 +181,14 @@ data Message = Message
   , messagePinnedMessage         :: Maybe Message -- ^ Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply.
   , messageInvoice               :: Maybe Invoice -- ^ Message is an invoice for a payment, information about the invoice.
   , messageSuccessfulPayment     :: Maybe SuccessfulPayment -- ^ Message is a service message about a successful payment, information about the payment.
+  , messageUserShared            :: Maybe UserShared -- ^ Service message: a user was shared with the bot.
+  , messageChatShared            :: Maybe ChatShared -- ^ Service message: a chat was shared with the bot.
   , messageConnectedWebsite      :: Maybe Text -- ^ The domain name of the website on which the user has logged in.
+  , messageWriteAccessAllowed    :: Maybe WriteAccessAllowed -- ^ Service message: the user allowed the bot added to the attachment menu to write messages.
   , messagePassportData          :: Maybe PassportData -- ^ Telegram Passport data.
   , messageProximityAlertTriggered :: Maybe ProximityAlertTriggered -- ^ Service message. A user in the chat triggered another user's proximity alert while sharing Live Location.
   , messageForumTopicCreated     :: Maybe ForumTopicCreated -- ^ Service message: forum topic created.
+  , messageForumTopicEdited     :: Maybe ForumTopicEdited -- ^ Service message: forum topic edited.
   , messageForumTopicClosed     :: Maybe ForumTopicClosed -- ^ Service message: forum topic closed.
   , messageForumTopicReopened     :: Maybe ForumTopicReopened -- ^ Service message: forum topic reopened.
   , messageVideoChatScheduled    :: Maybe VideoChatScheduled -- ^ Service message: video chat scheduled.
@@ -212,6 +216,10 @@ instance ToHttpApiData MessageThreadId where
 
 -- | The unique identifier of a media message group a message belongs to.
 newtype MediaGroupId = MediaGroupId Text
+  deriving (Eq, Show, ToJSON, FromJSON)
+
+-- | Signed 32-bit identifier of the request, which will be received back in the 'UserShared' or 'ChatShared' object. Must be unique within the message.
+newtype RequestId = RequestId Integer
   deriving (Eq, Show, ToJSON, FromJSON)
 
 -- ** MessageEntity
@@ -505,6 +513,30 @@ newtype GeneralForumTopicHidden = GeneralForumTopicHidden Object
 newtype GeneralForumTopicUnhidden = GeneralForumTopicUnhidden Object
   deriving (Generic, Show)
 
+-- ** 'UserShared'
+
+-- | This object contains information about the user whose identifier was shared with the bot using a 'KeyboardButtonRequestUser' button.
+data UserShared = UserShared
+  { userSharedRequestId :: RequestId -- ^ Identifier of the request.
+  , userSharedUserId :: UserId -- ^ Identifier of the shared user. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier. The bot may not have access to the user and could be unable to use this identifier, unless the user is already known to the bot by some other means.
+  }
+  deriving (Generic, Show)
+
+-- ** 'ChatShared'
+
+-- | This object contains information about the chat whose identifier was shared with the bot using a 'KeyboardButtonRequestChat' button.
+data ChatShared = ChatShared
+  { chatSharedRequestId :: RequestId -- ^ Identifier of the request.
+  , chatSharedChatId :: ChatId -- ^ Identifier of the shared chat. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier. The bot may not have access to the chat and could be unable to use this identifier, unless the chat is already known to the bot by some other means.
+  }
+  deriving (Generic, Show)
+
+-- ** 'WriteAccessAllowed'
+
+-- | This object represents a service message about a user allowing a bot added to the attachment menu to write messages. Currently holds no information.
+newtype WriteAccessAllowed = WriteAccessAllowed Object
+  deriving (Generic, Show)
+
 -- ** 'VideoChatScheduled'
 
 -- | This object represents a service message about a video chat scheduled in the chat.
@@ -598,6 +630,31 @@ data ReplyKeyboardMarkup = ReplyKeyboardMarkup
   }
   deriving (Generic, Show)
 
+-- ** 'KeyboardButtonRequestUser'
+
+-- | This object defines the criteria used to request a suitable user. The identifier of the selected user will be shared with the bot when the corresponding button is pressed.
+data KeyboardButtonRequestUser = KeyboardButtonRequestUser
+  { keyboardButtonRequestUserRequestId :: RequestId -- ^ Signed 32-bit identifier of the request, which will be received back in the 'UserShared' object. Must be unique within the message
+  , keyboardButtonRequestUserUserIsBot :: Maybe Bool -- ^ Pass 'True' to request a bot, pass 'False' to request a regular user. If not specified, no additional restrictions are applied.
+  , keyboardButtonRequestUserUserIsPremium :: Maybe Bool -- ^ Pass 'True' to request a premium user, pass 'False' to request a non-premium user. If not specified, no additional restrictions are applied.
+  }
+  deriving (Generic, Show)
+
+-- ** 'KeyboardButtonRequestChat'
+
+-- | This object defines the criteria used to request a suitable chat. The identifier of the selected chat will be shared with the bot when the corresponding button is pressed.
+data KeyboardButtonRequestChat = KeyboardButtonRequestChat
+  { keyboardButtonRequestChatRequestId :: RequestId -- ^ Signed 32-bit identifier of the request, which will be received back in the 'ChatShared' object. Must be unique within the message
+  , keyboardButtonRequestChatChatIsChannel :: Bool -- ^ Pass 'True' to request a channel chat, pass 'False' to request a group or a supergroup chat. 
+  , keyboardButtonRequestChatChatIsForum :: Maybe Bool -- ^ Pass 'True' to request a forum supergroup, pass 'False' to request a non-forum chat. If not specified, no additional restrictions are applied.
+  , keyboardButtonRequestChatChatHasUsername :: Maybe Bool -- ^ Pass 'True' to request a supergroup or a channel with a username, pass 'False' to request a chat without a username. If not specified, no additional restrictions are applied.
+  , keyboardButtonRequestChatChatIsCreated :: Maybe Bool -- ^ Pass 'True' to request a chat owned by the user. Otherwise, no additional restrictions are applied.
+  , keyboardButtonRequestChatUserAdministratorRights :: Maybe ChatAdministratorRights -- ^ A JSON-serialized object listing the required administrator rights of the user in the chat. The rights must be a superset of @bot_administrator_rights@. If not specified, no additional restrictions are applied.
+  , keyboardButtonRequestChatBotAdministratorRights :: Maybe ChatAdministratorRights -- ^ A JSON-serialized object listing the required administrator rights of the bot in the chat. The rights must be a subset of @user_administrator_rights@. If not specified, no additional restrictions are applied.
+  , keyboardButtonRequestChatBotIsMember :: Maybe Bool -- ^ Pass 'True' to request a chat with the bot as a member. Otherwise, no additional restrictions are applied.
+  }
+  deriving (Generic, Show)
+
 -- ** 'KeyboardButton'
 
 newtype WebAppInfo = WebAppInfo { webAppInfoUrl :: Text }
@@ -608,6 +665,8 @@ newtype WebAppInfo = WebAppInfo { webAppInfoUrl :: Text }
 -- to specify text of the button. Optional fields are mutually exclusive.
 data KeyboardButton = KeyboardButton
   { keyboardButtonText            :: Text       -- ^ Text of the button. If none of the optional fields are used, it will be sent as a message when the button is pressed.
+  , keyboardButtonRequestUser     :: Maybe KeyboardButtonRequestUser -- ^ If specified, pressing the button will open a list of suitable users. Tapping on any user will send their identifier to the bot in a “user_shared” service message. Available in private chats only.
+  , keyboardButtonRequestChat     :: Maybe KeyboardButtonRequestChat -- ^ If specified, pressing the button will open a list of suitable chats. Tapping on a chat will send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
   , keyboardButtonRequestContact  :: Maybe Bool -- ^ If 'True', the user's phone number will be sent as a contact when the button is pressed. Available in private chats only.
   , keyboardButtonRequestLocation :: Maybe Bool -- ^ If 'True', the user's current location will be sent when the button is pressed. Available in private chats only.
   , keyboardButtonRequestPoll     :: Maybe PollType -- ^ If specified, the user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only.
@@ -616,7 +675,7 @@ data KeyboardButton = KeyboardButton
   deriving (Generic, Show)
 
 instance IsString KeyboardButton where
-  fromString s = KeyboardButton (fromString s) Nothing Nothing Nothing Nothing
+  fromString s = KeyboardButton (fromString s) Nothing Nothing Nothing Nothing Nothing Nothing
 
 -- ** 'MenuButton'
 
@@ -825,7 +884,12 @@ data ChatMember = ChatMember
   -- restricted
   , chatMemberIsMember              :: Maybe Bool -- ^ Restricted only. 'True', if the user is a member of the chat at the moment of the request.
   , chatMemberCanSendMessages       :: Maybe Bool -- ^ Restricted only. 'True', if the user can send text messages, contacts, locations and venues.
-  , chatMemberCanSendMediaMessages  :: Maybe Bool -- ^ Restricted only. 'True', if the user can send audios, documents, photos, videos, video notes and voice notes, implies can_send_messages.
+  , chatMemberCanSendAudios         :: Maybe Bool -- ^ Restricted only. 'True', if the user is allowed to send audios.
+  , chatMemberCanSendDocuments      :: Maybe Bool -- ^ Restricted only. 'True', if the user is allowed to send documents.
+  , chatMemberCanSendPhotos         :: Maybe Bool -- ^ Restricted only. 'True', if the user is allowed to send photos.
+  , chatMemberCanSendVideos         :: Maybe Bool -- ^ Restricted only. 'True', if the user is allowed to send videos.
+  , chatMemberCanSendVideoNotes     :: Maybe Bool -- ^ Restricted only. 'True', if the user is allowed to send video notes.
+  , chatMemberCanSendVoiceNotes     :: Maybe Bool -- ^ Restricted only. 'True', if the user is allowed to send voice notes.
   , chatMemberCanSendPolls          :: Maybe Bool -- ^ Restricted only. 'True', if the user is allowed to send polls.
   , chatMemberCanSendOtherMessages  :: Maybe Bool -- ^ Restricted only. 'True', if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages.
   , chatMemberCanAddWebPagePreviews :: Maybe Bool -- ^ Restricted only. 'True', if user may add web page previews to his messages, implies can_send_media_messages.
@@ -851,6 +915,7 @@ data ChatMemberUpdated = ChatMemberUpdated
 data ChatJoinRequest = ChatJoinRequest
   { chatJoinRequestChat       :: Chat                 -- ^ Chat to which the request was sent.
   , chatJoinRequestFrom       :: User                 -- ^ User that sent the join request.
+  , chatJoinRequestUserChatId :: ChatId               -- ^ Identifier of a private chat with the user who sent the join request. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier. The bot can use this identifier for 24 hours to send messages until the join request is processed, assuming no other administrator contacted the user.
   , chatJoinRequestDate       :: POSIXTime            -- ^ Date the request was sent in Unix time.
   , chatJoinRequestBio        :: Maybe Text           -- ^ Bio of the user.
   , chatJoinRequestInviteLink :: Maybe ChatInviteLink -- ^ Chat invite link that was used by the user to send the join request.
@@ -1332,6 +1397,8 @@ foldMap deriveJSON'
   , ''File
   , ''ReplyKeyboardMarkup
   , ''KeyboardButton
+  , ''KeyboardButtonRequestUser
+  , ''KeyboardButtonRequestChat
   , ''ReplyKeyboardRemove
   , ''InlineKeyboardMarkup
   , ''InlineKeyboardButton
@@ -1339,6 +1406,7 @@ foldMap deriveJSON'
   , ''ForceReply
   , ''ChatPhoto
   , ''ChatMember
+  , ''ChatMemberUpdated
   , ''ResponseParameters
   , ''MaskPosition
   , ''CallbackGame
@@ -1346,6 +1414,8 @@ foldMap deriveJSON'
   , ''Dice
   , ''Game
   , ''Poll
+  , ''PollAnswer
+  , ''ChatJoinRequest
   , ''PollOption
   , ''MessageAutoDeleteTimerChanged
   , ''ForumTopicCreated
@@ -1354,6 +1424,9 @@ foldMap deriveJSON'
   , ''ForumTopicReopened
   , ''GeneralForumTopicHidden
   , ''GeneralForumTopicUnhidden
+  , ''UserShared
+  , ''ChatShared
+  , ''WriteAccessAllowed
   , ''Invoice
   , ''SuccessfulPayment
   , ''OrderInfo
