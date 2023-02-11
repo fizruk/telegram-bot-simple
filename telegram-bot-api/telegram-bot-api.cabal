@@ -4,6 +4,8 @@ name:           telegram-bot-api
 version:        6.5
 synopsis:       Easy to use library for building Telegram bots. Exports Telegram Bot API.
 description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
+                .
+                For official Bot API see Telegram Bot API at <https://core.telegram.org/bots/api>
 category:       Web
 homepage:       https://github.com/fizruk/telegram-bot-simple#readme
 bug-reports:    https://github.com/fizruk/telegram-bot-simple/issues
@@ -14,7 +16,6 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    README.md
     CHANGELOG.md
 
 source-repository head
