@@ -23,8 +23,8 @@ import Telegram.Bot.API.InlineMode.InlineQueryResult (InlineQueryResult)
 -- ** 'AnswerWebAppQueryRequest'
 
 data AnswerWebAppQueryRequest = AnswerWebAppQueryRequest
-  { answerWebAppQueryRequestWebAppQueryId :: Text              -- ^ Unique identifier for the query to be answered.
-  , answerWebAppQueryRequestResult        :: InlineQueryResult -- ^ A JSON-serialized object describing the message to be sent.
+  { answerWebAppQueryWebAppQueryId :: Text              -- ^ Unique identifier for the query to be answered.
+  , answerWebAppQueryResult        :: InlineQueryResult -- ^ A JSON-serialized object describing the message to be sent.
   }
   deriving (Generic, Show)
 

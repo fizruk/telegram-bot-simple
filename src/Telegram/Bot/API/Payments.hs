@@ -20,34 +20,34 @@ import Telegram.Bot.API.MakingRequests
 -- ** 'sendInvoice'
 
 data SendInvoiceRequest = SendInvoiceRequest
-  { sendInvoiceRequestChatId                    :: ChatId                     -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
-  , sendInvoiceRequestMessageThreadId           :: Maybe MessageThreadId      -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
-  , sendInvoiceRequestTitle                     :: Text                       -- ^ Product name, 1-32 characters.
-  , sendInvoiceRequestDescription               :: Text                       -- ^ Product description, 1-255 characters.
-  , sendInvoiceRequestPayload                   :: Text                       -- ^ Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
-  , sendInvoiceRequestProviderToken             :: Text                       -- ^ Payments provider token, obtained via Botfather.
-  , sendInvoiceRequestCurrency                  :: Text                       -- ^ Three-letter ISO 4217 currency code, see more on currencies.
-  , sendInvoiceRequestPrices                    :: [LabeledPrice]             -- ^ Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.).
-  , sendInvoiceRequestMaxTipAmount              :: Maybe Integer              -- ^ The maximum accepted amount for tips in the smallest units of the currency (integer, not float\/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0.
-  , sendInvoiceRequestSuggestedTipAmounts       :: Maybe [Integer]            -- ^ A JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
-  , sendInvoiceRequestStartParameter            :: Maybe Text                 -- ^ Unique deep-linking parameter. If left empty, forwarded copies of the sent message will have a Pay button, allowing multiple users to pay directly from the forwarded message, using the same invoice. If non-empty, forwarded copies of the sent message will have a URL button with a deep link to the bot (instead of a Pay button), with the value used as the start parameter.
-  , sendInvoiceRequestProviderData              :: Maybe Text                 -- ^ A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
-  , sendInvoiceRequestPhotoUrl                  :: Maybe Text                 -- ^ URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
-  , sendInvoiceRequestPhotoSize                 :: Maybe Int                  -- ^ Photo size.
-  , sendInvoiceRequestPhotoWidth                :: Maybe Int                  -- ^ Photo width.
-  , sendInvoiceRequestPhotoHeight               :: Maybe Int                  -- ^ Photo height.
-  , sendInvoiceRequestNeedName                  :: Maybe Bool                 -- ^ Pass 'True', if you require the user's full name to complete the order.
-  , sendInvoiceRequestNeedPhoneNumber           :: Maybe Bool                 -- ^ Pass 'True', if you require the user's phone number to complete the order.
-  , sendInvoiceRequestNeedEmail                 :: Maybe Bool                 -- ^ Pass 'True', if you require the user's email address to complete the order.
-  , sendInvoiceRequestNeedShippingAddress       :: Maybe Bool                 -- ^ Pass 'True', if you require the user's shipping address to complete the order.
-  , sendInvoiceRequestSendPhoneNumberToProvider :: Maybe Bool                 -- ^ Pass 'True', if you require the user's phone number to complete the order.
-  , sendInvoiceRequestSendEmailToProvider       :: Maybe Bool                 -- ^ Pass 'True', if user's email address should be sent to provider.
-  , sendInvoiceRequestIsFlexible                :: Maybe Bool                 -- ^ Pass 'True', if the final price depends on the shipping method.
-  , sendInvoiceRequestDisableNotification       :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendInvoiceRequestProtectContent            :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.
-  , sendInvoiceRequestReplyToMessageId          :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
-  , sendInvoiceRequestAllowSendingWithoutReply  :: Maybe Bool                 -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
-  , sendInvoiceRequestReplyMarkup               :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
+  { sendInvoiceChatId                    :: ChatId                     -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  , sendInvoiceMessageThreadId           :: Maybe MessageThreadId      -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
+  , sendInvoiceTitle                     :: Text                       -- ^ Product name, 1-32 characters.
+  , sendInvoiceDescription               :: Text                       -- ^ Product description, 1-255 characters.
+  , sendInvoicePayload                   :: Text                       -- ^ Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+  , sendInvoiceProviderToken             :: Text                       -- ^ Payments provider token, obtained via Botfather.
+  , sendInvoiceCurrency                  :: Text                       -- ^ Three-letter ISO 4217 currency code, see more on currencies.
+  , sendInvoicePrices                    :: [LabeledPrice]             -- ^ Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.).
+  , sendInvoiceMaxTipAmount              :: Maybe Integer              -- ^ The maximum accepted amount for tips in the smallest units of the currency (integer, not float\/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0.
+  , sendInvoiceequestSuggestedTipAmounts       :: Maybe [Integer]            -- ^ A JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+  , sendInvoiceStartParameter            :: Maybe Text                 -- ^ Unique deep-linking parameter. If left empty, forwarded copies of the sent message will have a Pay button, allowing multiple users to pay directly from the forwarded message, using the same invoice. If non-empty, forwarded copies of the sent message will have a URL button with a deep link to the bot (instead of a Pay button), with the value used as the start parameter.
+  , sendInvoiceProviderData              :: Maybe Text                 -- ^ A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
+  , sendInvoicePhotoUrl                  :: Maybe Text                 -- ^ URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
+  , sendInvoicePhotoSize                 :: Maybe Int                  -- ^ Photo size.
+  , sendInvoicePhotoWidth                :: Maybe Int                  -- ^ Photo width.
+  , sendInvoicePhotoHeight               :: Maybe Int                  -- ^ Photo height.
+  , sendInvoiceNeedName                  :: Maybe Bool                 -- ^ Pass 'True', if you require the user's full name to complete the order.
+  , sendInvoiceNeedPhoneNumber           :: Maybe Bool                 -- ^ Pass 'True', if you require the user's phone number to complete the order.
+  , sendInvoiceNeedEmail                 :: Maybe Bool                 -- ^ Pass 'True', if you require the user's email address to complete the order.
+  , sendInvoiceNeedShippingAddress       :: Maybe Bool                 -- ^ Pass 'True', if you require the user's shipping address to complete the order.
+  , sendInvoiceSendPhoneNumberToProvider :: Maybe Bool                 -- ^ Pass 'True', if you require the user's phone number to complete the order.
+  , sendInvoiceSendEmailToProvider       :: Maybe Bool                 -- ^ Pass 'True', if user's email address should be sent to provider.
+  , sendInvoiceIsFlexible                :: Maybe Bool                 -- ^ Pass 'True', if the final price depends on the shipping method.
+  , sendInvoiceDisableNotification       :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
+  , sendInvoiceProtectContent            :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendInvoiceReplyToMessageId          :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
+  , sendInvoiceAllowSendingWithoutReply  :: Maybe Bool                 -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
+  , sendInvoiceReplyMarkup               :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
   }
   deriving (Generic, Show)
 
@@ -66,26 +66,26 @@ sendInvoice = client (Proxy @SendInvoice)
 -- ** 'createInvoiceLink'
 
 data CreateInvoiceLinkRequest = CreateInvoiceLinkRequest
-  { createInvoiceLinkRequestTitle                     :: Text            -- ^ Product name, 1-32 characters.
-  , createInvoiceLinkRequestDescription               :: Text            -- ^ Product description, 1-255 characters.
-  , createInvoiceLinkRequestPayload                   :: Text            -- ^ Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
-  , createInvoiceLinkRequestProviderToken             :: Text            -- ^ Payment provider token, obtained via BotFather.
-  , createInvoiceLinkRequestCurrency                  :: Text            -- ^ Three-letter ISO 4217 currency code, see more on currencies.
-  , createInvoiceLinkRequestPrices                    :: [LabeledPrice]  -- ^ Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.).
-  , createInvoiceLinkRequestMaxTipAmount              :: Maybe Integer   -- ^ The maximum accepted amount for tips in the smallest units of the currency (integer, not float\/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0.
-  , createInvoiceLinkRequestSuggestedTipAmounts       :: Maybe [Integer] -- ^ A JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float\/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed @max_tip_amount@.
-  , createInvoiceLinkRequestProviderData              :: Maybe Text      -- ^ JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
-  , createInvoiceLinkRequestPhotoUrl                  :: Maybe Text      -- ^ URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service.
-  , createInvoiceLinkRequestPhotoSize                 :: Maybe Int       -- ^ Photo size in bytes.
-  , createInvoiceLinkRequestPhotoWidth                :: Maybe Int       -- ^ Photo width.
-  , createInvoiceLinkRequestPhotoHeight               :: Maybe Int       -- ^ Photo height
-  , createInvoiceLinkRequestNeedName                  :: Maybe Bool      -- ^ Pass 'True' if you require the user's full name to complete the order.
-  , createInvoiceLinkRequestNeedPhoneNumber           :: Maybe Bool      -- ^ Pass 'True' if you require the user's phone number to complete the order.
-  , createInvoiceLinkRequestNeedEmail                 :: Maybe Bool      -- ^ Pass 'True' if you require the user's email address to complete the order.
-  , createInvoiceLinkRequestNeedShippingAddress       :: Maybe Bool      -- ^ Pass 'True' if you require the user's shipping address to complete the order.
-  , createInvoiceLinkRequestSendPhoneNumberToProvider :: Maybe Bool      -- ^ Pass 'True' if the user's phone number should be sent to the provider.
-  , createInvoiceLinkRequestSendEmailToProvider       :: Maybe Bool      -- ^ Pass 'True' if the user's email address should be sent to the provider.
-  , createInvoiceLinkRequestIsFlexible                :: Maybe Bool      -- ^ Pass 'True' if the final price depends on the shipping method.
+  { createInvoiceLinkTitle                     :: Text            -- ^ Product name, 1-32 characters.
+  , createInvoiceLinkDescription               :: Text            -- ^ Product description, 1-255 characters.
+  , createInvoiceLinkPayload                   :: Text            -- ^ Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+  , createInvoiceLinkProviderToken             :: Text            -- ^ Payment provider token, obtained via BotFather.
+  , createInvoiceLinkCurrency                  :: Text            -- ^ Three-letter ISO 4217 currency code, see more on currencies.
+  , createInvoiceLinkPrices                    :: [LabeledPrice]  -- ^ Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.).
+  , createInvoiceLinkMaxTipAmount              :: Maybe Integer   -- ^ The maximum accepted amount for tips in the smallest units of the currency (integer, not float\/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0.
+  , createInvoiceLinkSuggestedTipAmounts       :: Maybe [Integer] -- ^ A JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float\/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed @max_tip_amount@.
+  , createInvoiceLinkProviderData              :: Maybe Text      -- ^ JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
+  , createInvoiceLinkPhotoUrl                  :: Maybe Text      -- ^ URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service.
+  , createInvoiceLinkPhotoSize                 :: Maybe Int       -- ^ Photo size in bytes.
+  , createInvoiceLinkPhotoWidth                :: Maybe Int       -- ^ Photo width.
+  , createInvoiceLinkPhotoHeight               :: Maybe Int       -- ^ Photo height
+  , createInvoiceLinkNeedName                  :: Maybe Bool      -- ^ Pass 'True' if you require the user's full name to complete the order.
+  , createInvoiceLinkNeedPhoneNumber           :: Maybe Bool      -- ^ Pass 'True' if you require the user's phone number to complete the order.
+  , createInvoiceLinkNeedEmail                 :: Maybe Bool      -- ^ Pass 'True' if you require the user's email address to complete the order.
+  , createInvoiceLinkNeedShippingAddress       :: Maybe Bool      -- ^ Pass 'True' if you require the user's shipping address to complete the order.
+  , createInvoiceLinkSendPhoneNumberToProvider :: Maybe Bool      -- ^ Pass 'True' if the user's phone number should be sent to the provider.
+  , createInvoiceLinkSendEmailToProvider       :: Maybe Bool      -- ^ Pass 'True' if the user's email address should be sent to the provider.
+  , createInvoiceLinkIsFlexible                :: Maybe Bool      -- ^ Pass 'True' if the final price depends on the shipping method.
   }
   deriving (Generic, Show)
 
@@ -104,10 +104,10 @@ createInvoiceLink = client (Proxy @CreateInvoiceLink)
 -- ** 'answerShippingQuery'
 
 data AnswerShippingQueryRequest = AnswerShippingQueryRequest
-  { answerShippingQueryRequestShippingQueryId :: Text                   -- ^ Unique identifier for the query to be answered.
-  , answerShippingQueryRequestOk              :: Bool                   -- ^ Specify 'True' if delivery to the specified address is possible and 'False' if there are any problems (for example, if delivery to the specified address is not possible).
-  , answerShippingQueryRequestShippingOptions :: Maybe [ShippingOption] -- ^ Required if @ok@ is 'True'. A JSON-serialized array of available shipping options.
-  , answerShippingQueryRequestErrorMessage    :: Maybe Text             -- ^ Required if @ok@ is 'False'. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user.
+  { answerShippingQueryShippingQueryId :: Text                   -- ^ Unique identifier for the query to be answered.
+  , answerShippingQueryOk              :: Bool                   -- ^ Specify 'True' if delivery to the specified address is possible and 'False' if there are any problems (for example, if delivery to the specified address is not possible).
+  , answerShippingQueryShippingOptions :: Maybe [ShippingOption] -- ^ Required if @ok@ is 'True'. A JSON-serialized array of available shipping options.
+  , answerShippingQueryErrorMessage    :: Maybe Text             -- ^ Required if @ok@ is 'False'. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user.
   }
   deriving (Generic, Show)
 
@@ -126,9 +126,9 @@ answerShippingQuery = client (Proxy @AnswerShippingQuery)
 -- ** 'answerPreCheckoutQuery'
 
 data AnswerPreCheckoutQueryRequest = AnswerPreCheckoutQueryRequest
-  { answerPreCheckoutQueryRequestPreCheckoutQueryId :: Text       -- ^ Unique identifier for the query to be answered.
-  , answerPreCheckoutQueryRequestOk                 :: Bool       -- ^ Specify 'True' if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
-  , answerPreCheckoutQueryRequestErrorMessage       :: Maybe Text -- ^ Required if @ok@ is 'False'. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user.
+  { answerPreCheckoutQueryPreCheckoutQueryId :: Text       -- ^ Unique identifier for the query to be answered.
+  , answerPreCheckoutQueryOk                 :: Bool       -- ^ Specify 'True' if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
+  , answerPreCheckoutQueryErrorMessage       :: Maybe Text -- ^ Required if @ok@ is 'False'. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user.
   }
   deriving (Generic, Show)
 

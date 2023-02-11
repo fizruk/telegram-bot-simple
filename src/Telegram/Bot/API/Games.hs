@@ -22,27 +22,27 @@ import Telegram.Bot.API.Types (ChatId, GameHighScore, InlineKeyboardMarkup, Mess
 -- ** 'SendGameRequest'
 
 data SendGameRequest = SendGameRequest
-  { sendGameRequestChatId                   :: ChatId                     -- ^ Unique identifier for the target chat.
-  , sendGameRequestMessageThreadId          :: Maybe MessageThreadId      -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
-  , sendGameRequestGameShortName            :: Text                       -- ^ Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
-  , sendGameRequestDisableNotification      :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
+  { sendGameChatId                   :: ChatId                     -- ^ Unique identifier for the target chat.
+  , sendGameMessageThreadId          :: Maybe MessageThreadId      -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
+  , sendGameGameShortName            :: Text                       -- ^ Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
+  , sendGameDisableNotification      :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendGameProtectContent                  :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.  
-  , sendGameRequestReplyToMessageId         :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
-  , sendGameRequestAllowSendingWithoutReply :: Maybe Bool                 -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found
-  , sendGameRequestReplyMarkup              :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.
+  , sendGameReplyToMessageId         :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
+  , sendGameAllowSendingWithoutReply :: Maybe Bool                 -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found
+  , sendGameReplyMarkup              :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.
   }
   deriving (Generic, Show)
 
 -- ** 'SetGameScoreRequest'
 
 data SetGameScoreRequest = SetGameScoreRequest
-  { setGameScoreRequestUserId             :: UserId          -- ^ User identifier.
-  , setGameScoreRequestScore              :: Integer         -- ^ New score, must be non-negative.
-  , setGameScoreRequestForce              :: Maybe Bool      -- ^ Pass 'True', if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters.
-  , setGameScoreRequestDisableEditMessage :: Maybe Bool      -- ^ Pass 'True', if the game message should not be automatically edited to include the current scoreboard.
-  , setGameScoreRequestChatId             :: Maybe ChatId    -- ^ Required if @inline_message_id@ is not specified. Unique identifier for the target chat
-  , setGameScoreRequestMessageId          :: Maybe MessageId -- ^ Required if @inline_message_id@ is not specified. Identifier of the sent message.
-  , setGameScoreRequestInlineMessageId    :: Maybe MessageId -- ^ Required if @chat_id@ and @message_id@ are not specified. Identifier of the inline message.
+  { setGameScoreUserId             :: UserId          -- ^ User identifier.
+  , setGameScoreScore              :: Integer         -- ^ New score, must be non-negative.
+  , setGameScoreForce              :: Maybe Bool      -- ^ Pass 'True', if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters.
+  , setGameScoreDisableEditMessage :: Maybe Bool      -- ^ Pass 'True', if the game message should not be automatically edited to include the current scoreboard.
+  , setGameScoreChatId             :: Maybe ChatId    -- ^ Required if @inline_message_id@ is not specified. Unique identifier for the target chat
+  , setGameScoreMessageId          :: Maybe MessageId -- ^ Required if @inline_message_id@ is not specified. Identifier of the sent message.
+  , setGameScoreInlineMessageId    :: Maybe MessageId -- ^ Required if @chat_id@ and @message_id@ are not specified. Identifier of the inline message.
   }
   deriving (Generic, Show)
 
@@ -54,10 +54,10 @@ data SetGameScoreResult = SetGameScoreMessage Message | SetGameScoreMessageBool 
 -- ** 'GetGameHighScoresRequest'
 
 data GetGameHighScoresRequest = GetGameHighScoresRequest
-  { getGameHighScoresRequestUserId          :: UserId          -- ^ Target user id.
-  , getGameHighScoresRequestChatId          :: Maybe ChatId    -- ^ Required if @inline_message_id@ is not specified. Unique identifier for the target chat.
-  , getGameHighScoresRequestMessageId       :: Maybe MessageId -- ^ Required if @inline_message_id@ is not specified. Identifier of the sent message.
-  , getGameHighScoresRequestInlineMessageId :: Maybe MessageId -- ^ Required if @chat_id@ and @message_id@ are not specified. Identifier of the inline message.
+  { getGameHighScoresUserId          :: UserId          -- ^ Target user id.
+  , getGameHighScoresChatId          :: Maybe ChatId    -- ^ Required if @inline_message_id@ is not specified. Unique identifier for the target chat.
+  , getGameHighScoresMessageId       :: Maybe MessageId -- ^ Required if @inline_message_id@ is not specified. Identifier of the sent message.
+  , getGameHighScoresInlineMessageId :: Maybe MessageId -- ^ Required if @chat_id@ and @message_id@ are not specified. Identifier of the inline message.
   }
   deriving (Generic, Show)
 

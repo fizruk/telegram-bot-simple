@@ -123,14 +123,14 @@ handleAction BotSettings{..} action model = case action of
     return ()
   AGame targetChatId msg -> model <# do
     let sendGameRequest = SendGameRequest
-          { sendGameRequestChatId                   = coerce targetChatId
-          , sendGameRequestMessageThreadId          = Nothing
-          , sendGameRequestGameShortName            = gameId
-          , sendGameRequestDisableNotification      = Nothing
+          { sendGameChatId                   = coerce targetChatId
+          , sendGameMessageThreadId          = Nothing
+          , sendGameGameShortName            = gameId
+          , sendGameDisableNotification      = Nothing
           , sendGameProtectContent                  = Nothing
-          , sendGameRequestReplyToMessageId         = Nothing
-          , sendGameRequestAllowSendingWithoutReply = Nothing
-          , sendGameRequestReplyMarkup              = Nothing
+          , sendGameReplyToMessageId         = Nothing
+          , sendGameAllowSendingWithoutReply = Nothing
+          , sendGameReplyMarkup              = Nothing
           }
     _ <- liftClientM $ sendGame sendGameRequest
     return ()

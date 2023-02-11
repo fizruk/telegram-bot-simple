@@ -36,9 +36,9 @@ getForumTopicIconStickers = client (Proxy @GetForumTopicIconStickers)
 
 data CreateForumTopicRequest = CreateForumTopicRequest
   { createForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
-  , createForumTopicRequestName :: Text -- ^ Topic name, 1-128 characters.
-  , createForumTopicRequestIconColor :: Maybe Integer -- ^ Color of the topic icon in RGB format. Currently, must be one of @7322096 (0x6FB9F0), 16766590 (0xFFD67E), 13338331 (0xCB86DB), 9367192 (0x8EEE98), 16749490 (0xFF93B2), or 16478047 (0xFB6F5F)@.
-  , createForumTopicRequestIconCustomEmojiId :: Maybe Text -- ^ Unique identifier of the custom emoji shown as the topic icon. Use 'getForumTopicIconStickers' to get all allowed custom emoji identifiers.
+  , createForumTopicName :: Text -- ^ Topic name, 1-128 characters.
+  , createForumTopicIconColor :: Maybe Integer -- ^ Color of the topic icon in RGB format. Currently, must be one of @7322096 (0x6FB9F0), 16766590 (0xFFD67E), 13338331 (0xCB86DB), 9367192 (0x8EEE98), 16749490 (0xFF93B2), or 16478047 (0xFB6F5F)@.
+  , createForumTopicIconCustomEmojiId :: Maybe Text -- ^ Unique identifier of the custom emoji shown as the topic icon. Use 'getForumTopicIconStickers' to get all allowed custom emoji identifiers.
   }
   deriving Generic
 
@@ -78,8 +78,8 @@ editForumTopic = client (Proxy @EditForumTopic)
 -- ** 'closeForumTopic'
 
 data CloseForumTopicRequest = CloseForumTopicRequest
-  { closeForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
-  , closeForumTopicRequestMessageThreadId :: MessageThreadId -- ^ Unique identifier for the target message thread of the forum topic.
+  { closeForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  , closeForumTopicMessageThreadId :: MessageThreadId -- ^ Unique identifier for the target message thread of the forum topic.
   }
   deriving Generic
 
@@ -97,8 +97,8 @@ closeForumTopic = client (Proxy @CloseForumTopic)
 -- ** 'reopenForumTopic'
 
 data ReopenForumTopicRequest = ReopenForumTopicRequest
-  { reopenForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
-  , reopenForumTopicRequestMessageThreadId :: MessageThreadId -- ^ Unique identifier for the target message thread of the forum topic.
+  { reopenForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  , reopenForumTopicMessageThreadId :: MessageThreadId -- ^ Unique identifier for the target message thread of the forum topic.
   }
   deriving Generic
 
@@ -116,8 +116,8 @@ reopenForumTopic = client (Proxy @ReopenForumTopic)
 -- ** 'deleteForumTopic'
 
 data DeleteForumTopicRequest = DeleteForumTopicRequest
-  { deleteForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
-  , deleteForumTopicRequestMessageThreadId :: MessageThreadId -- ^ Unique identifier for the target message thread of the forum topic.
+  { deleteForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  , deleteForumTopicMessageThreadId :: MessageThreadId -- ^ Unique identifier for the target message thread of the forum topic.
   }
   deriving Generic
 
@@ -135,8 +135,8 @@ deleteForumTopic = client (Proxy @DeleteForumTopic)
 -- ** 'unpinAllForumTopicMessages'
 
 data UnpinAllForumTopicMessagesRequest = UnpinAllForumTopicMessagesRequest
-  { unpinAllForumTopicMessagesRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
-  , unpinAllForumTopicMessagesRequestMessageThreadId :: MessageThreadId -- ^ Unique identifier for the target message thread of the forum topic.
+  { unpinAllForumTopicMessagesChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+  , unpinAllForumTopicMessagesMessageThreadId :: MessageThreadId -- ^ Unique identifier for the target message thread of the forum topic.
   }
   deriving Generic
 
@@ -154,8 +154,8 @@ unpinAllForumTopicMessages = client (Proxy @UnpinAllForumTopicMessages)
 -- ** 'editGeneralForumTopic'
 
 data EditGeneralForumTopicRequest = EditGeneralForumTopicRequest
-  { editGeneralForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
-  , editGeneralForumTopicRequestName :: Text -- ^ New topic name, 1-128 characters.
+  { editGeneralForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  , editGeneralForumTopicName :: Text -- ^ New topic name, 1-128 characters.
   }
   deriving Generic
 
@@ -209,7 +209,7 @@ reopenGeneralForumTopic = client (Proxy @ReopenGeneralForumTopic)
 -- ** 'hideGeneralForumTopic'
 
 data HideGeneralForumTopicRequest = HideGeneralForumTopicRequest
-  { hideGeneralForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
+  { hideGeneralForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
   }
   deriving Generic
 
@@ -227,7 +227,7 @@ hideGeneralForumTopic = client (Proxy @HideGeneralForumTopic)
 -- ** 'unhideGeneralForumTopic'
 
 data UnhideGeneralForumTopicRequest = UnhideGeneralForumTopicRequest
-  { unhideGeneralForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+  { unhideGeneralForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
   }
   deriving Generic
 
