@@ -10,173 +10,68 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Methods
-  ( AnswerCallbackQuery
-  , ApproveChatJoinRequest
-  , BanChatMember
-  , BanChatSenderChat
-  , CopyMessage
-  , CreateChatInviteLink
-  , DeclineChatJoinRequest
-  , DeleteChatPhoto
-  , DeleteChatStickerSet
-  , DeleteMessage
-  , DeleteMyCommands
-  , EditChatInviteLink
-  , EditMessageLiveLocation
-  , ExportChatInviteLink
-  , ForwardMessage
-  , GetChat
-  , GetChatAdministrators
-  , GetChatMember
-  , GetChatMemberCount
-  , GetChatMenuButton
-  , GetFile
-  , GetMe
-  , GetMyCommands
-  , GetMyDefaultAdministratorRights
-  , GetUserProfilePhotos
-  , LeaveChat
-  , PinChatMessage
-  , PromoteChatMember
-  , RestrictChatMember
-  , RevokeChatInviteLink
-  , SendAnimationContent
-  , SendAnimationLink
-  , SendAudioContent
-  , SendAudioLink
-  , SendChatAction
-  , SendContact
-  , SendDice
-  , SendDocumentContent
-  , SendDocumentLink
-  , SendLocation
-  , SendMediaGroup
-  , SendMessage
-  , SendPhotoContent
-  , SendPhotoLink
-  , SendPoll
-  , SendVenue
-  , SendVideoContent
-  , SendVideoLink
-  , SendVideoNoteContent
-  , SendVideoNoteLink
-  , SendVoiceContent
-  , SendVoiceLink
-  , SetChatAdministratorCustomTitle
-  , SetChatDescription
-  , SetChatMenuButton
-  , SetChatPermissions
-  , SetChatPhoto
-  , SetChatStickerSet
-  , SetChatTitle
-  , SetMyCommands
-  , SetMyDefaultAdministratorRights
-  , StopMessageLiveLocation
-  , UnbanChatMember
-  , UnbanChatSenderChat
-  , UnpinAllChatMessages
-  , UnpinChatMessage
-
-  , ParseMode (..)
-  , SomeReplyMarkup (..)
-
-  , AnswerCallbackQueryRequest (..)
-  , BanChatMemberRequest (..)
-  , CopyMessageRequest (..)
-  , CreateChatInviteLinkRequest (..)
-  , DeleteMyCommandsRequest (..)
-  , EditChatInviteLinkRequest (..)
-  , EditMessageLiveLocationRequest (..)
-  , ForwardMessageRequest (..)
-  , GetChatMenuButtonRequest (..)
-  , GetMyCommandsRequest (..)
-  , GetMyDefaultAdministratorRightsRequest (..)
-  , GetUserProfilePhotosRequest (..)
-  , PinChatMessageRequest (..)
-  , PromoteChatMemberRequest (..)
-  , RestrictChatMemberRequest (..)
-  , SendAnimationRequest (..)
-  , SendAudioRequest (..)
-  , SendContactRequest (..)
-  , SendDiceRequest (..)
-  , SendDocumentRequest (..)
-  , SendLocationRequest (..)
-  , SendMediaGroupRequest (..)
-  , SendMessageRequest (..)
-  , SendPhotoRequest (..)
-  , SendPollRequest (..)
-  , SendVenueRequest (..)
-  , SendVideoRequest (..)
-  , SendVideoNoteRequest (..)
-  , SendVoiceRequest (..)
-  , SetChatAdministratorCustomTitleRequest (..)
-  , SetChatMenuButtonRequest (..)
-  , SetChatPermissionsRequest (..)
-  , SetChatPhotoRequest (..)
-  , SetMyCommandsRequest (..)
-  , SetMyDefaultAdministratorRightsRequest (..)
-  , StopMessageLiveLocationRequest (..)
-  , UnbanChatMemberRequest (..)
-
-  , answerCallbackQuery
-  , approveChatJoinRequest
-  , banChatMember
-  , banChatSenderChat
-  , copyMessage
-  , createChatInviteLink
-  , declineChatJoinRequest
-  , deleteChatPhoto
-  , deleteChatStickerSet
-  , deleteMessage
-  , deleteMyCommands
-  , editChatInviteLink
-  , editMessageLiveLocation
-  , exportChatInviteLink
-  , forwardMessage
-  , getChat
-  , getChatAdministrators
-  , getChatMember
-  , getChatMemberCount
-  , getChatMenuButton
-  , getFile
-  , getMe
-  , getMyCommands
-  , getMyDefaultAdministratorRights
-  , getUserProfilePhotos
-  , leaveChat
-  , pinChatMessage
-  , promoteChatMember
-  , restrictChatMember
-  , revokeChatInviteLink
-  , sendAnimation
-  , sendAudio
-  , sendChatAction
-  , sendContact
-  , sendDice
-  , sendDocument
-  , sendLocation
-  , sendMediaGroup
-  , sendMessage
-  , sendPhoto
-  , sendPoll
-  , sendVenue
-  , sendVideo
-  , sendVideoNote
-  , sendVoice
-  , setChatAdministratorCustomTitle
-  , setChatDescription
-  , setChatMenuButton
-  , setChatPermissions
-  , setChatPhoto
-  , setChatStickerSet
-  , setChatTitle
-  , setMyCommands
-  , setMyDefaultAdministratorRights
-  , stopMessageLiveLocation
-  , unbanChatMember
-  , unbanChatSenderChat
-  , unpinAllChatMessages
-  , unpinChatMessage
+  ( module Telegram.Bot.API.Types.ParseMode
+  , module Telegram.Bot.API.Types.SomeReplyMarkup
+  
+  , module Telegram.Bot.API.Methods.AnswerCallbackQuery
+  , module Telegram.Bot.API.Methods.ApproveChatJoinRequest
+  , module Telegram.Bot.API.Methods.BanChatMember
+  , module Telegram.Bot.API.Methods.BanChatSenderChat
+  , module Telegram.Bot.API.Methods.CopyMessage
+  , module Telegram.Bot.API.Methods.CreateChatInviteLink
+  , module Telegram.Bot.API.Methods.DeclineChatJoinRequest
+  , module Telegram.Bot.API.Methods.DeleteChatPhoto
+  , module Telegram.Bot.API.Methods.DeleteChatStickerSet
+  , module Telegram.Bot.API.Methods.DeleteMessage
+  , module Telegram.Bot.API.Methods.DeleteMyCommands
+  , module Telegram.Bot.API.Methods.EditChatInviteLink
+  , module Telegram.Bot.API.Methods.EditMessageLiveLocation
+  , module Telegram.Bot.API.Methods.ExportChatInviteLink
+  , module Telegram.Bot.API.Methods.ForwardMessage
+  , module Telegram.Bot.API.Methods.GetChat
+  , module Telegram.Bot.API.Methods.GetChatAdministrators
+  , module Telegram.Bot.API.Methods.GetChatMember
+  , module Telegram.Bot.API.Methods.GetChatMemberCount
+  , module Telegram.Bot.API.Methods.GetChatMenuButton
+  , module Telegram.Bot.API.Methods.GetFile
+  , module Telegram.Bot.API.Methods.GetMe
+  , module Telegram.Bot.API.Methods.GetMyCommands
+  , module Telegram.Bot.API.Methods.GetMyDefaultAdministratorRights
+  , module Telegram.Bot.API.Methods.GetUserProfilePhotos
+  , module Telegram.Bot.API.Methods.LeaveChat
+  , module Telegram.Bot.API.Methods.PinChatMessage
+  , module Telegram.Bot.API.Methods.PromoteChatMember
+  , module Telegram.Bot.API.Methods.RestrictChatMember
+  , module Telegram.Bot.API.Methods.RevokeChatInviteLink
+  , module Telegram.Bot.API.Methods.SendAnimation
+  , module Telegram.Bot.API.Methods.SendAudio
+  , module Telegram.Bot.API.Methods.SendChatAction
+  , module Telegram.Bot.API.Methods.SendContact
+  , module Telegram.Bot.API.Methods.SendDice
+  , module Telegram.Bot.API.Methods.SendDocument
+  , module Telegram.Bot.API.Methods.SendLocation
+  , module Telegram.Bot.API.Methods.SendMediaGroup
+  , module Telegram.Bot.API.Methods.SendMessage
+  , module Telegram.Bot.API.Methods.SendPhoto
+  , module Telegram.Bot.API.Methods.SendPoll
+  , module Telegram.Bot.API.Methods.SendVenue
+  , module Telegram.Bot.API.Methods.SendVideo
+  , module Telegram.Bot.API.Methods.SendVideoNote
+  , module Telegram.Bot.API.Methods.SendVoice
+  , module Telegram.Bot.API.Methods.SetChatAdministratorCustomTitle
+  , module Telegram.Bot.API.Methods.SetChatDescription
+  , module Telegram.Bot.API.Methods.SetChatMenuButton
+  , module Telegram.Bot.API.Methods.SetChatPermissions
+  , module Telegram.Bot.API.Methods.SetChatPhoto
+  , module Telegram.Bot.API.Methods.SetChatStickerSet
+  , module Telegram.Bot.API.Methods.SetChatTitle
+  , module Telegram.Bot.API.Methods.SetMyCommands
+  , module Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
+  , module Telegram.Bot.API.Methods.StopMessageLiveLocation
+  , module Telegram.Bot.API.Methods.UnbanChatMember
+  , module Telegram.Bot.API.Methods.UnbanChatSenderChat
+  , module Telegram.Bot.API.Methods.UnpinAllChatMessages
+  , module Telegram.Bot.API.Methods.UnpinChatMessage
   ) where
 
 import Telegram.Bot.API.Types.ParseMode
