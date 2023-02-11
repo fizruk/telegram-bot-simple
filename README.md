@@ -1,7 +1,5 @@
 # telegram-bot-simple
 
-[![Build Status](https://travis-ci.org/fizruk/telegram-bot-simple.svg?branch=master)](https://travis-ci.org/fizruk/telegram-bot-simple)
-
 [![Hackage](https://img.shields.io/hackage/v/telegram-bot-simple.svg)](http://hackage.haskell.org/package/telegram-bot-simple)
 [![Stackage LTS](http://stackage.org/package/telegram-bot-simple/badge/lts)](http://stackage.org/lts/package/telegram-bot-simple)
 [![Stackage Nightly](http://stackage.org/package/telegram-bot-simple/badge/nightly)](http://stackage.org/nightly/package/telegram-bot-simple)
@@ -17,7 +15,7 @@ The supplementary materials for the workshop is available at https://github.com/
 
 See bot examples here: https://github.com/fizruk/telegram-bot-simple/tree/master/examples
 
-Use `cabal build -fexamples` to build it.
+Use `cabal build all -fexamples` to build it.
 If you are building with stack then use `stack build --flag telegram-bot-simple:examples`.
 
 ## Contributing
