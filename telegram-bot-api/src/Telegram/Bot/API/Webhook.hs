@@ -11,14 +11,11 @@
 
 module Telegram.Bot.API.Webhook
   ( setUpWebhook,
-    webhookApp,
     deleteWebhook,
     SetWebhookRequest (..),
   )
 where
 
-import           Control.Concurrent                  (forkIO)
-import           Control.Concurrent.STM
 import           Control.Monad.IO.Class              (MonadIO (liftIO))
 import           Data.Aeson                          (ToJSON (toJSON))
 import           Data.Bool                           (bool)
@@ -32,31 +29,11 @@ import           Servant.Client                      (ClientEnv, ClientError,
                                                       client, runClientM)
 import           Servant.Multipart.API
 import           Servant.Multipart.Client            (genBoundary)
-import           Telegram.Bot.API.GettingUpdates     (Update)
+
 import           Telegram.Bot.API.Internal.Utils     (gtoJSON)
 import           Telegram.Bot.API.MakingRequests     (Response)
 import           Telegram.Bot.API.Types              (InputFile, makeFile)
-import           Telegram.Bot.Simple.BotApp.Internal
 
-type WebhookAPI = ReqBody '[JSON] Update :> Post '[JSON] ()
-
-server :: BotApp model action -> BotEnv model action -> Server WebhookAPI
-server BotApp {..} botEnv@BotEnv {..} =
-  updateHandler
-  where
-    updateHandler :: Update -> Handler ()
-    updateHandler update = liftIO $ handleUpdate update
-    handleUpdate update = liftIO . void . forkIO $ do
-      maction <- botAction update <$> readTVarIO botModelVar
-      case maction of
-        Nothing     -> return ()
-        Just action -> issueAction botEnv (Just update) (Just action)
-
-webhookAPI :: Proxy WebhookAPI
-webhookAPI = Proxy
-
-app :: BotApp model action -> BotEnv model action -> Application
-app botApp botEnv = serve webhookAPI $ server botApp botEnv
 
 data SetWebhookRequest = SetWebhookRequest
   { setWebhookUrl                :: String,
@@ -118,5 +95,3 @@ deleteWebhook = (void <$>) <$> runClientM deleteWebhookRequest
     requestData = DeleteWebhookRequest {deleteWebhookDropPendingUpdates = Nothing}
     deleteWebhookRequest = client (Proxy @DeleteWebhook) requestData
 
-webhookApp :: BotApp model action -> BotEnv model action -> Application
-webhookApp = app

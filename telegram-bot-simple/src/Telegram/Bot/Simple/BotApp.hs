@@ -29,8 +29,9 @@ import           Network.Wai.Handler.WarpTLS
 import qualified Telegram.Bot.API                    as Telegram
 import           Telegram.Bot.API.Webhook            (SetWebhookRequest,
                                                       deleteWebhook,
-                                                      setUpWebhook, webhookApp)
+                                                      setUpWebhook)
 import           Telegram.Bot.Simple.BotApp.Internal
+import           Telegram.Bot.Simple.Webhook         (webhookApp)
 
 -- | Start bot with asynchronous polling.
 -- The result is a function that allows you to send actions
