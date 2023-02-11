@@ -1,6 +1,7 @@
 resolver: nightly-2021-07-02
 packages:
-- .
+- telegram-bot-simple
+- telegram-bot-api
 extra-deps:
 - servant-client-0.18.3@sha256:570145df5209b245a141eec6841fbca6785cd88e073e85eecbeff4438ca34784,4602
 - servant-multipart-client-0.12.1@sha256:d043063e2f33eab86840f87c4bdb16eb3fe4a5847a0b118e4f4265cf3ba4c9b3,1892
