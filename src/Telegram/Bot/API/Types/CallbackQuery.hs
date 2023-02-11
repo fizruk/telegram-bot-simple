@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.CallbackQuery where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -29,4 +29,5 @@ data CallbackQuery = CallbackQuery
   }
   deriving (Generic, Show)
 
-deriveJSON' ''CallbackQuery
+instance ToJSON   CallbackQuery where toJSON = gtoJSON
+instance FromJSON CallbackQuery where parseJSON = gparseJSON

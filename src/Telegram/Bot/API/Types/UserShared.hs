@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.UserShared where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Common
@@ -16,4 +16,5 @@ data UserShared = UserShared
   }
   deriving (Generic, Show)
 
-deriveJSON' ''UserShared
+instance ToJSON   UserShared where toJSON = gtoJSON
+instance FromJSON UserShared where parseJSON = gparseJSON

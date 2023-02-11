@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.Invoice where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -19,4 +19,5 @@ data Invoice = Invoice
   }
   deriving (Generic, Show)
 
-deriveJSON' ''Invoice
+instance ToJSON   Invoice where toJSON = gtoJSON
+instance FromJSON Invoice where parseJSON = gparseJSON

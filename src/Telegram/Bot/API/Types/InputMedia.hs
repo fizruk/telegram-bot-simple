@@ -3,7 +3,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.InputMedia where
 
 import Data.Aeson (ToJSON (..), KeyValue ((.=)))

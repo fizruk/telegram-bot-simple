@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.SuccessfulPayment where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -23,4 +23,5 @@ data SuccessfulPayment = SuccessfulPayment
   }
   deriving (Generic, Show)
 
-deriveJSON' ''SuccessfulPayment
+instance ToJSON   SuccessfulPayment where toJSON = gtoJSON
+instance FromJSON SuccessfulPayment where parseJSON = gparseJSON

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.VideoChatEnded where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Common
@@ -16,13 +16,16 @@ data VideoChatEnded = VideoChatEnded
   }
   deriving (Generic, Show)
 
+instance ToJSON   VideoChatEnded where toJSON = gtoJSON
+instance FromJSON VideoChatEnded where parseJSON = gparseJSON
+
+
 -- ** 'VideoChatParticipantsInvited'
+
 data VideoChatParticipantsInvited = VideoChatParticipantsInvited
   { videoChatParticipantsInvitedUsers :: Maybe [User] -- ^ New members that were invited to the video chat.
   }
   deriving (Generic, Show)
 
-foldMap deriveJSON'
-  [ ''VideoChatEnded
-  , ''VideoChatParticipantsInvited
-  ]
+instance ToJSON   VideoChatParticipantsInvited where toJSON = gtoJSON
+instance FromJSON VideoChatParticipantsInvited where parseJSON = gparseJSON

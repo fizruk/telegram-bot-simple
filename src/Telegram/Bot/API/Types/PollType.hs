@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.PollType where
 
 import Data.Aeson (Value(String), FromJSON (..), ToJSON (..))

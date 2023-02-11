@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.BotCommand where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -16,4 +16,5 @@ data BotCommand = BotCommand
   }
   deriving (Generic, Show)
 
-deriveJSON' ''BotCommand
+instance ToJSON   BotCommand where toJSON = gtoJSON
+instance FromJSON BotCommand where parseJSON = gparseJSON

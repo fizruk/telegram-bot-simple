@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.ForumTopicCreated where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -17,4 +17,5 @@ data ForumTopicCreated = ForumTopicCreated
   }
   deriving (Generic, Show)
 
-deriveJSON' ''ForumTopicCreated
+instance ToJSON   ForumTopicCreated where toJSON = gtoJSON
+instance FromJSON ForumTopicCreated where parseJSON = gparseJSON

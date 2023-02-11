@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.VideoNote where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Common 
@@ -21,4 +21,5 @@ data VideoNote = VideoNote
   }
   deriving (Generic, Show)
 
-deriveJSON' ''VideoNote
+instance ToJSON   VideoNote where toJSON = gtoJSON
+instance FromJSON VideoNote where parseJSON = gparseJSON

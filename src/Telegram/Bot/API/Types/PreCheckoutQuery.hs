@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.PreCheckoutQuery where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -24,4 +24,5 @@ data PreCheckoutQuery = PreCheckoutQuery
   }
   deriving (Generic, Show)
 
-deriveJSON' ''PreCheckoutQuery
+instance ToJSON   PreCheckoutQuery where toJSON = gtoJSON
+instance FromJSON PreCheckoutQuery where parseJSON = gparseJSON

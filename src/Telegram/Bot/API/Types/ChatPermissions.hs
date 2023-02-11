@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.ChatPermissions where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Internal.Utils
@@ -27,4 +27,5 @@ data ChatPermissions = ChatPermissions
   }
   deriving (Generic, Show)
 
-deriveJSON' ''ChatPermissions
+instance ToJSON   ChatPermissions where toJSON = gtoJSON
+instance FromJSON ChatPermissions where parseJSON = gparseJSON

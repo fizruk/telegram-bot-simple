@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.KeyboardButtonRequestChat where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.ChatAdministratorRights
@@ -23,4 +23,5 @@ data KeyboardButtonRequestChat = KeyboardButtonRequestChat
   }
   deriving (Generic, Show)
 
-deriveJSON' ''KeyboardButtonRequestChat
+instance ToJSON   KeyboardButtonRequestChat where toJSON = gtoJSON
+instance FromJSON KeyboardButtonRequestChat where parseJSON = gparseJSON

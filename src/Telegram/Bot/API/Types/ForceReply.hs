@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.ForceReply where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -21,4 +21,5 @@ data ForceReply = ForceReply
   }
   deriving (Generic, Show)
 
-deriveJSON' ''ForceReply
+instance ToJSON   ForceReply where toJSON = gtoJSON
+instance FromJSON ForceReply where parseJSON = gparseJSON

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.ResponseParameters where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Common
@@ -16,4 +16,5 @@ data ResponseParameters = ResponseParameters
   }
   deriving (Show, Generic)
 
-deriveJSON' ''ResponseParameters
+instance ToJSON   ResponseParameters where toJSON = gtoJSON
+instance FromJSON ResponseParameters where parseJSON = gparseJSON

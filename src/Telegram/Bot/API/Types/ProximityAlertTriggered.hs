@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.ProximityAlertTriggered where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.User
@@ -17,4 +17,5 @@ data ProximityAlertTriggered = ProximityAlertTriggered
   }
   deriving (Generic, Show)
 
-deriveJSON' ''ProximityAlertTriggered
+instance ToJSON   ProximityAlertTriggered where toJSON = gtoJSON
+instance FromJSON ProximityAlertTriggered where parseJSON = gparseJSON

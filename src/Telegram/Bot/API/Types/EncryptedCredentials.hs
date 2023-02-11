@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.EncryptedCredentials where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -17,4 +17,5 @@ data EncryptedCredentials = EncryptedCredentials
   }
   deriving (Generic, Show)
 
-deriveJSON' ''EncryptedCredentials
+instance ToJSON   EncryptedCredentials where toJSON = gtoJSON
+instance FromJSON EncryptedCredentials where parseJSON = gparseJSON

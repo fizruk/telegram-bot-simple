@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Common
@@ -15,4 +15,5 @@ data MessageAutoDeleteTimerChanged = MessageAutoDeleteTimerChanged
   }
   deriving (Generic, Show)
 
-deriveJSON' ''MessageAutoDeleteTimerChanged
+instance ToJSON   MessageAutoDeleteTimerChanged where toJSON = gtoJSON
+instance FromJSON MessageAutoDeleteTimerChanged where parseJSON = gparseJSON

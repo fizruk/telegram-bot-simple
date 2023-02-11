@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.Venue where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -22,4 +22,5 @@ data Venue = Venue
   }
   deriving (Generic, Show)
 
-deriveJSON' ''Venue
+instance ToJSON   Venue where toJSON = gtoJSON
+instance FromJSON Venue where parseJSON = gparseJSON

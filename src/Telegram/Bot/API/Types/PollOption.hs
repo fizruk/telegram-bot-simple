@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.PollOption where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -16,4 +16,5 @@ data PollOption = PollOption
   }
   deriving (Generic, Show)
 
-deriveJSON' ''PollOption
+instance ToJSON   PollOption where toJSON = gtoJSON
+instance FromJSON PollOption where parseJSON = gparseJSON

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.VideoChatScheduled where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
 
@@ -15,4 +15,5 @@ data VideoChatScheduled = VideoChatScheduled
   }
   deriving (Generic, Show)
 
-deriveJSON' ''VideoChatScheduled
+instance ToJSON   VideoChatScheduled where toJSON = gtoJSON
+instance FromJSON VideoChatScheduled where parseJSON = gparseJSON

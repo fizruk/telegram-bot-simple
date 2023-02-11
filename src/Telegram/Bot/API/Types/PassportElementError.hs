@@ -1,8 +1,8 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.PassportElementError where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Aeson.Text (encodeToLazyText)
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -27,6 +27,9 @@ data PassportErrorSource
   | PassportErrorSourceUnspecified
   deriving (Generic, Show)
 
+instance ToJSON   PassportErrorSource where toJSON = gtoJSON
+instance FromJSON PassportErrorSource where parseJSON = gparseJSON
+
 data PassportElementError
   = PassportElementError
     { passportElementErroSource       :: PassportErrorSource -- ^ Error source, must be one of 'PassportErrorSource'.
@@ -46,7 +49,5 @@ instance ToHttpApiData PassportElementError where
 instance ToHttpApiData [PassportElementError] where
   toUrlPiece = TL.toStrict . encodeToLazyText
 
-foldMap deriveJSON'
-  [ ''PassportErrorSource
-  , ''PassportElementError
-  ]
+instance ToJSON   PassportElementError where toJSON = gtoJSON
+instance FromJSON PassportElementError where parseJSON = gparseJSON

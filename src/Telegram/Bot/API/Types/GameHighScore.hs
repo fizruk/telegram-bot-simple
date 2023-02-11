@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.GameHighScore where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.User
@@ -17,4 +17,5 @@ data GameHighScore = GameHighScore
   }
   deriving (Generic, Show)
 
-deriveJSON' ''GameHighScore
+instance ToJSON   GameHighScore where toJSON = gtoJSON
+instance FromJSON GameHighScore where parseJSON = gparseJSON

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.ChatMemberUpdated where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
 
@@ -24,4 +24,7 @@ data ChatMemberUpdated = ChatMemberUpdated
   }
   deriving (Generic, Show)
 
-deriveJSON' ''ChatMemberUpdated
+instance ToJSON   ChatMemberUpdated where toJSON = gtoJSON
+instance FromJSON ChatMemberUpdated where parseJSON = gparseJSON
+
+

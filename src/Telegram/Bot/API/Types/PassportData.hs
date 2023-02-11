@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.PassportData where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.EncryptedCredentials
@@ -17,4 +17,5 @@ data PassportData = PassportData
   }
   deriving (Generic, Show)
 
-deriveJSON' ''PassportData
+instance ToJSON   PassportData where toJSON = gtoJSON
+instance FromJSON PassportData where parseJSON = gparseJSON

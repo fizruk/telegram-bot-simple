@@ -1,5 +1,4 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.Chat where
 
 import Data.Aeson (ToJSON(..), FromJSON(..))
@@ -49,6 +48,9 @@ data Chat = Chat
   }
   deriving (Generic, Show)
 
+instance ToJSON   Chat where toJSON = gtoJSON
+instance FromJSON Chat where parseJSON = gparseJSON
+
 -- | Type of chat.
 data ChatType
   = ChatTypePrivate
@@ -61,5 +63,3 @@ instance ToJSON   ChatType where
   toJSON = gtoJSON
 instance FromJSON ChatType where
   parseJSON = gparseJSON
-
-deriveJSON' ''Chat

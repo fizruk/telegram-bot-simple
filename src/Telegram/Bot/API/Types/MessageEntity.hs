@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.MessageEntity where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -21,6 +21,10 @@ data MessageEntity = MessageEntity
   , messageEntityCustomEmojiId :: Maybe Text -- ^ For “custom_emoji” only, unique identifier of the custom emoji. Use @getCustomEmojiStickers@ to get full information about the sticker.
   }
   deriving (Generic, Show)
+
+instance ToJSON   MessageEntity where toJSON = gtoJSON
+instance FromJSON MessageEntity where parseJSON = gparseJSON
+
 
 -- | Type of the entity. Can be mention (@username), hashtag, bot_command, url, email, bold (bold text), italic (italic text), underline (underlined text), strikethrough, code (monowidth string), pre (monowidth block), text_link (for clickable text URLs), text_mention (for users without usernames), cashtag, phone_number
 data MessageEntityType
@@ -43,7 +47,5 @@ data MessageEntityType
   | MessageEntityCustomEmoji
   deriving (Eq, Show, Generic)
 
-foldMap deriveJSON'
-  [ ''MessageEntityType
-  , ''MessageEntity
-  ]
+instance ToJSON   MessageEntityType where toJSON = gtoJSON
+instance FromJSON MessageEntityType where parseJSON = gparseJSON

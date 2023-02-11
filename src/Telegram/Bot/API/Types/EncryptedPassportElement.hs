@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.EncryptedPassportElement where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -24,6 +24,8 @@ data EncryptedPassportElement = EncryptedPassportElement
   , encryptedPassportElementHash        :: Text                 -- ^ Base64-encoded element hash for using in 'PassportElementErrorUnspecified'.
   } deriving (Generic, Show)
 
+instance ToJSON   EncryptedPassportElement where toJSON = gtoJSON
+instance FromJSON EncryptedPassportElement where parseJSON = gparseJSON
 
 -- | One of “personal_details”, “passport”, “driver_license”, “identity_card”, “internal_passport”, “address”, “utility_bill”, “bank_statement”, “rental_agreement”, “passport_registration”, “temporary_registration”, “phone_number”, “email”.
 data PassportElementType
@@ -42,7 +44,5 @@ data PassportElementType
   | PassportElementTypeEmail
   deriving (Generic, Show)
 
-foldMap deriveJSON'
-  [ ''EncryptedPassportElement
-  , ''PassportElementType
-  ]
+instance ToJSON   PassportElementType where toJSON = gtoJSON
+instance FromJSON PassportElementType where parseJSON = gparseJSON

@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.ReplyKeyboardMarkup where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -23,4 +23,5 @@ data ReplyKeyboardMarkup = ReplyKeyboardMarkup
   }
   deriving (Generic, Show)
 
-deriveJSON' ''ReplyKeyboardMarkup
+instance ToJSON   ReplyKeyboardMarkup where toJSON = gtoJSON
+instance FromJSON ReplyKeyboardMarkup where parseJSON = gparseJSON

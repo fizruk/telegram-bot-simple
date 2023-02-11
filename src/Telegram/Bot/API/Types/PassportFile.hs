@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.PassportFile where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
 
@@ -19,4 +19,5 @@ data PassportFile = PassportFile
   }
   deriving (Generic, Show)
 
-deriveJSON' ''PassportFile
+instance ToJSON   PassportFile where toJSON = gtoJSON
+instance FromJSON PassportFile where parseJSON = gparseJSON

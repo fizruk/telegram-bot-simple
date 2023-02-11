@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.InlineKeyboardMarkup where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.InlineKeyboardButton
@@ -19,4 +19,5 @@ data InlineKeyboardMarkup = InlineKeyboardMarkup
 -- ^ 
 -- **Note**: This will only work in Telegram versions released after 9 April, 2016. Older clients will display unsupported message.
 
-deriveJSON' ''InlineKeyboardMarkup
+instance ToJSON   InlineKeyboardMarkup where toJSON = gtoJSON
+instance FromJSON InlineKeyboardMarkup where parseJSON = gparseJSON

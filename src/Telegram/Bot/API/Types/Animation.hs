@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.Animation where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -25,4 +25,5 @@ data Animation = Animation
   }
   deriving (Generic, Show)
 
-deriveJSON' ''Animation
+instance ToJSON   Animation where toJSON = gtoJSON
+instance FromJSON Animation where parseJSON = gparseJSON

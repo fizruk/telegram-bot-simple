@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.PhotoSize where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Common
@@ -19,4 +19,5 @@ data PhotoSize = PhotoSize
   }
   deriving (Generic, Show)
 
-deriveJSON' ''PhotoSize
+instance ToJSON   PhotoSize where toJSON = gtoJSON
+instance FromJSON PhotoSize where parseJSON = gparseJSON

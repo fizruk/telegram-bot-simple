@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.MaskPosition where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -18,4 +18,5 @@ data MaskPosition = MaskPosition
   }
   deriving (Generic, Show)
 
-deriveJSON' ''MaskPosition
+instance ToJSON   MaskPosition where toJSON = gtoJSON
+instance FromJSON MaskPosition where parseJSON = gparseJSON

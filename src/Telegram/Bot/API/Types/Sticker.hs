@@ -1,8 +1,8 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DuplicateRecordFields #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Types.Sticker where
 
+import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
@@ -32,6 +32,9 @@ data Sticker = Sticker
   }
   deriving (Generic, Show)
 
+instance ToJSON   Sticker where toJSON = gtoJSON
+instance FromJSON Sticker where parseJSON = gparseJSON
+
 -- ** 'StickerSet'
 
 -- | This object represents a sticker set.
@@ -47,6 +50,10 @@ data StickerSet = StickerSet
   }
   deriving (Generic, Show)
 
+instance ToJSON   StickerSet where toJSON = gtoJSON
+instance FromJSON StickerSet where parseJSON = gparseJSON
+
+
 -- | Type of stickers in the set, currently one of “regular”, “mask”, “custom_emoji”.
 data StickerSetType
   = StickerSetTypeRegular
@@ -54,9 +61,5 @@ data StickerSetType
   | StickerSetTypeCustomEmoji
   deriving (Eq, Show, Generic)
 
-foldMap deriveJSON'
-  [ ''StickerSetType
-  , ''StickerSet
-  , ''Sticker
-  ]
-
+instance ToJSON   StickerSetType where toJSON = gtoJSON
+instance FromJSON StickerSetType where parseJSON = gparseJSON
