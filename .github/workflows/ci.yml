@@ -22,7 +22,7 @@ jobs:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
       - run: |
-          cabal build -fexamples
+          cabal build all -fexamples
 
   stack:
     name: build and test (stack)
