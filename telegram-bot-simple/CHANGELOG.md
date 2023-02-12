@@ -2,7 +2,7 @@
 ---
 
 - Compilation time reduced by splitting types and methods (see [#136](https://github.com/fizruk/telegram-bot-simple/pull/136));
-- All `Telegram.Bot.API.*` modules moved to `telegram-bot-api` package;
+- All `Telegram.Bot.API.*` modules moved to `telegram-bot-api` package (see [#137](https://github.com/fizruk/telegram-bot-simple/pull/137));
 - `Telegram.Bot.Simple.Webhook` module added;
 
 - **Migration guide**:
