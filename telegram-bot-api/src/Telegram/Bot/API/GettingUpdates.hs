@@ -18,6 +18,7 @@ import           Telegram.Bot.API.Internal.Utils
 import           Telegram.Bot.API.MakingRequests
 import           Telegram.Bot.API.Types
 import           Telegram.Bot.API.InlineMode
+import Telegram.Bot.API.Internal.TH (makeDefault)
 
 -- ** 'Update'
 
@@ -102,3 +103,5 @@ data UpdateType
 
 instance ToJSON   UpdateType where toJSON = gtoJSON
 instance FromJSON UpdateType where parseJSON = gparseJSON
+
+makeDefault ''GetUpdatesRequest

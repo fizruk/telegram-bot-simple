@@ -14,6 +14,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'editMessageLiveLocation'
 
@@ -46,3 +47,5 @@ type EditMessageLiveLocation = "editMessageLiveLocation"
 --   edited Message is returned, otherwise True is returned.
 editMessageLiveLocation :: EditMessageLiveLocationRequest ->  ClientM (Response (Either Bool Message))
 editMessageLiveLocation = client (Proxy @EditMessageLiveLocation)
+
+makeDefault ''EditMessageLiveLocationRequest

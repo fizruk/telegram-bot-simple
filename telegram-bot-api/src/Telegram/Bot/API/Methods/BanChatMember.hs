@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'banChatMember'
 
@@ -44,3 +45,5 @@ type BanChatMember = "banChatMember"
 --   Returns True on success.
 banChatMember :: BanChatMemberRequest ->  ClientM (Response Bool)
 banChatMember = client (Proxy @BanChatMember)
+
+makeDefault ''BanChatMemberRequest

@@ -10,7 +10,6 @@ import           Telegram.Bot.API.InlineMode.InlineQueryResult
 import           Telegram.Bot.API.InlineMode.InputMessageContent (defaultInputTextMessageContent)
 import           Telegram.Bot.API.Webhook
 import           Telegram.Bot.Simple
-import           Telegram.Bot.Simple.BotApp                      (WebhookConfig (WebhookConfig))
 import           Telegram.Bot.Simple.UpdateParser                (updateMessageSticker,
                                                                   updateMessageText)
 
@@ -55,29 +54,13 @@ handleAction :: Action -> Model -> Eff Action Model
 handleAction action model = case action of
   InlineEcho queryId msg -> model <# do
     let result = InlineQueryResult InlineQueryResultArticle (InlineQueryResultId msg) (Just msg) (Just (defaultInputTextMessageContent msg)) Nothing
-        answerInlineQueryRequest = AnswerInlineQueryRequest
-          { answerInlineQueryRequestInlineQueryId = queryId
-          , answerInlineQueryRequestResults       = [result]
-          , answerInlineQueryCacheTime            = Nothing
-          , answerInlineQueryIsPersonal           = Nothing
-          , answerInlineQueryNextOffset           = Nothing
-          , answerInlineQuerySwitchPmText         = Nothing
-          , answerInlineQuerySwitchPmParameter    = Nothing
-          }
+        answerInlineQueryRequest = defAnswerInlineQuery queryId [result]
     _ <- liftClientM (answerInlineQuery answerInlineQueryRequest)
     return ()
   StickerEcho file chat -> model <# do
     _ <- liftClientM
       (sendSticker
-        (SendStickerRequest
-          (SomeChatId chat)
-          Nothing
-          file
-          Nothing
-          Nothing
-          Nothing
-          Nothing
-          Nothing))
+        (defSendSticker (SomeChatId chat) file))
     return ()
   Echo msg -> model <# do
     pure msg -- or replyText msg
@@ -98,16 +81,10 @@ run token certPath keyPath port ip = do
                  webhookConfigTlsWarpSettings   = warpOpts,
                  webhookConfigSetWebhookRequest = requestData
                }
-    requestData =
-      SetWebhookRequest
-        { setWebhookUrl                 = url,
-          setWebhookCertificate         = certFile,
-          setWebhookIpAddress           = Nothing,
-          setWebhookMaxConnections      = Nothing,
-          setWebhookAllowedUpdates      = Just ["message"],
-          setWebhookDropPendingUpdates  = Nothing,
-          setWebhookSecretToken         = Nothing
-        }
+    requestData = (defSetWebhook url)
+      { setWebhookCertificate    = certFile,
+        setWebhookAllowedUpdates = Just ["message"]
+      }
 
 main :: IO ()
 main = do

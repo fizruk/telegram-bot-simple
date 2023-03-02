@@ -13,11 +13,12 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'getMyDefaultAdministratorRights'
 
 -- | Request parameters for 'getMyDefaultAdministratorRights'.
-data GetMyDefaultAdministratorRightsRequest = GetMyDefaultAdministratorRightsRequest
+newtype GetMyDefaultAdministratorRightsRequest = GetMyDefaultAdministratorRightsRequest
   { getMyDefaultAdministratorRightsRequestForChannels :: Maybe Bool -- ^ Pass 'True' to get default administrator rights of the bot in channels. Otherwise, default administrator rights of the bot for groups and supergroups will be returned.
   }
   deriving Generic
@@ -34,3 +35,5 @@ type GetMyDefaultAdministratorRights = "getMyDefaultAdministratorRights"
 getMyDefaultAdministratorRights
   :: GetMyDefaultAdministratorRightsRequest -> ClientM (Response ChatAdministratorRights)
 getMyDefaultAdministratorRights = client (Proxy @GetMyDefaultAdministratorRights)
+
+makeDefault ''GetMyDefaultAdministratorRightsRequest

@@ -17,7 +17,7 @@ type GetChatMember = "getChatMember"
   :> RequiredQueryParam "user_id" UserId
   :> Post '[JSON] (Response ChatMember)
 
--- | Use this method to get information about a member of a chat. 
+-- | Use this method to get information about a member of a chat.
 --   Returns a ChatMember object on success.
 getChatMember :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
   -> UserId -- ^ 	Unique identifier of the target user

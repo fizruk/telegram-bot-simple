@@ -16,7 +16,7 @@ type GetChatMemberCount = "getChatMemberCount"
   :> RequiredQueryParam "chat_id" SomeChatId
   :> Post '[JSON] (Response Integer)
 
--- | Use this method to get the number of members in a chat. 
+-- | Use this method to get the number of members in a chat.
 --   Returns Int on success.
 getChatMemberCount :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
   -> ClientM (Response Integer)

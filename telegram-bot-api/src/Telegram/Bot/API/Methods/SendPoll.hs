@@ -15,6 +15,7 @@ import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendPoll'
 
@@ -53,3 +54,5 @@ type SendPoll = "sendPoll"
 --   On success, the sent Message is returned.
 sendPoll :: SendPollRequest ->  ClientM (Response Message)
 sendPoll = client (Proxy @SendPoll)
+
+makeDefault ''SendPollRequest

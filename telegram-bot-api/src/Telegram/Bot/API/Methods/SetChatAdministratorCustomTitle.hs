@@ -14,6 +14,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'setChatAdministratorCustomTitle'
 
@@ -38,3 +39,5 @@ type SetChatAdministratorCustomTitle = "setChatAdministratorCustomTitle"
 --   Returns True on success.
 setChatAdministratorCustomTitle :: SetChatAdministratorCustomTitleRequest ->  ClientM (Response Bool)
 setChatAdministratorCustomTitle = client (Proxy @SetChatAdministratorCustomTitle)
+
+makeDefault ''SetChatAdministratorCustomTitleRequest

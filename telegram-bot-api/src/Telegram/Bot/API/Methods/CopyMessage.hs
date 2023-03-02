@@ -15,6 +15,7 @@ import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'copyMessage'
 
@@ -51,3 +52,5 @@ data CopyMessageRequest = CopyMessageRequest
 
 instance ToJSON   CopyMessageRequest where toJSON = gtoJSON
 instance FromJSON CopyMessageRequest where parseJSON = gparseJSON
+
+makeDefault ''CopyMessageRequest

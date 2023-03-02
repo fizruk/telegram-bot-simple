@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'getChatMenuButton'
 
@@ -34,3 +35,5 @@ type GetChatMenuButton = "getChatMenuButton"
 -- Returns @MenuButton@ on success.
 getChatMenuButton :: GetChatMenuButtonRequest -> ClientM (Response MenuButton)
 getChatMenuButton = client (Proxy @GetChatMenuButton)
+
+makeDefault ''GetChatMenuButtonRequest

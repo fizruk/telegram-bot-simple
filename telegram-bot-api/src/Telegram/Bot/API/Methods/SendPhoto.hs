@@ -31,6 +31,7 @@ import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
 import Telegram.Bot.API.Types.SomeReplyMarkup
+import Telegram.Bot.API.Internal.TH
 
 -- * Available methods
 
@@ -69,7 +70,7 @@ data SendPhotoRequest = SendPhotoRequest
   , sendPhotoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
   , sendPhotoHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the photo needs to be covered with a spoiler animation.
   , sendPhotoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendPhotoProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.  
+  , sendPhotoProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendPhotoReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendPhotoAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , sendPhotoReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -115,3 +116,5 @@ sendPhoto r = do
       boundary <- liftIO genBoundary
       client (Proxy @SendPhotoContent) (boundary, r)
     _ -> client (Proxy @SendPhotoLink) r
+
+makeDefault ''SendPhotoRequest

@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'restrictChatMember'
 
@@ -43,3 +44,5 @@ type RestrictChatMember = "restrictChatMember"
 --   Returns True on success.
 restrictChatMember :: RestrictChatMemberRequest ->  ClientM (Response Bool)
 restrictChatMember = client (Proxy @RestrictChatMember)
+
+makeDefault ''RestrictChatMemberRequest

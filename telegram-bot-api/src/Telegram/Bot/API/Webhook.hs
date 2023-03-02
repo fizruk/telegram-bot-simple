@@ -13,6 +13,8 @@ module Telegram.Bot.API.Webhook
   ( setUpWebhook,
     deleteWebhook,
     SetWebhookRequest (..),
+    defSetWebhook,
+    defDeleteWebhook
   )
 where
 
@@ -33,6 +35,7 @@ import           Servant.Multipart.Client            (genBoundary)
 import           Telegram.Bot.API.Internal.Utils     (gtoJSON)
 import           Telegram.Bot.API.MakingRequests     (Response)
 import           Telegram.Bot.API.Types              (InputFile, makeFile)
+import Telegram.Bot.API.Internal.TH (makeDefault)
 
 
 data SetWebhookRequest = SetWebhookRequest
@@ -95,3 +98,8 @@ deleteWebhook = (void <$>) <$> runClientM deleteWebhookRequest
     requestData = DeleteWebhookRequest {deleteWebhookDropPendingUpdates = Nothing}
     deleteWebhookRequest = client (Proxy @DeleteWebhook) requestData
 
+
+foldMap makeDefault
+  [ ''SetWebhookRequest
+  , ''DeleteWebhookRequest
+  ]

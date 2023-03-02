@@ -31,6 +31,7 @@ import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendVideo'
 
@@ -123,3 +124,5 @@ sendVideo r = case (sendVideoVideo r, sendVideoThumb r) of
     boundary <- liftIO genBoundary
     client (Proxy @SendVideoContent) (boundary, r)
   _ ->  client (Proxy @SendVideoLink) r
+
+makeDefault ''SendVideoRequest

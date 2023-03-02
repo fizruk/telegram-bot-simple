@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'getUserProfilePhotos'
 
@@ -35,3 +36,5 @@ type GetUserProfilePhotos = "getUserProfilePhotos"
 --   Returns a UserProfilePhotos object.
 getUserProfilePhotos :: GetUserProfilePhotosRequest ->  ClientM (Response UserProfilePhotos)
 getUserProfilePhotos = client (Proxy @GetUserProfilePhotos)
+
+makeDefault ''GetUserProfilePhotosRequest

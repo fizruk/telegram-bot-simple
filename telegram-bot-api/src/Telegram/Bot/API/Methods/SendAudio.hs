@@ -31,6 +31,7 @@ import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendAudio'
 
@@ -120,3 +121,5 @@ sendAudio r = case (sendAudioAudio r, sendAudioThumb r) of
     boundary <- liftIO genBoundary
     client (Proxy @SendAudioContent) (boundary, r)
   _ ->  client (Proxy @SendAudioLink) r
+
+makeDefault ''SendAudioRequest

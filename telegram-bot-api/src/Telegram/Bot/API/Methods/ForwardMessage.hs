@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'forwardMessage'
 
@@ -38,3 +39,5 @@ data ForwardMessageRequest = ForwardMessageRequest
 
 instance ToJSON   ForwardMessageRequest where toJSON = gtoJSON
 instance FromJSON ForwardMessageRequest where parseJSON = gparseJSON
+
+makeDefault ''ForwardMessageRequest

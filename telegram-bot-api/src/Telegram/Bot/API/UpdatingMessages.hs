@@ -16,6 +16,7 @@ import           Telegram.Bot.API.Internal.Utils (deriveJSON', gtoJSON)
 import           Telegram.Bot.API.MakingRequests
 import           Telegram.Bot.API.Methods
 import           Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH (makeDefault)
 
 data EditMessageResponse
   = EditedInlineMessage Bool
@@ -78,7 +79,7 @@ data StopPollRequest = StopPollRequest
   , stopPollReplyMarkup      :: Maybe SomeReplyMarkup -- ^ A JSON-serialized object for a new message inline keyboard.
   } deriving (Generic)
 
-foldMap deriveJSON' 
+foldMap deriveJSON'
   [ ''EditMessageTextRequest
   , ''EditMessageCaptionRequest
   , ''EditMessageReplyMarkupRequest
@@ -144,3 +145,9 @@ stopPoll :: StopPollRequest -> ClientM (Response Poll)
 stopPoll = client (Proxy @StopPoll)
 
 
+foldMap makeDefault
+  [ ''EditMessageTextRequest
+  , ''EditMessageCaptionRequest
+  , ''EditMessageReplyMarkupRequest
+  , ''StopPollRequest
+  ]

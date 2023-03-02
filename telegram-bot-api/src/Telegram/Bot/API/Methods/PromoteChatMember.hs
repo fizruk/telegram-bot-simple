@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'promoteChatMember'
 
@@ -52,3 +53,5 @@ type PromoteChatMember = "promoteChatMember"
 --   Returns True on success.
 promoteChatMember ::PromoteChatMemberRequest ->  ClientM (Response Bool)
 promoteChatMember = client (Proxy @PromoteChatMember)
+
+makeDefault ''PromoteChatMemberRequest

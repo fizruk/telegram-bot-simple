@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'pinChatMessage'
 
@@ -31,12 +32,14 @@ type PinChatMessage = "pinChatMessage"
   :> ReqBody '[JSON] PinChatMessageRequest
   :> Post '[JSON] (Response Bool)
 
--- | Use this method to add a message to the list 
---   of pinned messages in a chat. If the chat is 
---   not a private chat, the bot must be an administrator 
---   in the chat for this to work and must have the 
+-- | Use this method to add a message to the list
+--   of pinned messages in a chat. If the chat is
+--   not a private chat, the bot must be an administrator
+--   in the chat for this to work and must have the
 --   'can_pin_messages' administrator right in a supergroup
---   or 'can_edit_messages' administrator right in a channel. 
+--   or 'can_edit_messages' administrator right in a channel.
 --   Returns True on success.
 pinChatMessage :: PinChatMessageRequest ->  ClientM (Response Bool)
 pinChatMessage = client (Proxy @PinChatMessage)
+
+makeDefault ''PinChatMessageRequest

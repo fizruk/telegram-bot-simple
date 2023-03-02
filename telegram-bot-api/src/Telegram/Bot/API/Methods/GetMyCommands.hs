@@ -14,12 +14,13 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'getMyCommands'
 
 -- | Request parameters for 'getMyCommands'.
 data GetMyCommandsRequest = GetMyCommandsRequest
-  { getMyCommandsScope :: Maybe BotCommandScope  -- ^ A JSON-serialized object, describing scope of users. Defaults to BotCommandScopeDefault. 
+  { getMyCommandsScope :: Maybe BotCommandScope  -- ^ A JSON-serialized object, describing scope of users. Defaults to BotCommandScopeDefault.
   , getMyCommandsLanguageCode :: Maybe Text   -- ^ 	A two-letter ISO 639-1 language code or an empty string
   }
   deriving Generic
@@ -32,9 +33,11 @@ type GetMyCommands = "getMyCommands"
   :> Post '[JSON] (Response [BotCommand])
 
 -- | Use this method to get the current list
---   of the bot's commands for the given scope 
---   and user language. Returns Array of BotCommand 
---   on success. If commands aren't set, an empty list 
+--   of the bot's commands for the given scope
+--   and user language. Returns Array of BotCommand
+--   on success. If commands aren't set, an empty list
 --   is returned.
 getMyCommands :: GetMyCommandsRequest -> ClientM (Response [BotCommand])
 getMyCommands = client (Proxy @GetMyCommands)
+
+makeDefault ''GetMyCommandsRequest
