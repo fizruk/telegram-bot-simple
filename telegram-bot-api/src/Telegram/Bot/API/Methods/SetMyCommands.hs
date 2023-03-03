@@ -14,6 +14,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'setMyCommands'
 
@@ -32,9 +33,11 @@ type SetMyCommands = "setMyCommands"
   :> ReqBody '[JSON] SetMyCommandsRequest
   :> Post '[JSON] (Response Bool)
 
--- | Use this method to change the list of 
---   the bot's commands. See <https:\/\/core.telegram.org\/bots#commands> 
---   for more details about bot commands. 
+-- | Use this method to change the list of
+--   the bot's commands. See <https:\/\/core.telegram.org\/bots#commands>
+--   for more details about bot commands.
 --   Returns True on success.
 setMyCommands :: SetMyCommandsRequest ->  ClientM (Response Bool)
 setMyCommands = client (Proxy @SetMyCommands)
+
+makeDefault ''SetMyCommandsRequest

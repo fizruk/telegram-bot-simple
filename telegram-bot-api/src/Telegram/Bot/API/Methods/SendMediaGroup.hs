@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendMediaGroup'
 
@@ -42,3 +43,5 @@ type SendMediaGroup = "sendMediaGroup"
 --   On success, an array of Messages that were sent is returned.
 sendMediaGroup :: SendMediaGroupRequest ->  ClientM (Response [Message])
 sendMediaGroup = client (Proxy @SendMediaGroup)
+
+makeDefault ''SendMediaGroupRequest

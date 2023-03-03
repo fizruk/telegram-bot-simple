@@ -29,6 +29,7 @@ import qualified Data.Text.Lazy as TL
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendVideoNote'
 
@@ -97,3 +98,5 @@ sendVideoNote r = case (sendVideoNoteVideoNote r, sendVideoNoteThumb r) of
     boundary <- liftIO genBoundary
     client (Proxy @SendVideoNoteContent) (boundary, r)
   _ ->  client (Proxy @SendVideoNoteLink) r
+
+makeDefault ''SendVideoNoteRequest

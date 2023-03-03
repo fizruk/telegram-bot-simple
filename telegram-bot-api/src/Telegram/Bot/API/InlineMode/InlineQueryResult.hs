@@ -11,10 +11,11 @@ import           GHC.Generics                    (Generic)
 import           Telegram.Bot.API.Internal.Utils
 import           Telegram.Bot.API.Types (Contact)
 import           Telegram.Bot.API.InlineMode.InputMessageContent
+import Telegram.Bot.API.Internal.TH (makeDefault)
 
 -- | This object represents one result of an inline query
 data InlineQueryResult = InlineQueryResult
-  { inlineQueryResultType     :: InlineQueryResultType -- ^ Type of the result
+  { inlineQueryResultType :: InlineQueryResultType -- ^ Type of the result
   , inlineQueryResultId :: InlineQueryResultId -- ^ Unique identifier for this result, 1-64 Bytes
   , inlineQueryResultTitle :: Maybe Text -- ^ Title of the result (only valid for "Article", "Photo", "Gif", "Mpeg4Gif", "Video", "Audio", "Voice", "Document", "Location", "Venue", "CachedPhoto", "CachedGif", "CachedMpeg4Gif", "CachedDocument", "CachedVideo", "CachedVoice" types of results)
   , inlineQueryResultInputMessageContent :: Maybe InputMessageContent
@@ -77,3 +78,5 @@ instance ToJSON InlineQueryResultType where
   toJSON = String . getType
 
 instance FromJSON InlineQueryResultType where parseJSON = gparseJSON
+
+makeDefault ''InlineQueryResult

@@ -31,6 +31,7 @@ import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendVoice'
 
@@ -109,3 +110,5 @@ sendVoice r = case sendVoiceVoice r of
     boundary <- liftIO genBoundary
     client (Proxy @SendVoiceContent) (boundary, r)
   _ ->  client (Proxy @SendVoiceLink) r
+
+makeDefault ''SendVoiceRequest

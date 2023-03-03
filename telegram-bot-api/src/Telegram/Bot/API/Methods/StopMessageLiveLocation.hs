@@ -14,6 +14,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'stopMessageLiveLocation'
 
@@ -40,3 +41,5 @@ type StopMessageLiveLocation = "stopMessageLiveLocation"
 --   is returned, otherwise True is returned.
 stopMessageLiveLocation :: StopMessageLiveLocationRequest ->  ClientM (Response (Either Bool Message))
 stopMessageLiveLocation = client (Proxy @StopMessageLiveLocation)
+
+makeDefault ''StopMessageLiveLocationRequest

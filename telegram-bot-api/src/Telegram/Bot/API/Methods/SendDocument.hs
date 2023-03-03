@@ -31,6 +31,7 @@ import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
 import Telegram.Bot.API.Types.SomeReplyMarkup
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendDocument'
 
@@ -67,7 +68,7 @@ data SendDocumentRequest = SendDocumentRequest
   , sendDocumentCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
   , sendDocumentDisableContentTypeDetection :: Maybe Bool -- ^ Disables automatic server-side content type detection for files uploaded using @multipart/form-data@.
   , sendDocumentDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendDocumentProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.  
+  , sendDocumentProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendDocumentReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendDocumentAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
   , sendDocumentReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -117,20 +118,8 @@ instance ToMultipart Tmp SendDocumentRequest where
 
 instance ToJSON   SendDocumentRequest where toJSON = gtoJSON
 
+makeDefault ''SendDocumentRequest
+
 -- | Generate send document structure.
 toSendDocument :: SomeChatId -> DocumentFile -> SendDocumentRequest
-toSendDocument ch df = SendDocumentRequest
-  { sendDocumentChatId = ch
-  , sendDocumentMessageThreadId = Nothing
-  , sendDocumentDocument = df
-  , sendDocumentThumb = Nothing
-  , sendDocumentCaption = Nothing
-  , sendDocumentParseMode = Nothing
-  , sendDocumentCaptionEntities =  Nothing
-  , sendDocumentDisableContentTypeDetection = Nothing
-  , sendDocumentDisableNotification = Nothing
-  , sendDocumentProtectContent = Nothing
-  , sendDocumentReplyToMessageId = Nothing
-  , sendDocumentAllowSendingWithoutReply = Nothing
-  , sendDocumentReplyMarkup = Nothing
-  }
+toSendDocument = defSendDocument

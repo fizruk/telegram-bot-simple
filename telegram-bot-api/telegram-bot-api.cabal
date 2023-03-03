@@ -34,6 +34,7 @@ library
       Telegram.Bot.API.InlineMode.InlineQueryResult
       Telegram.Bot.API.InlineMode.InputMessageContent
       Telegram.Bot.API.Internal.Utils
+      Telegram.Bot.API.Internal.TH
       Telegram.Bot.API.MakingRequests
       -- Methods
       Telegram.Bot.API.Methods
@@ -222,3 +223,5 @@ library
     , warp
     , warp-tls
   default-language: Haskell2010
+  default-extensions:
+    TemplateHaskell

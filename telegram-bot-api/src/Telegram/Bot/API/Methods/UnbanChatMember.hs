@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'unbanChatMember'.
 data UnbanChatMemberRequest = UnbanChatMemberRequest
@@ -44,3 +45,5 @@ type UnbanChatMember = "unbanChatMember"
 --   Returns True on success.
 unbanChatMember :: UnbanChatMemberRequest ->  ClientM (Response Bool)
 unbanChatMember = client (Proxy @UnbanChatMember)
+
+makeDefault ''UnbanChatMemberRequest

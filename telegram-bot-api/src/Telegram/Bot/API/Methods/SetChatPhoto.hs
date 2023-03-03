@@ -18,6 +18,7 @@ import qualified Data.Text as T
 
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'setChatPhoto'
 
@@ -40,11 +41,11 @@ type SetChatPhoto = "setChatPhoto"
   :> MultipartForm Tmp SetChatPhotoRequest
   :> Post '[JSON] (Response Bool)
 
--- | Use this method to set a new profile 
+-- | Use this method to set a new profile
 --   photo for the chat. Photos can't be changed
---   for private chats. The bot must be an 
---   administrator in the chat for this to work 
---   and must have the appropriate administrator rights. 
+--   for private chats. The bot must be an
+--   administrator in the chat for this to work
+--   and must have the appropriate administrator rights.
 --   Returns True on success.
 --
 -- *Note*: Only 'InputFile' case might be used in 'SetChatPhotoRequest'.
@@ -53,3 +54,5 @@ setChatPhoto :: SetChatPhotoRequest ->  ClientM (Response Bool)
 setChatPhoto r =do
       boundary <- liftIO genBoundary
       client (Proxy @SetChatPhoto) (boundary, r)
+
+makeDefault ''SetChatPhotoRequest

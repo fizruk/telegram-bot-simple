@@ -20,6 +20,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'getForumTopicIconStickers'
 
@@ -241,3 +242,17 @@ type UnhideGeneralForumTopic
 -- | Use this method to unhide the @General@ topic in a forum supergroup chat. The bot must be an administrator in the chat for this to work and must have the @can_manage_topics@ administrator rights. Returns 'True' on success.
 unhideGeneralForumTopic :: UnhideGeneralForumTopicRequest -> ClientM (Response Bool)
 unhideGeneralForumTopic = client (Proxy @UnhideGeneralForumTopic)
+
+foldMap makeDefault
+  [ ''UnhideGeneralForumTopicRequest
+  , ''HideGeneralForumTopicRequest
+  , ''ReopenGeneralForumTopicRequest
+  , ''CloseGeneralForumTopicRequest
+  , ''EditGeneralForumTopicRequest
+  , ''UnpinAllForumTopicMessagesRequest
+  , ''DeleteForumTopicRequest
+  , ''ReopenForumTopicRequest
+  , ''CloseForumTopicRequest
+  , ''EditForumTopicRequest
+  , ''CreateForumTopicRequest
+  ]

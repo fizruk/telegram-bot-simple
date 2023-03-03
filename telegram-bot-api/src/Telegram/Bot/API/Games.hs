@@ -16,7 +16,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils (deriveJSON')
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types (ChatId, GameHighScore, InlineKeyboardMarkup, Message, MessageId, MessageThreadId, UserId)
-
+import Telegram.Bot.API.Internal.TH
 -- * Types
 
 -- ** 'SendGameRequest'
@@ -26,7 +26,7 @@ data SendGameRequest = SendGameRequest
   , sendGameMessageThreadId          :: Maybe MessageThreadId      -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendGameGameShortName            :: Text                       -- ^ Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
   , sendGameDisableNotification      :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendGameProtectContent                  :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.  
+  , sendGameProtectContent           :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendGameReplyToMessageId         :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
   , sendGameAllowSendingWithoutReply :: Maybe Bool                 -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found
   , sendGameReplyMarkup              :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.
@@ -92,4 +92,8 @@ setGameScore = client (Proxy @SetGameScore)
 type GetGameHighScores
   = "getGameHighScores" :> ReqBody '[JSON] GetGameHighScoresRequest :> Post '[JSON] (Response [GameHighScore])
 
-
+foldMap makeDefault
+  [ ''SendGameRequest
+  , ''SetGameScoreRequest
+  , ''GetGameHighScoresRequest
+  ]

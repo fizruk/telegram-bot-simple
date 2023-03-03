@@ -5,7 +5,7 @@ import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
-import Telegram.Bot.API.Types.Common 
+import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.PhotoSize
 import Telegram.Bot.API.Internal.Utils
 

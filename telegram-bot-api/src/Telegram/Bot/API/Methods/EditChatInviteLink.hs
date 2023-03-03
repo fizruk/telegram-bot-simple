@@ -14,6 +14,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'editChatInviteLink'
 
@@ -36,10 +37,13 @@ type EditChatInviteLink = "editChatInviteLink"
   :> Post '[JSON] (Response ChatInviteLink)
 
 -- | Use this method to edit a non-primary
---   invite link created by the bot. The 
---   bot must be an administrator in the 
---   chat for this to work and must have 
+--   invite link created by the bot. The
+--   bot must be an administrator in the
+--   chat for this to work and must have
 --   the appropriate administrator rights.
 --   Returns the edited invite link as a ChatInviteLink object.
 editChatInviteLink :: EditChatInviteLinkRequest ->  ClientM (Response ChatInviteLink)
 editChatInviteLink = client (Proxy @EditChatInviteLink)
+
+
+makeDefault ''EditChatInviteLinkRequest

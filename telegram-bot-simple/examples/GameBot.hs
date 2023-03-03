@@ -109,44 +109,24 @@ handleAction BotSettings{..} action model = case action of
             (Just gameMsg)
             Nothing
         gameMsg = (defaultInputTextMessageContent gameMessageText) { inputMessageContentParseMode = Just "HTML" }
-        answerInlineQueryRequest = AnswerInlineQueryRequest
-          { answerInlineQueryRequestInlineQueryId = queryId
-          , answerInlineQueryRequestResults       = [inlineQueryResult]
-          , answerInlineQueryCacheTime            = Nothing
-          , answerInlineQueryIsPersonal           = Nothing
-          , answerInlineQueryNextOffset           = Nothing
-          , answerInlineQuerySwitchPmText         = Nothing
-          , answerInlineQuerySwitchPmParameter    = Nothing
-          }
+        answerInlineQueryRequest = defAnswerInlineQuery  queryId [inlineQueryResult]
 
     _ <- liftClientM (answerInlineQuery answerInlineQueryRequest)
     return ()
   AGame targetChatId msg -> model <# do
-    let sendGameRequest = SendGameRequest
-          { sendGameChatId                   = coerce targetChatId
-          , sendGameMessageThreadId          = Nothing
-          , sendGameGameShortName            = gameId
-          , sendGameDisableNotification      = Nothing
-          , sendGameProtectContent                  = Nothing
-          , sendGameReplyToMessageId         = Nothing
-          , sendGameAllowSendingWithoutReply = Nothing
-          , sendGameReplyMarkup              = Nothing
-          }
+    let sendGameRequest = defSendGame (coerce targetChatId) gameId
     _ <- liftClientM $ sendGame sendGameRequest
     return ()
   ACallback callback -> model <# do
     let queryId = coerce (callbackQueryId callback)
         queryData = callbackQueryData callback
-        answerCallbackQueryRequest = AnswerCallbackQueryRequest
-          { answerCallbackQueryCallbackQueryId = queryId
-          , answerCallbackQueryText            = queryData
-          , answerCallbackQueryShowAlert       = Nothing
+        answerCallbackQueryRequest = (defAnswerCallbackQuery queryId)
+          { answerCallbackQueryText            = queryData
           , answerCallbackQueryUrl             = Just gameUrl
-          , answerCallbackQueryCacheTime       = Nothing
           }
     _ <- liftClientM $ answerCallbackQuery answerCallbackQueryRequest
     return ()
-    
+
   where
     gameMessageText = "<a href=\"" <> gameUrl <> "\">" <> gameName <> "</a>"
 data Command = CmdBot | CmdServer
@@ -551,22 +531,22 @@ renderText txt =
 
 renderExplanation :: Bool -> Text -> Html
 renderExplanation True txt = renderText txt
-renderExplanation False txt = 
+renderExplanation False txt =
   H.div ! A.class_ "qbox pad" $ do
     H.div ! A.class_ "wel" $ do
       H.div ! A.class_ "text" $ toMarkup txt
 
 renderButton :: Text -> Html
-renderButton txt = 
+renderButton txt =
   H.div ! A.class_ "qbox pad" $ do
     H.button ! A.class_ "qel text button" ! A.type_ "submit"  ! A.value "submit" $ toMarkup txt
 
 renderLink :: ServerSettings -> Text -> Html
 renderLink settings txt = do
-  H.a ! A.href (toValue $ makeAbsoluteGameUrl settings) $ do 
+  H.a ! A.href (toValue $ makeAbsoluteGameUrl settings) $ do
     H.div ! A.class_ "qbox pad" $ do
       H.div ! A.class_ "qel button" $ do
-        H.div ! A.class_ "text" 
+        H.div ! A.class_ "text"
           $ toMarkup txt
 
 renderAnswer :: Bool -> Int -> Text -> Html

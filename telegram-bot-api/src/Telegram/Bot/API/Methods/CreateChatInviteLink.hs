@@ -14,6 +14,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'createChatInviteLink'
 
@@ -35,11 +36,13 @@ type CreateChatInviteLink = "createChatInviteLink"
   :> Post '[JSON] (Response ChatInviteLink)
 
 -- | Use this method to create an additional
---   invite link for a chat. The bot must be 
---   an administrator in the chat for this to 
---   work and must have the appropriate administrator 
---   rights. The link can be revoked using the 
---   method revokeChatInviteLink. 
+--   invite link for a chat. The bot must be
+--   an administrator in the chat for this to
+--   work and must have the appropriate administrator
+--   rights. The link can be revoked using the
+--   method revokeChatInviteLink.
 --   Returns the new invite link as ChatInviteLink object.
 createChatInviteLink :: CreateChatInviteLinkRequest ->  ClientM (Response ChatInviteLink)
 createChatInviteLink = client (Proxy @CreateChatInviteLink)
+
+makeDefault ''CreateChatInviteLinkRequest

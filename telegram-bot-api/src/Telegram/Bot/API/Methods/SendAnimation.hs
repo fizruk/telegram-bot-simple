@@ -31,6 +31,7 @@ import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendAnimation'
 
@@ -120,3 +121,5 @@ sendAnimation r = case (sendAnimationAnimation r, sendAnimationThumb r) of
     boundary <- liftIO genBoundary
     client (Proxy @SendAnimationContent) (boundary, r)
   _ ->  client (Proxy @SendAnimationLink) r
+
+makeDefault ''SendAnimationRequest

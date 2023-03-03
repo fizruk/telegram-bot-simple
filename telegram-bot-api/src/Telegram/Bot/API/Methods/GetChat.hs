@@ -16,10 +16,10 @@ type GetChat = "getChat"
   :> RequiredQueryParam "chat_id" SomeChatId
   :> Post '[JSON] (Response Chat)
 
--- | Use this method to get up to date information 
---   about the chat (current name of the user for 
---   one-on-one conversations, current username of 
---   a user, group or channel, etc.). 
+-- | Use this method to get up to date information
+--   about the chat (current name of the user for
+--   one-on-one conversations, current username of
+--   a user, group or channel, etc.).
 --   Returns a Chat object on success.
 getChat :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
   -> ClientM (Response Chat)

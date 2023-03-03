@@ -16,6 +16,7 @@ import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Types.ParseMode
 import Telegram.Bot.API.Types.SomeReplyMarkup
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendMessage'
 
@@ -44,3 +45,5 @@ data SendMessageRequest = SendMessageRequest
 
 instance ToJSON   SendMessageRequest where toJSON = gtoJSON
 instance FromJSON SendMessageRequest where parseJSON = gparseJSON
+
+makeDefault ''SendMessageRequest

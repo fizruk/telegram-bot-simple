@@ -14,6 +14,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'sendVenue'
 
@@ -48,3 +49,5 @@ type SendVenue = "sendVenue"
 --   On success, the sent Message is returned.
 sendVenue :: SendVenueRequest ->  ClientM (Response Message)
 sendVenue = client (Proxy @SendVenue)
+
+makeDefault ''SendVenueRequest

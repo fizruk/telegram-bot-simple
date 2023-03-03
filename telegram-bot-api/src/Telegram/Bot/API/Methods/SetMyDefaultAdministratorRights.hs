@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'setMyDefaultAdministratorRights'
 
@@ -34,3 +35,5 @@ type SetMyDefaultAdministratorRights = "setMyDefaultAdministratorRights"
 setMyDefaultAdministratorRights
   :: SetMyDefaultAdministratorRightsRequest -> ClientM (Response Bool)
 setMyDefaultAdministratorRights = client (Proxy @SetMyDefaultAdministratorRights)
+
+makeDefault ''SetMyDefaultAdministratorRightsRequest

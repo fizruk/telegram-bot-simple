@@ -18,11 +18,11 @@ type SetChatDescription = "setChatDescription"
   :> QueryParam "description" Text
   :> Post '[JSON] (Response Bool)
 
--- | Use this method to change the description 
---   of a group, a supergroup or a channel. The 
---   bot must be an administrator in the chat 
---   for this to work and must have the appropriate 
---   administrator rights. 
+-- | Use this method to change the description
+--   of a group, a supergroup or a channel. The
+--   bot must be an administrator in the chat
+--   for this to work and must have the appropriate
+--   administrator rights.
 --   Returns True on success.
 setChatDescription :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
   -> Maybe Text -- ^ New chat description, 0-255 characters

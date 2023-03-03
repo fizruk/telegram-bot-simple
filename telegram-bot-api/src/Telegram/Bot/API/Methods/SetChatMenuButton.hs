@@ -13,6 +13,7 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
+import Telegram.Bot.API.Internal.TH
 
 -- ** 'setChatMenuButton'
 
@@ -34,3 +35,5 @@ type SetChatMenuButton = "setChatMenuButton"
 --  or the default menu button. Returns True on success.
 setChatMenuButton :: SetChatMenuButtonRequest -> ClientM (Response Bool)
 setChatMenuButton = client (Proxy @SetChatMenuButton)
+
+makeDefault ''SetChatMenuButtonRequest

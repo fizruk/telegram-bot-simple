@@ -17,6 +17,7 @@ import Telegram.Bot.API.Internal.Utils (deriveJSON')
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.InlineMode (InlineQueryId)
 import Telegram.Bot.API.InlineMode.InlineQueryResult (InlineQueryResult)
+import Telegram.Bot.API.Internal.TH (makeDefault)
 
 -- * Types
 
@@ -35,7 +36,7 @@ newtype SentWebAppMessage = SentWebAppMessage
   { sentWebAppMessageInlineMessageId :: Maybe InlineQueryId
   }
   deriving (Generic, Show)
-  
+
 foldMap deriveJSON'
   [ ''SentWebAppMessage
   , ''AnswerWebAppQueryRequest
@@ -51,7 +52,12 @@ type AnswerWebAppQuery
 -- | Use this method to set the result of an interaction with a Web App
 -- and send a corresponding message on behalf of the user
 -- to the chat from which the query originated.
--- 
+--
 -- On success, a 'SentWebAppMessage' object is returned.
 answerWebAppQuery :: AnswerWebAppQueryRequest -> ClientM (Response SentWebAppMessage)
 answerWebAppQuery = client (Proxy @AnswerWebAppQuery)
+
+foldMap makeDefault
+  [ ''SentWebAppMessage
+  , ''AnswerWebAppQueryRequest
+  ]
