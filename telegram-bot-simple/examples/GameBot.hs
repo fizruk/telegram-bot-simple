@@ -49,7 +49,6 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
 import Telegram.Bot.API
-import Telegram.Bot.API.Games
 import Telegram.Bot.API.InlineMode.InlineQueryResult
 import Telegram.Bot.API.InlineMode.InputMessageContent
 import Telegram.Bot.Simple
@@ -97,7 +96,7 @@ handleAction BotSettings{..} action model = case action of
     let shouldNotify  = Just True
         targetChatId  = SomeChatId (ChatId (fromIntegral supportChatId))
         fwdMsgRequest = ForwardMessageRequest targetChatId Nothing sourceChatId shouldNotify Nothing msgId
-    _ <- liftClientM (forwardMessage fwdMsgRequest)
+    _ <- runTG fwdMsgRequest
     return ()
 
   AInlineGame queryId msg -> model <# do
@@ -111,11 +110,11 @@ handleAction BotSettings{..} action model = case action of
         gameMsg = (defaultInputTextMessageContent gameMessageText) { inputMessageContentParseMode = Just "HTML" }
         answerInlineQueryRequest = defAnswerInlineQuery  queryId [inlineQueryResult]
 
-    _ <- liftClientM (answerInlineQuery answerInlineQueryRequest)
+    _ <- runTG answerInlineQueryRequest
     return ()
   AGame targetChatId msg -> model <# do
     let sendGameRequest = defSendGame (coerce targetChatId) gameId
-    _ <- liftClientM $ sendGame sendGameRequest
+    _ <- runTG sendGameRequest
     return ()
   ACallback callback -> model <# do
     let queryId = coerce (callbackQueryId callback)
@@ -124,7 +123,7 @@ handleAction BotSettings{..} action model = case action of
           { answerCallbackQueryText            = queryData
           , answerCallbackQueryUrl             = Just gameUrl
           }
-    _ <- liftClientM $ answerCallbackQuery answerCallbackQueryRequest
+    _ <- runTG answerCallbackQueryRequest
     return ()
 
   where
