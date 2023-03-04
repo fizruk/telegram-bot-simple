@@ -8,7 +8,7 @@ category:       Web
 homepage:       https://github.com/fizruk/telegram-bot-simple#readme
 bug-reports:    https://github.com/fizruk/telegram-bot-simple/issues
 author:         Nickolay Kudasov
-maintainer:     nickolay.kudasov@gmail.com
+maintainer:     nickolay.kudasov@gmail.com, Andrey Prokopenko <persiantiger@yandex.ru>
 copyright:      Nickolay Kudasov
 license:        BSD3
 license-file:   LICENSE
