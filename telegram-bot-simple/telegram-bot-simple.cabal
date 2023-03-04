@@ -38,6 +38,7 @@ library
       Telegram.Bot.Simple.InlineKeyboard
       Telegram.Bot.Simple.Instances
       Telegram.Bot.Simple.Reply
+      Telegram.Bot.Simple.RunTG
       Telegram.Bot.Simple.UpdateParser
       Telegram.Bot.Simple.Webhook
   other-modules:

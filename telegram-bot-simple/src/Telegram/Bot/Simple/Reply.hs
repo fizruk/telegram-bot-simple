@@ -9,8 +9,8 @@ import           Data.Text               (Text)
 import           GHC.Generics            (Generic)
 
 import           Telegram.Bot.API        as Telegram hiding (editMessageText, editMessageReplyMarkup)
-import qualified Telegram.Bot.API.UpdatingMessages as Update
 import           Telegram.Bot.Simple.Eff
+import           Telegram.Bot.Simple.RunTG (RunTG(..))
 
 -- | Get current 'ChatId' if possible.
 currentChatId :: BotM (Maybe ChatId)
@@ -75,7 +75,7 @@ replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageReques
 replyTo :: SomeChatId -> ReplyMessage -> BotM ()
 replyTo someChatId rmsg = do
   let msg = replyMessageToSendMessageRequest someChatId rmsg
-  void $ liftClientM $ sendMessage msg
+  void $ runTG msg
 
 -- | Reply in the current chat (if possible).
 reply :: ReplyMessage -> BotM ()
@@ -137,7 +137,7 @@ editMessageToReplyMessage EditMessage{..} = (toReplyMessage editMessageText)
 editMessage :: EditMessageId -> EditMessage -> BotM ()
 editMessage editMessageId emsg = do
   let msg = editMessageToEditMessageTextRequest editMessageId emsg
-  void $ liftClientM $ Update.editMessageText msg
+  void $ runTG msg
 
 editUpdateMessage :: EditMessage -> BotM ()
 editUpdateMessage emsg = do

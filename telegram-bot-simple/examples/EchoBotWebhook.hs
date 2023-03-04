@@ -8,7 +8,6 @@ import qualified Data.Text                                       as Text
 import           Telegram.Bot.API
 import           Telegram.Bot.API.InlineMode.InlineQueryResult
 import           Telegram.Bot.API.InlineMode.InputMessageContent (defaultInputTextMessageContent)
-import           Telegram.Bot.API.Webhook
 import           Telegram.Bot.Simple
 import           Telegram.Bot.Simple.UpdateParser                (updateMessageSticker,
                                                                   updateMessageText)
@@ -55,12 +54,11 @@ handleAction action model = case action of
   InlineEcho queryId msg -> model <# do
     let result = InlineQueryResult InlineQueryResultArticle (InlineQueryResultId msg) (Just msg) (Just (defaultInputTextMessageContent msg)) Nothing
         answerInlineQueryRequest = defAnswerInlineQuery queryId [result]
-    _ <- liftClientM (answerInlineQuery answerInlineQueryRequest)
+    _ <- runTG answerInlineQueryRequest
     return ()
   StickerEcho file chat -> model <# do
-    _ <- liftClientM
-      (sendSticker
-        (defSendSticker (SomeChatId chat) file))
+    _ <- runTG
+        (defSendSticker (SomeChatId chat) file)
     return ()
   Echo msg -> model <# do
     pure msg -- or replyText msg
