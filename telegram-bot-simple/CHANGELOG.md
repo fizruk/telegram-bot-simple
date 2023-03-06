@@ -1,3 +1,9 @@
+0.11
+---
+
+- Add default implementations to all requests (see [#138](https://github.com/fizruk/telegram-bot-simple/pull/138));
+- Add `RunTG` that simplifies making requests (see [#139](https://github.com/fizruk/telegram-bot-simple/pull/139));
+
 0.10
 ---
 
