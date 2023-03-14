@@ -37,6 +37,8 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.GetMe
   , module Telegram.Bot.API.Methods.GetMyCommands
   , module Telegram.Bot.API.Methods.GetMyDefaultAdministratorRights
+  , module Telegram.Bot.API.Methods.GetMyDescription
+  , module Telegram.Bot.API.Methods.GetMyShortDescription
   , module Telegram.Bot.API.Methods.GetUserProfilePhotos
   , module Telegram.Bot.API.Methods.LeaveChat
   , module Telegram.Bot.API.Methods.PinChatMessage
@@ -67,6 +69,8 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.SetChatTitle
   , module Telegram.Bot.API.Methods.SetMyCommands
   , module Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
+  , module Telegram.Bot.API.Methods.SetMyDescription
+  , module Telegram.Bot.API.Methods.SetMyShortDescription
   , module Telegram.Bot.API.Methods.StopMessageLiveLocation
   , module Telegram.Bot.API.Methods.UnbanChatMember
   , module Telegram.Bot.API.Methods.UnbanChatSenderChat
@@ -101,6 +105,8 @@ import Telegram.Bot.API.Methods.GetFile
 import Telegram.Bot.API.Methods.GetMe
 import Telegram.Bot.API.Methods.GetMyCommands
 import Telegram.Bot.API.Methods.GetMyDefaultAdministratorRights
+import Telegram.Bot.API.Methods.GetMyDescription
+import Telegram.Bot.API.Methods.GetMyShortDescription
 import Telegram.Bot.API.Methods.GetUserProfilePhotos
 import Telegram.Bot.API.Methods.LeaveChat
 import Telegram.Bot.API.Methods.PinChatMessage
@@ -131,6 +137,8 @@ import Telegram.Bot.API.Methods.SetChatStickerSet
 import Telegram.Bot.API.Methods.SetChatTitle
 import Telegram.Bot.API.Methods.SetMyCommands
 import Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
+import Telegram.Bot.API.Methods.SetMyDescription
+import Telegram.Bot.API.Methods.SetMyShortDescription
 import Telegram.Bot.API.Methods.StopMessageLiveLocation
 import Telegram.Bot.API.Methods.UnbanChatMember
 import Telegram.Bot.API.Methods.UnbanChatSenderChat
