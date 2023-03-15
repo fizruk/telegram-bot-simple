@@ -34,7 +34,7 @@ type SetMyShortDescription = "setMyShortDescription"
 --   which is shown on the bot's profile page and
 --   is sent together with the link when users share the bot.
 --   Returns 'True' on success.
-setMyShortDescriptionRequest :: SetMyShortDescriptionRequest -> ClientM (Response Bool)
-setMyShortDescriptionRequest = client (Proxy @SetMyShortDescription)
+setMyShortDescription :: SetMyShortDescriptionRequest -> ClientM (Response Bool)
+setMyShortDescription = client (Proxy @SetMyShortDescription)
 
 makeDefault ''SetMyShortDescriptionRequest

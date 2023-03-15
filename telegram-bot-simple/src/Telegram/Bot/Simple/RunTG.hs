@@ -231,6 +231,14 @@ instance RunTG AnswerCallbackQueryRequest (Response Bool) where
 instance RunTG SetMyDefaultAdministratorRightsRequest (Response Bool) where
   runTG = runTG . setMyDefaultAdministratorRights
 
+-- | Wrapper around 'SetMyDescriptionRequest' request type for 'setMyDescription' method.
+instance RunTG SetMyDescriptionRequest (Response Bool) where
+  runTG = runTG . setMyDescription
+
+-- | Wrapper around 'SetMyShortDescriptionRequest' request type for 'setMyShortDescription' method.
+instance RunTG SetMyShortDescriptionRequest (Response Bool) where
+  runTG = runTG . setMyShortDescription
+
 -- | Wrapper around 'CreateChatInviteLinkRequest' request type for 'createChatInviteLink' method.
 instance RunTG CreateChatInviteLinkRequest (Response ChatInviteLink) where
   runTG = runTG . createChatInviteLink
@@ -250,6 +258,14 @@ instance RunTG PromoteChatMemberRequest (Response Bool) where
 -- | Wrapper around 'GetMyDefaultAdministratorRightsRequest' request type for 'getMyDefaultAdministratorRights' method.
 instance RunTG GetMyDefaultAdministratorRightsRequest (Response ChatAdministratorRights) where
   runTG = runTG . getMyDefaultAdministratorRights
+
+-- | Wrapper around 'GetMyDescriptionRequest' request type for 'getMyDescription' method.
+instance RunTG GetMyDescriptionRequest (Response BotDescription) where
+  runTG = runTG . getMyDescription
+
+-- | Wrapper around 'GetMyShortDescriptionRequest' request type for 'getMyShortDescription' method.
+instance RunTG GetMyShortDescriptionRequest (Response BotShortDescription) where
+  runTG = runTG . getMyShortDescription
 
 -- | Wrapper around 'BanChatMemberRequest' request type for 'banChatMember' method.
 instance RunTG BanChatMemberRequest (Response Bool) where
