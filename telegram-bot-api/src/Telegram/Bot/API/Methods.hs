@@ -72,6 +72,11 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.UnbanChatSenderChat
   , module Telegram.Bot.API.Methods.UnpinAllChatMessages
   , module Telegram.Bot.API.Methods.UnpinChatMessage
+
+  , module Telegram.Bot.API.Forum
+  , module Telegram.Bot.API.Games
+  , module Telegram.Bot.API.Payments
+  , module Telegram.Bot.API.WebApps
   ) where
 
 import Telegram.Bot.API.Types.ParseMode
@@ -136,3 +141,8 @@ import Telegram.Bot.API.Methods.UnbanChatMember
 import Telegram.Bot.API.Methods.UnbanChatSenderChat
 import Telegram.Bot.API.Methods.UnpinAllChatMessages
 import Telegram.Bot.API.Methods.UnpinChatMessage
+
+import Telegram.Bot.API.Forum
+import Telegram.Bot.API.Games
+import Telegram.Bot.API.Payments
+import Telegram.Bot.API.WebApps
