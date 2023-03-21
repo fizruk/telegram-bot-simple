@@ -1,3 +1,8 @@
+0.11.1
+---
+
+- Add `RunTG` instances for newly added methods in 6.5.1.
+
 0.11
 ---
 

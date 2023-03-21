@@ -23,4 +23,11 @@ If you are building with stack then use `stack build --flag telegram-bot-simple:
 Contributions are welcome!
 Feel free to ping me on GitHub, file an issue or submit a PR :)
 
+## Compatibility
+
+| telegram-bot-api  | telegram-bot-simple |
+| ------------- | ------------- |
+| 0.10  | 6.5  |
+| 0.11.1  | 6.5.1  |
+
 _Nick_
