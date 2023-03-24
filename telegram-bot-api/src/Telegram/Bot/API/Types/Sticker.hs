@@ -29,6 +29,7 @@ data Sticker = Sticker
   , stickerMaskPosition :: Maybe MaskPosition -- ^ For mask stickers, the position where the mask should be placed.
   , stickerCustomEmojiId :: Maybe Text        -- ^ For custom emoji stickers, unique identifier of the custom emoji.
   , stickerFileSize     :: Maybe Integer      -- ^ File size in bytes.
+  , stickerNeedsRepainting  :: Maybe Bool      -- ^ Pass `True` if stickers in the sticker set must be repainted to the color of text when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context; for custom emoji sticker sets only.
   }
   deriving (Generic, Show)
 
