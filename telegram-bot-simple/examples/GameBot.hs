@@ -43,7 +43,6 @@ import qualified Data.Text as Text
 import qualified Data.Text.IO as Text
 import qualified Data.UUID as UUID
 import qualified Options.Applicative as Optparse (command)
--- import qualified System.Posix.Signals as Sig
 import qualified System.Signal as Sig
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
@@ -112,7 +111,7 @@ handleAction BotSettings{..} action model = case action of
 
     _ <- runTG answerInlineQueryRequest
     return ()
-  AGame targetChatId msg -> model <# do
+  AGame targetChatId _msg -> model <# do
     let sendGameRequest = defSendGame (coerce targetChatId) gameId
     _ <- runTG sendGameRequest
     return ()
@@ -185,6 +184,14 @@ runServer = do
       port = fromIntegral (serverPort serverSettings)
   runSettings warpSettings (serverApp env)
 
+data PictureSettings = PictureSettings
+  { theGood :: Text
+  , theBad  :: Text
+  , theUgly :: Text
+  , goodScore :: Double
+  , badScore  :: Double
+  } deriving (Generic, FromDhall)
+
 data ServerSettings = ServerSettings
   { serverPort       :: Natural
   , serverUrlPrefix  :: Text
@@ -194,6 +201,10 @@ data ServerSettings = ServerSettings
   , analyticsPath    :: Text
   , pageStyle        :: Text
   , quizDescription  :: Text
+  , quizFooterBegin  :: Text
+  , quizFooterCode   :: Text
+  , quizFooterEnd    :: Text
+  , quizPicture      :: Maybe PictureSettings
   } deriving (Generic, FromDhall)
 
 serverSettingsPath :: Text
@@ -429,11 +440,13 @@ storeEnv Env{..} = do
 -- *** Handlers
 
 withUser
-  :: Maybe Text
+  :: ServerSettings
+  -> Maybe Text
   -> (GameUserId -> Handler (WithCookie Html))
   -> Handler (WithCookie Html)
-withUser Nothing _action = redirectToRoot
-withUser (Just cookie) action = maybe redirectToRoot action (parseUser cookie)
+withUser settings Nothing _action = redirectToRoot settings
+withUser settings (Just cookie) action
+  = maybe (redirectToRoot settings) action (parseUser cookie)
 
 startHandler :: Env -> Maybe Text -> Handler (WithCookie Html)
 startHandler Env{..} mCookie = do
@@ -443,7 +456,7 @@ startHandler Env{..} mCookie = do
     $ renderStartPage settings
 
 firstQuestionHandler :: Env -> Maybe Text -> Handler (WithCookie Html)
-firstQuestionHandler env mCookie = withUser mCookie (firstQuestionForUser env)
+firstQuestionHandler env mCookie = withUser (settings env) mCookie (firstQuestionForUser env)
   where
     ServerSettings{..} = settings env
     limit = fromIntegral questionsPerGame
@@ -459,14 +472,14 @@ firstQuestionHandler env mCookie = withUser mCookie (firstQuestionForUser env)
             Just userData -> modifyTVar' userState $! HashMap.insert user userData
           pure newUserData
       case mNewUserData of
-        Nothing -> redirectToRoot
+        Nothing -> redirectToRoot settings
         Just newUserData -> pure
           $ addHeader @"Set-Cookie" (userToSetCookie user)
           $ renderQuestionPage settings newUserData
 
 nextQuestionHandler :: Env -> Maybe Text -> AnswerInt -> Handler (WithCookie Html)
 nextQuestionHandler env mCookie (AnswerInt answer)
-  = withUser mCookie (nextQuestionForUser env answer)
+  = withUser (settings env) mCookie (nextQuestionForUser env answer)
   where
     nextQuestionForUser Env{..} numAnswer user = do
       newGameState <- liftIO $ atomically $ do
@@ -482,7 +495,7 @@ nextQuestionHandler env mCookie (AnswerInt answer)
                 writeTVar userState $! HashMap.insert user newUserData oldUserState
             pure newUserState
       case newGameState of
-        GameNotFound -> redirectToStart user
+        GameNotFound -> redirectToStart settings user
         GameOver oldUserData -> pure
           $ addHeader @"Set-Cookie" (userToSetCookie user)
           $ renderUserScore settings oldUserData
@@ -492,13 +505,15 @@ nextQuestionHandler env mCookie (AnswerInt answer)
 
 -- *** Redirects
 
-redirectToRoot :: Handler (WithCookie Html)
-redirectToRoot = noHeader @"Set-Cookie" <$> throwError (err301WithLoc "/")
+redirectToRoot :: ServerSettings -> Handler (WithCookie Html)
+redirectToRoot settings
+  = noHeader @"Set-Cookie"
+  <$> throwError (err301WithLoc $ encodeUtf8 $ makeAbsoluteUrl settings "/")
 
-redirectToStart :: GameUserId -> Handler (WithCookie Html)
-redirectToStart user
+redirectToStart :: ServerSettings -> GameUserId -> Handler (WithCookie Html)
+redirectToStart settings user
   =   addHeader @"Set-Cookie" (userToSetCookie user)
-  <$> throwError (err301WithLoc "/game")
+  <$> throwError (err301WithLoc $ encodeUtf8 $ makeAbsoluteUrl settings "/game/")
 
 err301WithLoc :: ByteString -> ServerError
 err301WithLoc loc = err301 { errHeaders = [(hLocation, loc)] }
@@ -512,111 +527,199 @@ makeAbsoluteRootUrl :: ServerSettings -> Text
 makeAbsoluteRootUrl = flip makeAbsoluteUrl "/"
 
 makeAbsoluteGameUrl :: ServerSettings -> Text
-makeAbsoluteGameUrl = flip makeAbsoluteUrl "/game"
+makeAbsoluteGameUrl = flip makeAbsoluteUrl "/game/"
 
 withGameTemplate :: ServerSettings -> Html -> Html
-withGameTemplate ServerSettings{..} content = toHtml $ H.html $ do
+withGameTemplate s@ServerSettings{..} content = toHtml $ H.html $ do
   H.head $ do
     H.title $ "Game"
     H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1"
+    H.link
+      ! A.href (toValue $ makeAbsoluteUrl s "/fonts/HalvarBreitschriftDEMO-Regular.woff")
+      ! A.rel "stylesheet"
+    H.link
+      ! A.href (toValue $ makeAbsoluteUrl s "/fonts/HalvarBreitschriftDEMO-Bold.woff")
+      ! A.rel "stylesheet"
     H.style $ toMarkup pageStyle
   H.body $ content
 
-renderText :: Text -> Html
-renderText txt =
-  H.div ! A.class_ "qbox pad" $ do
-    H.div ! A.class_ "qel" $ do
-      H.div ! A.class_ "text" $ toMarkup txt
+-- **** Home page
 
-renderExplanation :: Bool -> Text -> Html
-renderExplanation True txt = renderText txt
-renderExplanation False txt =
+renderTextLogo1 :: Text -> Html
+renderTextLogo1 txt =
   H.div ! A.class_ "qbox pad" $ do
-    H.div ! A.class_ "wel" $ do
-      H.div ! A.class_ "text" $ toMarkup txt
+    H.div ! A.class_ "text-logo-line1 position-logo-line1" $ toMarkup txt
 
-renderButton :: Text -> Html
-renderButton txt =
+renderTextLogo2 :: Text -> Html
+renderTextLogo2 txt =
   H.div ! A.class_ "qbox pad" $ do
-    H.button ! A.class_ "qel text button" ! A.type_ "submit"  ! A.value "submit" $ toMarkup txt
+    H.div ! A.class_ "text-logo-line2 position-logo-line2" $ toMarkup txt
 
-renderLink :: ServerSettings -> Text -> Html
-renderLink settings txt = do
-  H.a ! A.href (toValue $ makeAbsoluteGameUrl settings) $ do
-    H.div ! A.class_ "qbox pad" $ do
-      H.div ! A.class_ "qel button" $ do
-        H.div ! A.class_ "text"
-          $ toMarkup txt
-
-renderAnswer :: Bool -> Int -> Text -> Html
-renderAnswer ch num txt =
+renderDescription :: Text -> Html
+renderDescription txt= do
   H.div ! A.class_ "qbox pad" $ do
-    H.div ! A.class_ "qel" $ do
-      H.label ! A.class_ "container" ! A.for (toValue num) $ do
-        H.input
-          ! A.id (toValue num)
-          ! A.type_ "radio"
-          ! A.name "q"
-          !? (ch, A.checked "")
-          ! A.value (toValue num)
-        H.div ! A.class_ "checkmark" $ ""
-        H.div ! A.class_ "ctext text typing" $ toMarkup txt
+    H.div ! A.class_ "text-description position-text" $ toMarkup txt
 
-renderProgress :: Text -> Html
-renderProgress txt =
+renderFooterText :: Text -> Html
+renderFooterText txt= do
   H.div ! A.class_ "qbox pad" $ do
-    H.div $ do
-      H.div ! A.class_ "text" $ toMarkup txt
+    H.div ! A.class_ "text-footer position-text" $ toMarkup txt
+
+renderFooterCode :: Text -> Html
+renderFooterCode txt= do
+  H.div ! A.class_ "qbox pad" $ do
+    H.div ! A.class_ "text-footer-code position-text" $ toMarkup txt
 
 renderStartPage :: ServerSettings -> Html
 renderStartPage settings = withGameTemplate settings $ do
-  renderText "Haskell Quiz Game"
-  renderText (quizDescription settings)
+  renderTextLogo1 "Haskell"
+  renderTextLogo2 "Quiz Game"
+  renderDescription (quizDescription settings)
   renderLink settings "Play"
+  renderFooterText (quizFooterBegin settings)
+  renderFooterCode (quizFooterCode settings)
+  renderFooterText (quizFooterEnd settings)
+
+-- **** Question page
+
+renderProgress :: Bool -> Int -> Integer -> Html
+renderProgress isResult current total =
+  H.div ! A.class_ "qbox pad" $ do
+    let currentClass = if isResult then "text-current-result" else "text-current-number"
+        positionClass = if isResult then "position-progress-result" else "position-progress"
+    H.div ! A.class_ positionClass $ do
+      H.span ! A.class_ currentClass $ toMarkup (show current)
+      H.span ! A.class_ "text-total-number" $ toMarkup $ "/ " <> show total
+
+renderQuestionText :: Bool -> Text -> Html
+renderQuestionText forExplanation txt =
+  H.div ! A.class_ "qbox pad" $ do
+    let positionStyle = if forExplanation then "position-explanation" else "position-question"
+        questionStyle = "text-question " <> positionStyle :: Text
+    H.div ! A.class_ (toValue questionStyle) $ toMarkup txt
+
+renderAnswer :: Bool -> Int -> Text -> Html
+renderAnswer ch num txt =
+  H.div ! A.class_ "qbox position-answer" $ do
+    H.label ! A.class_ "container" ! A.for (toValue num) $ do
+      H.input
+        ! A.id (toValue num)
+        ! A.type_ "radio"
+        ! A.name "q"
+        !? (ch, A.checked "")
+        ! A.value (toValue num)
+      H.div ! A.class_ "checkmark" $ ""
+      H.div ! A.class_ "text-answer position-text-answer" $ toMarkup txt
 
 renderQuestionPage :: ServerSettings -> UserData -> Html
 renderQuestionPage settings UserData{..} = withGameTemplate settings $ do
-  let progress = show (length userDataAnswers + 1) <> "/" <> show userDataTotalQuestions
   case userDataCurrentQuestion of
     Nothing -> do
-      renderText "No more questions left."
-      renderLink settings "Play again"
+      renderQuestionText False "No more questions left."
+      renderAgainLink settings "Play again"
 
     Just QuestionBool{..} -> do
-      renderText questionBoolText
+      renderProgress False (length userDataAnswers + 1) userDataTotalQuestions
+      renderQuestionText False questionBoolText
       H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "post" $ do
         renderAnswer True 1 "True"
         renderAnswer False 0 "False"
-        renderButton "Next question"
-        renderProgress $ Text.pack progress
+        renderButton "Next"
 
     Just QuestionChoice{..} -> do
-      renderText questionChoiceText
+      renderProgress False (length userDataAnswers + 1) userDataTotalQuestions
+      renderQuestionText False questionChoiceText
       H.form ! A.action (toValue $ makeAbsoluteGameUrl settings) ! A.method "post" $ do
         forM_ questionChoiceChoices $
           \Choice{..} -> renderAnswer
             (if choiceNumber == 1 then True else False)
             (fromIntegral choiceNumber)
             choiceText
-        renderButton "Next question"
-        renderProgress $ Text.pack progress
+        renderButton "Next"
+
+-- **** Score page
+
+renderExplanation :: Bool -> Text -> Html
+renderExplanation True txt = renderQuestionText True txt
+renderExplanation False txt =
+  H.div ! A.class_ "qbox pad" $ do
+    H.div ! A.class_ "text-wrong-answer position-explanation" $ toMarkup txt
+
+chooseScorePicture :: PictureSettings -> Double -> Text
+chooseScorePicture PictureSettings{..} userScore =
+  if goodScore < userScore
+    then theGood
+    else if badScore < userScore
+           then theBad
+           else theUgly
+
+renderPicture :: ServerSettings -> Int -> Integer -> Html
+renderPicture ServerSettings{..} score total = case quizPicture of
+  Nothing -> return ()
+  Just ps@PictureSettings{..} -> case goodScore < badScore of
+    -- invalid settings
+    True -> return ()
+    False -> do
+      let userScore :: Double
+          userScore = fromIntegral score / fromIntegral total
+
+          pictureUrl = chooseScorePicture ps userScore
+      H.div ! A.class_ "qbox pad" $ do
+        H.img ! A.src (toValue pictureUrl) ! A.class_ "score-img"
+
+renderBrightLine, renderDarkLine :: Html
+renderBrightLine = H.div ! A.class_ "qbox pad" $ do
+  H.hr ! A.class_ "bright-line"
+renderDarkLine = H.div ! A.class_ "qbox pad" $ do
+  H.hr ! A.class_ "dark-line"
 
 renderUserScore :: ServerSettings -> UserData -> Html
 renderUserScore settings UserData{..} = withGameTemplate settings $ do
   case userDataAnswers of
     [] -> do
-      renderText "Sorry. Looks like no answers available at the moment. Try again maybe?"
-      renderLink settings "Play again"
+      renderDescription
+        "Sorry. Looks like no answers available at the moment. Try again maybe?"
+      renderAgainLink settings "Play again"
     _  -> do
-      let total = show userDataTotalQuestions
-          current = show (length $ filter answerIsRight userDataAnswers)
-          score = Text.pack (current <> "/" <> total)
-      H.b $ do
-        renderText $ "Your score is: " <> score
+      let score = length $ filter answerIsRight userDataAnswers
+      renderTextLogo1 "Your"
+      renderTextLogo2 "Score is"
+      renderProgress True score userDataTotalQuestions
+      renderPicture settings score userDataTotalQuestions
+      renderBrightLine
       H.div $ do
         forM_ userDataAnswers $ \Answer{..} -> H.tr $ do
-          H.div $ renderText (questionText answerQuestion)
+          H.div $ renderQuestionText True (questionText answerQuestion)
           H.div $ if answerIsRight
             then renderExplanation True "OK"
             else renderExplanation False $ explainError answerQuestion
-      renderLink settings "Play again"
+          renderDarkLine
+      renderAgainLink settings "Play again"
+
+-- **** Helpers
+
+renderButton :: Text -> Html
+renderButton txt =
+  H.div ! A.class_ "qbox pad" $ do
+    H.div ! A.class_ "position-button" $ do
+      H.input
+        ! A.class_ "qel-button text-button"
+        ! A.type_ "submit"
+        ! A.value (toValue txt)
+
+renderLink :: ServerSettings -> Text -> Html
+renderLink settings txt = do
+  H.a ! A.href (toValue $ makeAbsoluteGameUrl settings) $ do
+    H.div ! A.class_ "qbox pad" $ do
+      H.div ! A.class_ "position-link" $ do
+        H.div ! A.class_ "qel-button text-button text-play-button"
+          $ toMarkup txt
+
+renderAgainLink :: ServerSettings -> Text -> Html
+renderAgainLink settings txt = do
+  H.a ! A.href (toValue $ makeAbsoluteGameUrl settings) $ do
+    H.div ! A.class_ "qbox pad" $ do
+      H.div ! A.class_ "position-link" $ do
+        H.div ! A.class_ "qel-button text-button text-again-button"
+          $ toMarkup txt
+
