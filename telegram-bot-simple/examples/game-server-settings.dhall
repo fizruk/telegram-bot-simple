@@ -28,13 +28,7 @@
       }
 
       body { background-color: #000000; font-family: Halvar Breitschrift DEMO,Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace; }
-      .qbox { margin: auto; text-align: center; width: 50%; }
-      /* Responsiveness */
-      @media screen and (min-width: 800px; ) { .qbox { width: 50%; } }
-      @media screen and (min-width: 600px; ) { .qbox { width: 480px; } }
-      @media screen and (min-width: 480px; ) { .qbox { width: 420px; } }
-      @media screen and (min-width: 414px; ) { .qbox { width: 360px; } }
-      @media screen and (min-width: 320px; ) { .qbox { width: 320px; } }
+      .qbox { margin: auto; text-align: center; }
 
       /* specifically for button */
       .qel-button { width: 100px; height: 100px; border: 1px solid #5BBF3B; box-sizing: border-box; border-radius: 50%; }
@@ -326,6 +320,17 @@
       }
       /** Link styling **/
       a { text-decoration: none; }
+      /* Responsiveness */
+      @media screen and (min-width: 800px; ) { .qbox { width: 50%; } }
+      @media screen and (min-width: 600px; ) { .qbox { width: 480px; } }
+      @media screen and (min-width: 480px; ) { .qbox { width: 420px; } }
+      @media screen and (min-width: 414px; ) { .qbox { width: 360px; } }
+      @media screen and (min-width: 320px; ) { .qbox { width: 320px; } }
+      input {
+          -webkit-appearance: none;
+          -webkit-border-radius:0;
+          border-radius:0;
+      }
     ''
 , quizDescription =
 ''
