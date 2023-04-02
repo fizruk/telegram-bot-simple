@@ -12,6 +12,7 @@
 {-# LANGUAGE RecordWildCards #-}
 module Main where
 
+import Control.Concurrent (threadDelay)
 import Control.Concurrent.STM
 import Control.Monad (void, forM_)
 import Control.Monad.IO.Class (liftIO)
@@ -95,7 +96,7 @@ handleAction BotSettings{..} action model = case action of
     let shouldNotify  = Just True
         targetChatId  = SomeChatId (ChatId (fromIntegral supportChatId))
         fwdMsgRequest = ForwardMessageRequest targetChatId Nothing sourceChatId shouldNotify Nothing msgId
-    _ <- runTG fwdMsgRequest
+    waitAndRetry fwdMsgRequest
     return ()
 
   AInlineGame queryId msg -> model <# do
@@ -113,7 +114,7 @@ handleAction BotSettings{..} action model = case action of
     return ()
   AGame targetChatId _msg -> model <# do
     let sendGameRequest = defSendGame (coerce targetChatId) gameId
-    _ <- runTG sendGameRequest
+    waitAndRetry sendGameRequest
     return ()
   ACallback callback -> model <# do
     let queryId = coerce (callbackQueryId callback)
@@ -122,12 +123,25 @@ handleAction BotSettings{..} action model = case action of
           { answerCallbackQueryText            = queryData
           , answerCallbackQueryUrl             = Just gameUrl
           }
-    _ <- runTG answerCallbackQueryRequest
+    waitAndRetry answerCallbackQueryRequest
     return ()
 
   where
     gameMessageText = "<a href=\"" <> gameUrl <> "\">" <> gameName <> "</a>"
+
 data Command = CmdBot | CmdServer
+
+waitAndRetry :: RunTG a (Response b) => a -> BotM ()
+waitAndRetry request = do
+  result <- runTG request
+  if responseOk result
+    then pure ()
+    else case responseParameters result >>= responseParametersRetryAfter of
+      Nothing -> pure ()
+      Just sec -> do
+        liftIO . threadDelay $ coerce sec * 1000000
+        _ <- runTG request
+        return ()
 
 -- * Main
 

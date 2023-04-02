@@ -321,11 +321,12 @@
       /** Link styling **/
       a { text-decoration: none; }
       /* Responsiveness */
-      @media screen and (min-width: 800px; ) { .qbox { width: 50%; } }
-      @media screen and (min-width: 600px; ) { .qbox { width: 480px; } }
-      @media screen and (min-width: 480px; ) { .qbox { width: 420px; } }
-      @media screen and (min-width: 414px; ) { .qbox { width: 360px; } }
-      @media screen and (min-width: 320px; ) { .qbox { width: 320px; } }
+      @media (min-width:320px)  { .qbox { width: 320px; } }
+      @media (min-width:481px)  { .qbox { width: 360px; } }
+      @media (min-width:641px)  { .qbox { width: 420px; } }
+      @media (min-width:961px)  { .qbox { width: 480px; } }
+      @media (min-width:1025px) { .qbox { width: 50%; } }
+
       input {
           -webkit-appearance: none;
           -webkit-border-radius:0;
