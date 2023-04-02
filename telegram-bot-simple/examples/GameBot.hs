@@ -96,7 +96,7 @@ handleAction BotSettings{..} action model = case action of
     let shouldNotify  = Just True
         targetChatId  = SomeChatId (ChatId (fromIntegral supportChatId))
         fwdMsgRequest = ForwardMessageRequest targetChatId Nothing sourceChatId shouldNotify Nothing msgId
-    _ <- runTG fwdMsgRequest
+    waitAndRetry fwdMsgRequest
     return ()
 
   AInlineGame queryId msg -> model <# do
