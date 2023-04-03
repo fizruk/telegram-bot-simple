@@ -129,16 +129,19 @@ type GetCustomEmojiStickers
 
 -- | Request parameters for 'uploadStickerFile'.
 data UploadStickerFileRequest = UploadStickerFileRequest
-  { uploadStickerFileUserId     :: UserId -- ^ User identifier of sticker file owner
-  , uploadStickerFilePngSticker :: InputFile -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
+  { uploadStickerFileUserId        :: UserId -- ^ User identifier of sticker file owner
+  , uploadStickerFileSticker       :: InputFile -- ^ A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format. See https://core.telegram.org/stickers for technical requirements.
+  , uploadStickerFileStickerFormat :: Text -- ^ Format of the sticker, must be one of “static”, “animated”, “video”
   } deriving Generic
 
 instance ToJSON UploadStickerFileRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp UploadStickerFileRequest where
   toMultipart UploadStickerFileRequest{..} =
-    makeFile "png_sticker" uploadStickerFilePngSticker (MultipartData fields []) where
-    fields = [ Input "user_id" $ T.pack . show $ uploadStickerFileUserId ]
+    makeFile "sticker" uploadStickerFileSticker (MultipartData fields []) where
+    fields = [ Input "user_id" $ T.pack . show $ uploadStickerFileUserId
+             , Input "sticker_format" $ T.pack . show $ uploadStickerFileStickerFormat
+             ]
 
 type UploadStickerFileContent
   = "uploadStickerFile"
@@ -150,13 +153,13 @@ type UploadStickerFileLink
   :> ReqBody '[JSON] UploadStickerFileRequest
   :> Post '[JSON] (Response File)
 
--- | Use this method to upload a .PNG file
+-- | Use this method to upload f file in .WEBP, .PNG, .TGS, or .WEBM format
 --   with a sticker for later use in createNewStickerSet
 --   and addStickerToSet methods (can be used multiple times).
 --   Returns the uploaded File on success.
 uploadStickerFile :: UploadStickerFileRequest -> ClientM (Response File)
 uploadStickerFile r =
-  case uploadStickerFilePngSticker r of
+  case uploadStickerFileSticker r of
     InputFile{} -> do
       boundary <- liftIO genBoundary
       client (Proxy @UploadStickerFileContent) (boundary, r)
