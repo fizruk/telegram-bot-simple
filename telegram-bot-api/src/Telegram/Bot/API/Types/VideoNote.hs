@@ -16,7 +16,7 @@ data VideoNote = VideoNote
   , videoNoteFileUniqueId :: FileId -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
   , videoNoteLength   :: Int -- ^ Video width and height as defined by sender.
   , videoNoteDuration :: Seconds -- ^ Duration of the video in seconds as defined by sender.
-  , videoNoteThumb    :: Maybe PhotoSize -- ^ Video thumbnail.
+  , videoNoteThumbnail    :: Maybe PhotoSize -- ^ Video thumbnail.
   , videoNoteFileSize :: Maybe Integer -- ^ File size in bytes.
   }
   deriving (Generic, Show)

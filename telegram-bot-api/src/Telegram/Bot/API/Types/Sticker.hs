@@ -22,7 +22,7 @@ data Sticker = Sticker
   , stickerHeight       :: Int              -- ^ Sticker height.
   , stickerIsAnimated   :: Bool               -- ^ 'True', if the sticker is animated.
   , stickerIsVideo      :: Bool               -- ^ 'True', if the sticker is a video sticker.
-  , stickerThumb        :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
+  , stickerThumbnail    :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
   , stickerEmoji        :: Maybe Text         -- ^ Emoji associated with the sticker.
   , stickerSetName      :: Maybe Text         -- ^ Name of the sticker set to which the sticker belongs.
   , stickerPremiumAnimation :: Maybe File    -- ^ For premium regular stickers, premium animation for the sticker.
@@ -47,7 +47,7 @@ data StickerSet = StickerSet
   , stickerSetIsVideo       :: Bool            -- ^ 'True', if the sticker is a video sticker.
   , stickerSetContainsMasks :: Maybe Bool      -- ^ True, if the sticker set contains masks.
   , stickerSetStickers      :: [Sticker]       -- ^ List of all set stickers.
-  , stickerSetThumb         :: Maybe PhotoSize -- ^ Sticker set thumbnail in the .WEBP or .TGS format.
+  , stickerSetThumbnail     :: Maybe PhotoSize -- ^ Sticker set thumbnail in the .WEBP or .TGS format.
   }
   deriving (Generic, Show)
 
