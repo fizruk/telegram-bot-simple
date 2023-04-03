@@ -338,45 +338,45 @@ deleteStickerFromSet :: T.Text -- ^ File identifier of the sticker
   -> ClientM (Response Bool)
 deleteStickerFromSet = client (Proxy @DeleteStickerFromSet)
 
--- ** 'setStickerSetThumb'
+-- ** 'setStickerSetThumbnail'
 
--- | Request parameters for 'setStickerSetThumb'.
-data SetStickerSetThumbRequest = SetStickerSetThumbRequest
-  { setStickerSetThumbName   :: T.Text -- ^ Sticker set name
-  , setStickerSetThumbUserId :: UserId -- ^ User identifier of the sticker set owner
-  , setStickerSetThumbThumb  :: InputFile -- ^ A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size; see <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for animated sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated sticker set thumbnail can't be uploaded via HTTP URL.
+-- | Request parameters for 'setStickerSetThumbnail'.
+data SetStickerSetThumbnailRequest = SetStickerSetThumbnailRequest
+  { setStickerSetThumbnailName   :: T.Text -- ^ Sticker set name
+  , setStickerSetThumbnailUserId :: UserId -- ^ User identifier of the sticker set owner
+  , setStickerSetThumbnailThumbnail  :: InputFile -- ^ A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size; see <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for animated sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated sticker set thumbnail can't be uploaded via HTTP URL.
   } deriving Generic
 
-instance ToJSON SetStickerSetThumbRequest where toJSON = gtoJSON
+instance ToJSON SetStickerSetThumbnailRequest where toJSON = gtoJSON
 
-instance ToMultipart Tmp SetStickerSetThumbRequest where
-  toMultipart SetStickerSetThumbRequest{..} =
-    makeFile "png_sticker" setStickerSetThumbThumb (MultipartData fields []) where
+instance ToMultipart Tmp SetStickerSetThumbnailRequest where
+  toMultipart SetStickerSetThumbnailRequest{..} =
+    makeFile "png_sticker" setStickerSetThumbnailThumbnail (MultipartData fields []) where
     fields =
-      [ Input "user_id" $ T.pack . show $ setStickerSetThumbUserId
-      , Input "name" setStickerSetThumbName
+      [ Input "user_id" $ T.pack . show $ setStickerSetThumbnailUserId
+      , Input "name" setStickerSetThumbnailName
       ]
 
-type SetStickerSetThumbContent
-  = "setStickerSetThumb"
-  :> MultipartForm Tmp SetStickerSetThumbRequest
+type SetStickerSetThumbnailContent
+  = "setStickerSetThumbThumbnail"
+  :> MultipartForm Tmp SetStickerSetThumbnailRequest
   :> Post '[JSON] (Response Bool)
 
-type SetStickerSetThumbLink
-  = "setStickerSetThumb"
-  :> ReqBody '[JSON] SetStickerSetThumbRequest
+type SetStickerSetThumbnailLink
+  = "setStickerSetThumbThumbnail"
+  :> ReqBody '[JSON] SetStickerSetThumbnailRequest
   :> Post '[JSON] (Response Bool)
 
 -- | Use this method to set the thumbnail of a sticker set.
 --   Animated thumbnails can be set for animated sticker sets only.
 --   Returns True on success.
-setStickerSetThumb :: SetStickerSetThumbRequest -> ClientM (Response Bool)
-setStickerSetThumb r =
-  case setStickerSetThumbThumb r of
+setStickerSetThumbnail :: SetStickerSetThumbnailRequest -> ClientM (Response Bool)
+setStickerSetThumbnail r =
+  case setStickerSetThumbnailThumbnail r of
     InputFile{} -> do
       boundary <- liftIO genBoundary
-      client (Proxy @SetStickerSetThumbContent) (boundary, r)
-    _ -> client (Proxy @SetStickerSetThumbLink) r
+      client (Proxy @SetStickerSetThumbnailContent) (boundary, r)
+    _ -> client (Proxy @SetStickerSetThumbnailLink) r
 
 foldMap makeDefault
   [ ''SendStickerRequest
@@ -384,5 +384,5 @@ foldMap makeDefault
   , ''UploadStickerFileRequest
   , ''CreateNewStickerSetRequest
   , ''AddStickerToSetRequest
-  , ''SetStickerSetThumbRequest
+  , ''SetStickerSetThumbnailRequest
   ]

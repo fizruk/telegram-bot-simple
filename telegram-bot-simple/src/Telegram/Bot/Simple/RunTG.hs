@@ -76,8 +76,8 @@ instance RunTG AddStickerToSetRequest (Response Bool) where
   runTG = runTG . addStickerToSet
 
 -- | Wrapper around 'SetStickerSetThumbRequest' request type for 'setStickerSetThumb' method.
-instance RunTG SetStickerSetThumbRequest (Response Bool) where
-  runTG = runTG . setStickerSetThumb
+instance RunTG SetStickerSetThumbnailRequest (Response Bool) where
+  runTG = runTG . setStickerSetThumbnail
 
 -- | Wrapper around 'EditMessageTextRequest' request type for 'editMessageText' method.
 instance RunTG EditMessageTextRequest (Response EditMessageResponse) where
