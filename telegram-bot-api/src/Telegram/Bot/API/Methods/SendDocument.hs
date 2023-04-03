@@ -62,7 +62,7 @@ data SendDocumentRequest = SendDocumentRequest
   { sendDocumentChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
   , sendDocumentMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendDocumentDocument :: DocumentFile -- ^ Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
-  , sendDocumentThumb :: Maybe FilePath -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
+  , sendDocumentThumbnail :: Maybe FilePath -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
   , sendDocumentCaption :: Maybe Text -- ^ Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
   , sendDocumentParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendDocumentCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
@@ -98,7 +98,7 @@ instance ToMultipart Tmp SendDocumentRequest where
           SomeChatUsername txt -> txt
       ] <>
       (   (maybe id (\t -> ((Input "message_thread_id") (T.pack $ show t):)) sendDocumentMessageThreadId)
-        $ (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendDocumentThumb)
+        $ (maybe id (\_ -> ((Input "thumbnail" "attach://thumbnail"):)) sendDocumentThumbnail)
         $ (maybe id (\t -> ((Input "caption" t):)) sendDocumentCaption)
         $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentParseMode)
         $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentCaptionEntities)
@@ -111,7 +111,7 @@ instance ToMultipart Tmp SendDocumentRequest where
         [])
     files
       = (FileData "file" (T.pack $ takeFileName path) ct path)
-      : maybe [] (\t -> [FileData "thumb" (T.pack $ takeFileName t) "image/jpeg" t]) sendDocumentThumb
+      : maybe [] (\t -> [FileData "thumbnail" (T.pack $ takeFileName t) "image/jpeg" t]) sendDocumentThumbnail
 
     DocumentFile path ct = sendDocumentDocument
 
