@@ -191,6 +191,9 @@ instance RunTG SetChatMenuButtonRequest (Response Bool) where
 instance RunTG SetMyCommandsRequest (Response Bool) where
   runTG = runTG . setMyCommands
 
+instance RunTG SetCustomEmojiStickerSetThumbnailRequest (Response Bool) where
+  runTG = runTG . setCustomEmojiStickerSetThumbnail
+
 -- | Wrapper around 'CopyMessageRequest' request type for 'copyMessage' method.
 instance RunTG CopyMessageRequest (Response CopyMessageId) where
   runTG = runTG . copyMessage

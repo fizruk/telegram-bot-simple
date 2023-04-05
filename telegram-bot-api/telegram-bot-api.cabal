@@ -93,6 +93,7 @@ library
       Telegram.Bot.API.Methods.SetChatStickerSet
       Telegram.Bot.API.Methods.SetChatTitle
       Telegram.Bot.API.Methods.SetMyCommands
+      Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
       Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
       Telegram.Bot.API.Methods.SetMyDescription
       Telegram.Bot.API.Methods.SetMyShortDescription
