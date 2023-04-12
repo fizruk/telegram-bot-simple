@@ -23,6 +23,16 @@ If you are building with stack then use `stack build --flag telegram-bot-simple:
 Contributions are welcome!
 Feel free to ping me on GitHub, file an issue or submit a PR :)
 
+### Nix
+
+You can use a [Nix flake](https://nixos.wiki/wiki/Flakes) from this repo to get several development tools.
+
+1. [Enable flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes).
+
+2. Run `nix develop`. This command will make available `cabal`, `ghc`, and `haskell-language-server`.
+
+3. Run `cabal run example-echo-bot` to start a bot.
+
 ## Compatibility
 
 | telegram-bot-api  | telegram-bot-simple |
