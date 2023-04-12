@@ -11,19 +11,17 @@
       telegram-bot-simple = "telegram-bot-simple";
 
       systemDepends = [ pkgs.zlib ];
+
+      overridePkg = self: name: localDeps: {
+        "${name}" = pkgs.haskell.lib.overrideCabal
+          (self.callCabal2nix name ./${name} (__listToAttrs (map (x: { name = x; value = self.${x}; }) localDeps)))
+          (x: { librarySystemDepends = systemDepends ++ (x.librarySystemDepends or [ ]); });
+      };
+
       override = {
         overrides = self: super:
-          let inherit (pkgs.haskell.lib) overrideCabal; in
-          {
-            "${telegram-bot-api}" = overrideCabal
-              (super.callCabal2nix telegram-bot-api ./${telegram-bot-api} { })
-              (x: { librarySystemDepends = systemDepends ++ (x.librarySystemDepends or [ ]); });
-            "${telegram-bot-simple}" = overrideCabal
-              (self.callCabal2nix telegram-bot-simple ./${telegram-bot-simple} {
-                "${telegram-bot-api}" = self."${telegram-bot-api}";
-              })
-              (x: { librarySystemDepends = systemDepends ++ (x.librarySystemDepends or [ ]); });
-          };
+          (overridePkg self telegram-bot-api [ ]) //
+          (overridePkg self telegram-bot-simple [ telegram-bot-api ]);
       };
 
       ghcVersion = "ghc927";
@@ -41,7 +39,7 @@
           )
         );
 
-      ghcForPackages = hpkgs_:  override_: packageNames_:
+      ghcForPackages = hpkgs_: override_: packageNames_:
         (hpkgs_.override override_).ghcWithPackages (ps:
           getHaskellPackagesDeps (map (x: ps.${x}) packageNames_)
         );
@@ -49,7 +47,7 @@
       ghc = ghcForPackages hpkgs override [ telegram-bot-api telegram-bot-simple ];
 
       tools = [
-        hpkgs.cabal-install
+        pkgs.cabal-install
         # ghc should go before haskell-language-server - https://github.com/NixOS/nixpkgs/issues/225895
         ghc
         hpkgs.haskell-language-server
