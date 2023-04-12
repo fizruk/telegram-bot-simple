@@ -53,6 +53,8 @@
         # ghc should go before haskell-language-server - https://github.com/NixOS/nixpkgs/issues/225895
         ghc
         hpkgs.haskell-language-server
+
+        pkgs.dhall-lsp-server
       ];
 
       devShells.default = pkgs.mkShell {
