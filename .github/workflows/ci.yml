@@ -21,6 +21,12 @@ jobs:
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
+        id: setup-haskell
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.setup-haskell.outputs.cabal-store }}
+          key: ${{ runner.os }}-v2-${{ matrix.ghc }}-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-v2-${{ matrix.ghc }}-
       - run: |
           cabal build all -fexamples
 
