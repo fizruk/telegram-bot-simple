@@ -57,7 +57,13 @@
 
       devShells.default = pkgs.mkShell {
         buildInputs = tools;
-        shellHook = "export LANG=C.utf8";
+        LANG = "C.utf8";
+        shellHook = ''
+          cat <<EOF > cabal.project.local
+          ignore-project: False
+          flags: +examples
+          EOF
+        '';
       };
     in
     {
