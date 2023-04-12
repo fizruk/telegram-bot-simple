@@ -14,7 +14,7 @@
 
       overridePkg = self: name: localDeps: {
         "${name}" = pkgs.haskell.lib.overrideCabal
-          (self.callCabal2nix name ./${name} (__listToAttrs (map (x: { name = x; value = self.${x}; }) localDeps)))
+          (self.callCabal2nix name ./${name} (__foldl' (x: y: x // { "${y}" = self.${y}; }) { } localDeps))
           (x: { librarySystemDepends = systemDepends ++ (x.librarySystemDepends or [ ]); });
       };
 
