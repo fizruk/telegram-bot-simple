@@ -24,6 +24,7 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.DeleteChatStickerSet
   , module Telegram.Bot.API.Methods.DeleteMessage
   , module Telegram.Bot.API.Methods.DeleteMyCommands
+  , module Telegram.Bot.API.Methods.DeleteStickerSet
   , module Telegram.Bot.API.Methods.EditChatInviteLink
   , module Telegram.Bot.API.Methods.EditMessageLiveLocation
   , module Telegram.Bot.API.Methods.ExportChatInviteLink
@@ -94,6 +95,7 @@ import Telegram.Bot.API.Methods.DeleteChatPhoto
 import Telegram.Bot.API.Methods.DeleteChatStickerSet
 import Telegram.Bot.API.Methods.DeleteMessage
 import Telegram.Bot.API.Methods.DeleteMyCommands
+import Telegram.Bot.API.Methods.DeleteStickerSet
 import Telegram.Bot.API.Methods.EditChatInviteLink
 import Telegram.Bot.API.Methods.EditMessageLiveLocation
 import Telegram.Bot.API.Methods.ExportChatInviteLink

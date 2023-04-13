@@ -49,6 +49,7 @@ library
       Telegram.Bot.API.Methods.DeleteChatStickerSet
       Telegram.Bot.API.Methods.DeleteMessage
       Telegram.Bot.API.Methods.DeleteMyCommands
+      Telegram.Bot.API.Methods.DeleteStickerSet
       Telegram.Bot.API.Methods.EditChatInviteLink
       Telegram.Bot.API.Methods.EditMessageLiveLocation
       Telegram.Bot.API.Methods.ExportChatInviteLink
