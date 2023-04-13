@@ -98,6 +98,7 @@ library
       Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
       Telegram.Bot.API.Methods.SetMyDescription
       Telegram.Bot.API.Methods.SetMyShortDescription
+      Telegram.Bot.API.Methods.SetStickerEmojiList
       Telegram.Bot.API.Methods.SetStickerSetTitle
       Telegram.Bot.API.Methods.StopMessageLiveLocation
       Telegram.Bot.API.Methods.UnbanChatMember

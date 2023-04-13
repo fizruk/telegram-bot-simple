@@ -73,6 +73,7 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
   , module Telegram.Bot.API.Methods.SetMyDescription
   , module Telegram.Bot.API.Methods.SetMyShortDescription
+  , module Telegram.Bot.API.Methods.SetStickerEmojiList
   , module Telegram.Bot.API.Methods.SetStickerSetTitle
   , module Telegram.Bot.API.Methods.StopMessageLiveLocation
   , module Telegram.Bot.API.Methods.UnbanChatMember
@@ -144,6 +145,7 @@ import Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
 import Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
 import Telegram.Bot.API.Methods.SetMyDescription
 import Telegram.Bot.API.Methods.SetMyShortDescription
+import Telegram.Bot.API.Methods.SetStickerEmojiList
 import Telegram.Bot.API.Methods.SetStickerSetTitle
 import Telegram.Bot.API.Methods.StopMessageLiveLocation
 import Telegram.Bot.API.Methods.UnbanChatMember
