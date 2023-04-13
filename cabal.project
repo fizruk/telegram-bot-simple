@@ -1,5 +1,3 @@
 packages:
   telegram-bot-api/
   telegram-bot-simple/
-
-flags: +examples
