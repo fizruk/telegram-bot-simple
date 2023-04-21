@@ -22,13 +22,14 @@ data Sticker = Sticker
   , stickerHeight       :: Int              -- ^ Sticker height.
   , stickerIsAnimated   :: Bool               -- ^ 'True', if the sticker is animated.
   , stickerIsVideo      :: Bool               -- ^ 'True', if the sticker is a video sticker.
-  , stickerThumb        :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
+  , stickerThumbnail    :: Maybe PhotoSize    -- ^ Sticker thumbnail in the .WEBP or .JPG format.
   , stickerEmoji        :: Maybe Text         -- ^ Emoji associated with the sticker.
   , stickerSetName      :: Maybe Text         -- ^ Name of the sticker set to which the sticker belongs.
   , stickerPremiumAnimation :: Maybe File    -- ^ For premium regular stickers, premium animation for the sticker.
   , stickerMaskPosition :: Maybe MaskPosition -- ^ For mask stickers, the position where the mask should be placed.
   , stickerCustomEmojiId :: Maybe Text        -- ^ For custom emoji stickers, unique identifier of the custom emoji.
   , stickerFileSize     :: Maybe Integer      -- ^ File size in bytes.
+  , stickerNeedsRepainting  :: Maybe Bool      -- ^ Pass `True` if stickers in the sticker set must be repainted to the color of text when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context; for custom emoji sticker sets only.
   }
   deriving (Generic, Show)
 
@@ -46,7 +47,7 @@ data StickerSet = StickerSet
   , stickerSetIsVideo       :: Bool            -- ^ 'True', if the sticker is a video sticker.
   , stickerSetContainsMasks :: Maybe Bool      -- ^ True, if the sticker set contains masks.
   , stickerSetStickers      :: [Sticker]       -- ^ List of all set stickers.
-  , stickerSetThumb         :: Maybe PhotoSize -- ^ Sticker set thumbnail in the .WEBP or .TGS format.
+  , stickerSetThumbnail     :: Maybe PhotoSize -- ^ Sticker set thumbnail in the .WEBP or .TGS format.
   }
   deriving (Generic, Show)
 

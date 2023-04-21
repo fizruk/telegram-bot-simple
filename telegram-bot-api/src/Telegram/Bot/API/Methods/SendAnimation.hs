@@ -43,7 +43,7 @@ data SendAnimationRequest = SendAnimationRequest
   , sendAnimationDuration :: Maybe Int -- ^ Duration of sent animation in seconds
   , sendAnimationWidth :: Maybe Int -- ^ Animation width
   , sendAnimationHeight :: Maybe Int -- ^ Animation height
-  , sendAnimationThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
+  , sendAnimationThumbnail :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
   , sendAnimationCaption :: Maybe Text -- ^ Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
   , sendAnimationParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendAnimationCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
@@ -60,7 +60,7 @@ instance ToJSON SendAnimationRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp SendAnimationRequest where
   toMultipart SendAnimationRequest{..} =
-    maybe id (makeFile "thumb") sendAnimationThumb $
+    maybe id (makeFile "thumbnail") sendAnimationThumbnail $
     makeFile "animation" sendAnimationAnimation $
     MultipartData fields [] where
     fields =
@@ -113,7 +113,7 @@ type SendAnimationLink
 --   can currently send animation files of up to 50
 --   MB in size, this limit may be changed in the future.
 sendAnimation :: SendAnimationRequest ->  ClientM (Response Message)
-sendAnimation r = case (sendAnimationAnimation r, sendAnimationThumb r) of
+sendAnimation r = case (sendAnimationAnimation r, sendAnimationThumbnail r) of
   (InputFile{}, _) -> do
     boundary <- liftIO genBoundary
     client (Proxy @SendAnimationContent) (boundary, r)

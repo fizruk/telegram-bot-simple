@@ -18,7 +18,7 @@ data Animation = Animation
   , animationWidth        :: Int           -- ^ Video width as defined by sender.
   , animationHeight       :: Int           -- ^ Video height as defined by sender.
   , animationDuration     :: Seconds         -- ^ Duration of the video in seconds as defined by sender.
-  , animationThumb        :: Maybe PhotoSize -- ^ Animation thumbnail as defined by sender.
+  , animationThumbnail    :: Maybe PhotoSize -- ^ Animation thumbnail as defined by sender.
   , animationFileName     :: Maybe Text      -- ^ Original animation filename as defined by sender.
   , animationMimeType     :: Maybe Text      -- ^ MIME type of the file as defined by sender.
   , animationFileSize     :: Maybe Integer   -- ^ File size in bytes.

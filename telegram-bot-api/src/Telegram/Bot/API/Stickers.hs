@@ -56,6 +56,7 @@ data StickerFile = StickerFile {stickerFileSticker :: InputFile, stickerFileLabe
 data SendStickerRequest = SendStickerRequest
   { sendStickerChatId                   :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendStickerMessageThreadId          :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
+  , sendStickerEmoji                    :: Maybe Text -- ^ Emoji associated with the sticker; only for just uploaded stickers.
   , sendStickerSticker                  :: InputFile -- ^ Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a .WEBP file from the Internet, or upload a new one using multipart/form-data.
   , sendStickerDisableNotification      :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendStickerProtectContent           :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
@@ -128,16 +129,19 @@ type GetCustomEmojiStickers
 
 -- | Request parameters for 'uploadStickerFile'.
 data UploadStickerFileRequest = UploadStickerFileRequest
-  { uploadStickerFileUserId     :: UserId -- ^ User identifier of sticker file owner
-  , uploadStickerFilePngSticker :: InputFile -- ^ PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
+  { uploadStickerFileUserId        :: UserId -- ^ User identifier of sticker file owner
+  , uploadStickerFileSticker       :: InputFile -- ^ A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format. See https://core.telegram.org/stickers for technical requirements.
+  , uploadStickerFileStickerFormat :: Text -- ^ Format of the sticker, must be one of “static”, “animated”, “video”
   } deriving Generic
 
 instance ToJSON UploadStickerFileRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp UploadStickerFileRequest where
   toMultipart UploadStickerFileRequest{..} =
-    makeFile "png_sticker" uploadStickerFilePngSticker (MultipartData fields []) where
-    fields = [ Input "user_id" $ T.pack . show $ uploadStickerFileUserId ]
+    makeFile "sticker" uploadStickerFileSticker (MultipartData fields []) where
+    fields = [ Input "user_id" $ T.pack . show $ uploadStickerFileUserId
+             , Input "sticker_format" $ T.pack . show $ uploadStickerFileStickerFormat
+             ]
 
 type UploadStickerFileContent
   = "uploadStickerFile"
@@ -149,13 +153,13 @@ type UploadStickerFileLink
   :> ReqBody '[JSON] UploadStickerFileRequest
   :> Post '[JSON] (Response File)
 
--- | Use this method to upload a .PNG file
+-- | Use this method to upload f file in .WEBP, .PNG, .TGS, or .WEBM format
 --   with a sticker for later use in createNewStickerSet
 --   and addStickerToSet methods (can be used multiple times).
 --   Returns the uploaded File on success.
 uploadStickerFile :: UploadStickerFileRequest -> ClientM (Response File)
 uploadStickerFile r =
-  case uploadStickerFilePngSticker r of
+  case uploadStickerFileSticker r of
     InputFile{} -> do
       boundary <- liftIO genBoundary
       client (Proxy @UploadStickerFileContent) (boundary, r)
@@ -337,45 +341,45 @@ deleteStickerFromSet :: T.Text -- ^ File identifier of the sticker
   -> ClientM (Response Bool)
 deleteStickerFromSet = client (Proxy @DeleteStickerFromSet)
 
--- ** 'setStickerSetThumb'
+-- ** 'setStickerSetThumbnail'
 
--- | Request parameters for 'setStickerSetThumb'.
-data SetStickerSetThumbRequest = SetStickerSetThumbRequest
-  { setStickerSetThumbName   :: T.Text -- ^ Sticker set name
-  , setStickerSetThumbUserId :: UserId -- ^ User identifier of the sticker set owner
-  , setStickerSetThumbThumb  :: InputFile -- ^ A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size; see <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for animated sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated sticker set thumbnail can't be uploaded via HTTP URL.
+-- | Request parameters for 'setStickerSetThumbnail'.
+data SetStickerSetThumbnailRequest = SetStickerSetThumbnailRequest
+  { setStickerSetThumbnailName   :: T.Text -- ^ Sticker set name
+  , setStickerSetThumbnailUserId :: UserId -- ^ User identifier of the sticker set owner
+  , setStickerSetThumbnailThumbnail  :: InputFile -- ^ A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size; see <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for animated sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated sticker set thumbnail can't be uploaded via HTTP URL.
   } deriving Generic
 
-instance ToJSON SetStickerSetThumbRequest where toJSON = gtoJSON
+instance ToJSON SetStickerSetThumbnailRequest where toJSON = gtoJSON
 
-instance ToMultipart Tmp SetStickerSetThumbRequest where
-  toMultipart SetStickerSetThumbRequest{..} =
-    makeFile "png_sticker" setStickerSetThumbThumb (MultipartData fields []) where
+instance ToMultipart Tmp SetStickerSetThumbnailRequest where
+  toMultipart SetStickerSetThumbnailRequest{..} =
+    makeFile "png_sticker" setStickerSetThumbnailThumbnail (MultipartData fields []) where
     fields =
-      [ Input "user_id" $ T.pack . show $ setStickerSetThumbUserId
-      , Input "name" setStickerSetThumbName
+      [ Input "user_id" $ T.pack . show $ setStickerSetThumbnailUserId
+      , Input "name" setStickerSetThumbnailName
       ]
 
-type SetStickerSetThumbContent
-  = "setStickerSetThumb"
-  :> MultipartForm Tmp SetStickerSetThumbRequest
+type SetStickerSetThumbnailContent
+  = "setStickerSetThumbThumbnail"
+  :> MultipartForm Tmp SetStickerSetThumbnailRequest
   :> Post '[JSON] (Response Bool)
 
-type SetStickerSetThumbLink
-  = "setStickerSetThumb"
-  :> ReqBody '[JSON] SetStickerSetThumbRequest
+type SetStickerSetThumbnailLink
+  = "setStickerSetThumbThumbnail"
+  :> ReqBody '[JSON] SetStickerSetThumbnailRequest
   :> Post '[JSON] (Response Bool)
 
 -- | Use this method to set the thumbnail of a sticker set.
 --   Animated thumbnails can be set for animated sticker sets only.
 --   Returns True on success.
-setStickerSetThumb :: SetStickerSetThumbRequest -> ClientM (Response Bool)
-setStickerSetThumb r =
-  case setStickerSetThumbThumb r of
+setStickerSetThumbnail :: SetStickerSetThumbnailRequest -> ClientM (Response Bool)
+setStickerSetThumbnail r =
+  case setStickerSetThumbnailThumbnail r of
     InputFile{} -> do
       boundary <- liftIO genBoundary
-      client (Proxy @SetStickerSetThumbContent) (boundary, r)
-    _ -> client (Proxy @SetStickerSetThumbLink) r
+      client (Proxy @SetStickerSetThumbnailContent) (boundary, r)
+    _ -> client (Proxy @SetStickerSetThumbnailLink) r
 
 foldMap makeDefault
   [ ''SendStickerRequest
@@ -383,5 +387,5 @@ foldMap makeDefault
   , ''UploadStickerFileRequest
   , ''CreateNewStickerSetRequest
   , ''AddStickerToSetRequest
-  , ''SetStickerSetThumbRequest
+  , ''SetStickerSetThumbnailRequest
   ]

@@ -40,7 +40,7 @@ data SendVideoNoteRequest = SendVideoNoteRequest
   , sendVideoNoteVideoNote :: InputFile -- ^ Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. More info on Sending Files ». Sending video notes by a URL is currently unsupported
   , sendVideoNoteDuration :: Maybe Int -- ^ Duration of sent video in seconds
   , sendVideoNoteLength :: Maybe Int -- ^ Video width and height, i.e. diameter of the video message
-  , sendVideoNoteThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
+  , sendVideoNoteThumbnail :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
   , sendVideoNoteDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendVideoNoteProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
   , sendVideoNoteReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
@@ -53,7 +53,7 @@ instance ToJSON SendVideoNoteRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp SendVideoNoteRequest where
   toMultipart SendVideoNoteRequest{..} =
-    maybe id (makeFile "thumb") sendVideoNoteThumb $
+    maybe id (makeFile "thumbnail") sendVideoNoteThumbnail $
     makeFile "video_note" sendVideoNoteVideoNote $
     MultipartData fields [] where
     fields =
@@ -90,7 +90,7 @@ type SendVideoNoteLink
 --   this method to send video messages.
 --   On success, the sent Message is returned.
 sendVideoNote :: SendVideoNoteRequest ->  ClientM (Response Message)
-sendVideoNote r = case (sendVideoNoteVideoNote r, sendVideoNoteThumb r) of
+sendVideoNote r = case (sendVideoNoteVideoNote r, sendVideoNoteThumbnail r) of
   (InputFile{}, _) -> do
     boundary <- liftIO genBoundary
     client (Proxy @SendVideoNoteContent) (boundary, r)

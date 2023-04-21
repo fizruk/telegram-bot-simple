@@ -21,7 +21,7 @@ data Audio = Audio
   , audioFileName  :: Maybe Text -- ^ Original filename as defined by sender.
   , audioMimeType  :: Maybe Text -- ^ MIME type of the file as defined by sender.
   , audioFileSize  :: Maybe Integer -- ^ File size in bytes.
-  , audioThumb     :: Maybe PhotoSize -- ^ Thumbnail of the album cover to which the music file belongs.
+  , audioThumbnail :: Maybe PhotoSize -- ^ Thumbnail of the album cover to which the music file belongs.
   }
   deriving (Generic, Show)
 

@@ -76,8 +76,8 @@ instance RunTG AddStickerToSetRequest (Response Bool) where
   runTG = runTG . addStickerToSet
 
 -- | Wrapper around 'SetStickerSetThumbRequest' request type for 'setStickerSetThumb' method.
-instance RunTG SetStickerSetThumbRequest (Response Bool) where
-  runTG = runTG . setStickerSetThumb
+instance RunTG SetStickerSetThumbnailRequest (Response Bool) where
+  runTG = runTG . setStickerSetThumbnail
 
 -- | Wrapper around 'EditMessageTextRequest' request type for 'editMessageText' method.
 instance RunTG EditMessageTextRequest (Response EditMessageResponse) where
@@ -190,6 +190,9 @@ instance RunTG SetChatMenuButtonRequest (Response Bool) where
 -- | Wrapper around 'SetMyCommandsRequest' request type for 'setMyCommands' method.
 instance RunTG SetMyCommandsRequest (Response Bool) where
   runTG = runTG . setMyCommands
+
+instance RunTG SetCustomEmojiStickerSetThumbnailRequest (Response Bool) where
+  runTG = runTG . setCustomEmojiStickerSetThumbnail
 
 -- | Wrapper around 'CopyMessageRequest' request type for 'copyMessage' method.
 instance RunTG CopyMessageRequest (Response CopyMessageId) where

@@ -24,6 +24,7 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.DeleteChatStickerSet
   , module Telegram.Bot.API.Methods.DeleteMessage
   , module Telegram.Bot.API.Methods.DeleteMyCommands
+  , module Telegram.Bot.API.Methods.DeleteStickerSet
   , module Telegram.Bot.API.Methods.EditChatInviteLink
   , module Telegram.Bot.API.Methods.EditMessageLiveLocation
   , module Telegram.Bot.API.Methods.ExportChatInviteLink
@@ -68,9 +69,14 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.SetChatStickerSet
   , module Telegram.Bot.API.Methods.SetChatTitle
   , module Telegram.Bot.API.Methods.SetMyCommands
+  , module Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
   , module Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
   , module Telegram.Bot.API.Methods.SetMyDescription
   , module Telegram.Bot.API.Methods.SetMyShortDescription
+  , module Telegram.Bot.API.Methods.SetStickerEmojiList
+  , module Telegram.Bot.API.Methods.SetStickerKeywords
+  , module Telegram.Bot.API.Methods.SetStickerMaskPosition
+  , module Telegram.Bot.API.Methods.SetStickerSetTitle
   , module Telegram.Bot.API.Methods.StopMessageLiveLocation
   , module Telegram.Bot.API.Methods.UnbanChatMember
   , module Telegram.Bot.API.Methods.UnbanChatSenderChat
@@ -97,6 +103,7 @@ import Telegram.Bot.API.Methods.DeleteChatPhoto
 import Telegram.Bot.API.Methods.DeleteChatStickerSet
 import Telegram.Bot.API.Methods.DeleteMessage
 import Telegram.Bot.API.Methods.DeleteMyCommands
+import Telegram.Bot.API.Methods.DeleteStickerSet
 import Telegram.Bot.API.Methods.EditChatInviteLink
 import Telegram.Bot.API.Methods.EditMessageLiveLocation
 import Telegram.Bot.API.Methods.ExportChatInviteLink
@@ -141,9 +148,14 @@ import Telegram.Bot.API.Methods.SetChatPhoto
 import Telegram.Bot.API.Methods.SetChatStickerSet
 import Telegram.Bot.API.Methods.SetChatTitle
 import Telegram.Bot.API.Methods.SetMyCommands
+import Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
 import Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
 import Telegram.Bot.API.Methods.SetMyDescription
 import Telegram.Bot.API.Methods.SetMyShortDescription
+import Telegram.Bot.API.Methods.SetStickerEmojiList
+import Telegram.Bot.API.Methods.SetStickerKeywords
+import Telegram.Bot.API.Methods.SetStickerMaskPosition
+import Telegram.Bot.API.Methods.SetStickerSetTitle
 import Telegram.Bot.API.Methods.StopMessageLiveLocation
 import Telegram.Bot.API.Methods.UnbanChatMember
 import Telegram.Bot.API.Methods.UnbanChatSenderChat

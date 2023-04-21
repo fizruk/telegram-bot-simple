@@ -15,7 +15,7 @@ import Telegram.Bot.API.Internal.Utils
 data Document = Document
   { documentFileId   :: FileId -- ^ Unique file identifier.
   , documentFileUniqueId :: FileId -- ^ Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
-  , documentThumb    :: Maybe PhotoSize -- ^ Document thumbnail as defined by sender.
+  , documentThumbnail    :: Maybe PhotoSize -- ^ Document thumbnail as defined by sender.
   , documentFileName :: Maybe Text -- ^ Original filename as defined by sender.
   , documentMimeType :: Maybe Text -- ^ MIME type of the file as defined by sender.
   , documentFileSize :: Maybe Integer -- ^ File size in bytes. 

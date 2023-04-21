@@ -43,7 +43,7 @@ data SendVideoRequest = SendVideoRequest
   , sendVideoDuration :: Maybe Int -- ^ Duration of sent video in seconds
   , sendVideoWidth :: Maybe Int -- ^ Video width
   , sendVideoHeight :: Maybe Int -- ^ Video height
-  , sendVideoThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
+  , sendVideoThumbnail :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
   , sendVideoCaption :: Maybe Text -- ^ Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
   , sendVideoParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendVideoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
@@ -61,7 +61,7 @@ instance ToJSON SendVideoRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp SendVideoRequest where
   toMultipart SendVideoRequest{..} =
-    maybe id (makeFile "thumb") sendVideoThumb $
+    maybe id (makeFile "thumbnail") sendVideoThumbnail $
     makeFile "video" sendVideoVideo $
     MultipartData fields [] where
     fields =
@@ -116,7 +116,7 @@ type SendVideoLink
 --   Bots can currently send video files of up
 --   to 50 MB in size, this limit may be changed in the future.
 sendVideo :: SendVideoRequest ->  ClientM (Response Message)
-sendVideo r = case (sendVideoVideo r, sendVideoThumb r) of
+sendVideo r = case (sendVideoVideo r, sendVideoThumbnail r) of
   (InputFile{}, _) -> do
     boundary <- liftIO genBoundary
     client (Proxy @SendVideoContent) (boundary, r)

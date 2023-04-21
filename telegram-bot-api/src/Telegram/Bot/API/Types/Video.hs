@@ -18,7 +18,7 @@ data Video = Video
   , videoWidth        :: Int -- ^ Video width as defined by sender.
   , videoHeight       :: Int -- ^ Video height as defined by sender.
   , videoDuration     :: Seconds -- ^ Duration of the video in seconds as defined by sender.
-  , videoThumb        :: Maybe PhotoSize -- ^ Video thumbnail.
+  , videoThumbnail    :: Maybe PhotoSize -- ^ Video thumbnail.
   , videoFileName     :: Maybe Text -- ^ Original filename as defined by sender.
   , videoMimeType     :: Maybe Text -- ^ Mime type of a file as defined by sender.
   , videoFileSize     :: Maybe Integer -- ^ File size in bytes.

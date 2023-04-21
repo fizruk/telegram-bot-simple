@@ -49,6 +49,7 @@ library
       Telegram.Bot.API.Methods.DeleteChatStickerSet
       Telegram.Bot.API.Methods.DeleteMessage
       Telegram.Bot.API.Methods.DeleteMyCommands
+      Telegram.Bot.API.Methods.DeleteStickerSet
       Telegram.Bot.API.Methods.EditChatInviteLink
       Telegram.Bot.API.Methods.EditMessageLiveLocation
       Telegram.Bot.API.Methods.ExportChatInviteLink
@@ -93,9 +94,14 @@ library
       Telegram.Bot.API.Methods.SetChatStickerSet
       Telegram.Bot.API.Methods.SetChatTitle
       Telegram.Bot.API.Methods.SetMyCommands
+      Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
       Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
       Telegram.Bot.API.Methods.SetMyDescription
       Telegram.Bot.API.Methods.SetMyShortDescription
+      Telegram.Bot.API.Methods.SetStickerEmojiList
+      Telegram.Bot.API.Methods.SetStickerKeywords
+      Telegram.Bot.API.Methods.SetStickerMaskPosition
+      Telegram.Bot.API.Methods.SetStickerSetTitle
       Telegram.Bot.API.Methods.StopMessageLiveLocation
       Telegram.Bot.API.Methods.UnbanChatMember
       Telegram.Bot.API.Methods.UnbanChatSenderChat

@@ -43,7 +43,7 @@ data SendAudioRequest = SendAudioRequest
   , sendAudioDuration :: Maybe Int -- ^ Duration of sent audio in seconds
   , sendAudioPerformer :: Maybe Text -- ^ Performer
   , sendAudioTitle :: Maybe Text -- ^ Track name
-  , sendAudioThumb :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
+  , sendAudioThumbnail :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
   , sendAudioCaption :: Maybe Text -- ^ Audio caption (may also be used when resending audios by file_id), 0-1024 characters after entities parsing
   , sendAudioParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendAudioCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
@@ -59,7 +59,7 @@ instance ToJSON SendAudioRequest where toJSON = gtoJSON
 
 instance ToMultipart Tmp SendAudioRequest where
   toMultipart SendAudioRequest{..} =
-    maybe id (makeFile "thumb") sendAudioThumb $
+    maybe id (makeFile "Thumbnail") sendAudioThumbnail $
     makeFile "audio" sendAudioAudio $
     MultipartData fields [] where
     fields =
@@ -113,7 +113,7 @@ type SendAudioLink
 --
 --   For sending voice messages, use the sendVoice method instead.
 sendAudio :: SendAudioRequest ->  ClientM (Response Message)
-sendAudio r = case (sendAudioAudio r, sendAudioThumb r) of
+sendAudio r = case (sendAudioAudio r, sendAudioThumbnail r) of
   (InputFile{}, _) -> do
     boundary <- liftIO genBoundary
     client (Proxy @SendAudioContent) (boundary, r)
