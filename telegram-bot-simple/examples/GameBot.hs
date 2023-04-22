@@ -100,14 +100,15 @@ handleAction BotSettings{..} action model = case action of
     return ()
 
   AInlineGame queryId msg -> model <# do
-    let inlineQueryResult =
-          InlineQueryResult
-            InlineQueryResultGame
-            (InlineQueryResultId msg)
-            (Just msg)
-            (Just gameMsg)
-            Nothing
+    let genericResult = (defInlineQueryResultGeneric (InlineQueryResultId msg))
+          { inlineQueryResultTitle = Just msg
+          , inlineQueryResultInputMessageContent = Just gameMsg
+          }
         gameMsg = (defaultInputTextMessageContent gameMessageText) { inputMessageContentParseMode = Just "HTML" }
+        inlineQueryResult = InlineQueryResultGame
+          { inlineQueryResultGameGeneric = genericResult
+          , inlineQueryResultGameGameShortName = gameName
+          }
         answerInlineQueryRequest = defAnswerInlineQuery  queryId [inlineQueryResult]
 
     _ <- runTG answerInlineQueryRequest
