@@ -52,8 +52,13 @@ updateToAction update _
 handleAction :: Action -> Model -> Eff Action Model
 handleAction action model = case action of
   InlineEcho queryId msg -> model <# do
-    let result = InlineQueryResult InlineQueryResultArticle (InlineQueryResultId msg) (Just msg) (Just (defaultInputTextMessageContent msg)) Nothing
-        answerInlineQueryRequest = defAnswerInlineQuery queryId [result]
+    let result = (defInlineQueryResultGeneric (InlineQueryResultId msg))
+          { inlineQueryResultTitle = Just msg
+          , inlineQueryResultInputMessageContent = Just (defaultInputTextMessageContent msg)
+          }
+        thumbnail = defInlineQueryResultGenericThumbnail result
+        article = defInlineQueryResultArticle thumbnail
+        answerInlineQueryRequest = defAnswerInlineQuery queryId [article]
     _ <- runTG answerInlineQueryRequest
     return ()
   StickerEcho file chat -> model <# do

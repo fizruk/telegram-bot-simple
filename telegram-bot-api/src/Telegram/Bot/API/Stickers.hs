@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE RecordWildCards            #-}
@@ -12,9 +11,6 @@ module Telegram.Bot.API.Stickers where
 
 import Control.Monad.IO.Class
 import Data.Aeson
-#if MIN_VERSION_aeson(2,0,0)
-import Data.Aeson.Key (fromText)
-#endif
 import Data.Aeson.Text
 import Data.Bool
 import Data.Text (Text)
@@ -30,7 +26,7 @@ import Servant.Multipart.Client
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types
-import Data.Maybe (catMaybes, maybeToList)
+import Data.Maybe (catMaybes)
 import Data.Functor
 import Telegram.Bot.API.Internal.TH (makeDefault)
 
@@ -41,11 +37,6 @@ data StickerType
   | TgsSticker -- ^ TGS animation with the sticker, uploaded using multipart/form-data. See <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for technical requirements.
   | WebmSticker -- ^ WEBM video with the sticker, uploaded using multipart/form-data. See <https:\/\/core.telegram.org\/stickers#video-sticker-requirements> for technical requirements.
 
-stickerLabel :: StickerType -> T.Text
-stickerLabel = \case
-  PngSticker -> "png_sticker"
-  TgsSticker -> "tgs_sticker"
-  WebmSticker -> "webm_sticker"
 
 -- | Sticker file with static/animated label.
 data StickerFile = StickerFile {stickerFileSticker :: InputFile, stickerFileLabel :: StickerType}
@@ -125,6 +116,9 @@ type GetCustomEmojiStickers
   :> ReqBody '[JSON] GetCustomEmojiStickersRequest
   :> Post '[JSON] (Response [Sticker])
 
+getCustomEmojiStickers :: GetCustomEmojiStickersRequest -> ClientM (Response [Sticker])
+getCustomEmojiStickers = client (Proxy @GetCustomEmojiStickers)
+
 -- ** 'uploadStickerFile'
 
 -- | Request parameters for 'uploadStickerFile'.
@@ -173,51 +167,15 @@ data CreateNewStickerSetRequest = CreateNewStickerSetRequest
   { createNewStickerSetUserId        :: UserId -- ^ User identifier of created sticker set owner
   , createNewStickerSetName          :: T.Text -- ^ Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals). Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in “_by_<bot username>”. <bot_username> is case insensitive. 1-64 characters.
   , createNewStickerSetTitle         :: T.Text -- ^ Sticker set title, 1-64 characters
-  , createNewStickerSetSticker       :: StickerFile -- ^ Sticker file to upload
-  , createNewStickerSetEmojis        :: T.Text -- ^ One or more emoji corresponding to the sticker
-  , createNewStickerSetContainsMasks :: Maybe Bool -- ^ Pass True, if a set of mask stickers should be created
-  , createNewStickerSetMaskPosition  :: Maybe MaskPosition -- ^ A JSON-serialized object for position where the mask should be placed on faces
+  , createNewStickerSetStickers      :: [InputSticker] -- ^ A JSON-serialized list of 1-50 initial stickers to be added to the sticker set.
+  , createNewStickerFormat           :: Text -- ^ Format of stickers in the set, must be one of “static”, “animated”, “video”.
+  , createNewStickerSetType             :: Maybe StickerSetType -- ^ Type of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. By default, a regular sticker set is created.
+  , createNewStickerSetNeedsRepainting :: Maybe Bool -- ^ 'True' if stickers in the sticker set must be repainted to the color of text when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context; for custom emoji sticker sets only.
   } deriving Generic
 
-instance ToJSON CreateNewStickerSetRequest where
-  toJSON CreateNewStickerSetRequest{..} = object
-    [ "user_id" .= createNewStickerSetUserId
-    , "name" .= createNewStickerSetName
-    , "title" .= createNewStickerSetTitle
-#if MIN_VERSION_aeson(2,0,0)
-    , fromText (stickerLabel stickerFileLabel) .= stickerFileSticker
-#else
-    , stickerLabel stickerFileLabel .= stickerFileSticker
-#endif
-    , "emojis" .= createNewStickerSetEmojis
-    , "contains_mask" .= createNewStickerSetContainsMasks
-    , "mask_position" .= createNewStickerSetMaskPosition
-    ]
-    where
-      StickerFile{..} = createNewStickerSetSticker
+instance ToJSON CreateNewStickerSetRequest where toJSON = gtoJSON
 
-instance ToMultipart Tmp CreateNewStickerSetRequest where
-  toMultipart CreateNewStickerSetRequest{..} =
-    makeFile (stickerLabel stickerFileLabel) stickerFileSticker (MultipartData fields []) where
-    fields =
-      [ Input "user_id" $ T.pack . show $ createNewStickerSetUserId
-      , Input "name" createNewStickerSetName
-      , Input "title" createNewStickerSetTitle
-      , Input "emojis" createNewStickerSetEmojis
-      ] <> catMaybes
-      [ createNewStickerSetContainsMasks <&>
-        \t -> Input "contains_masks" (bool "false" "true" t)
-      , createNewStickerSetMaskPosition <&>
-        \t -> Input "mask_position" (TL.toStrict $ encodeToLazyText t)
-      ]
-    StickerFile {..} = createNewStickerSetSticker
-
-type CreateNewStickerSetContent
-  = "createNewStickerSet"
-  :> MultipartForm Tmp CreateNewStickerSetRequest
-  :> Post '[JSON] (Response Bool)
-
-type CreateNewStickerSetLink
+type CreateNewStickerSet
   = "createNewStickerSet"
   :> ReqBody '[JSON] CreateNewStickerSetRequest
   :> Post '[JSON] (Response Bool)
@@ -228,12 +186,7 @@ type CreateNewStickerSetLink
 --   must use exactly one of the fields png_sticker or tgs_sticker.
 --   Returns True on success.
 createNewStickerSet :: CreateNewStickerSetRequest -> ClientM (Response Bool)
-createNewStickerSet r =
-  case stickerFileSticker $ createNewStickerSetSticker r of
-    InputFile{} -> do
-      boundary <- liftIO genBoundary
-      client (Proxy @CreateNewStickerSetContent) (boundary, r)
-    _ -> client (Proxy @CreateNewStickerSetLink) r
+createNewStickerSet = client (Proxy @CreateNewStickerSet)
 
 -- ** 'addStickerToSet'
 
@@ -241,45 +194,12 @@ createNewStickerSet r =
 data AddStickerToSetRequest = AddStickerToSetRequest
   { addStickerToSetUserId       :: UserId -- ^ User identifier of sticker set owner
   , addStickerToSetName         :: T.Text -- ^ Sticker set name
-  , addStickerToSetSticker      :: StickerFile -- ^ Sticker file to upload
-  , addStickerToSetEmojis       :: T.Text -- ^ One or more emoji corresponding to the sticker
-  , addStickerToSetMaskPosition :: Maybe MaskPosition -- ^ A JSON-serialized object for position where the mask should be placed on faces
+  , addStickerToSetStickers     :: InputSticker -- ^ A JSON-serialized object with information about the added sticker. If exactly the same sticker had already been added to the set, then the set isn't changed.
   } deriving Generic
 
-instance ToJSON AddStickerToSetRequest where
-  toJSON AddStickerToSetRequest{..} = object
-    [ "user_id" .= addStickerToSetUserId
-    , "name" .= addStickerToSetName
-#if MIN_VERSION_aeson(2,0,0)
-    , fromText (stickerLabel stickerFileLabel) .= stickerFileSticker
-#else
-    , stickerLabel stickerFileLabel .= stickerFileSticker
-#endif
-    , "emojis" .= addStickerToSetEmojis
-    , "mask_position" .= addStickerToSetMaskPosition
-    ]
-    where
-      StickerFile{..} = addStickerToSetSticker
+instance ToJSON AddStickerToSetRequest where toJSON = gtoJSON
 
-instance ToMultipart Tmp AddStickerToSetRequest where
-  toMultipart AddStickerToSetRequest{..} =
-    makeFile (stickerLabel stickerFileLabel) stickerFileSticker (MultipartData fields []) where
-    fields =
-      [ Input "user_id" $ T.pack . show $ addStickerToSetUserId
-      , Input "name" addStickerToSetName
-      , Input "emojis" addStickerToSetEmojis
-      ] <> maybeToList
-      ( addStickerToSetMaskPosition <&>
-        \t -> Input "mask_position" (TL.toStrict $ encodeToLazyText t)
-      )
-    StickerFile {..} = addStickerToSetSticker
-
-type AddStickerToSetContent
-  = "addStickerToSet"
-  :> MultipartForm Tmp AddStickerToSetRequest
-  :> Post '[JSON] (Response Bool)
-
-type AddStickerToSetLink
+type AddStickerToSet
   = "addStickerToSet"
   :> ReqBody '[JSON] AddStickerToSetRequest
   :> Post '[JSON] (Response Bool)
@@ -292,12 +212,7 @@ type AddStickerToSetLink
 --   stickers. Static sticker sets can have up to 120 stickers.
 --   Returns True on success.
 addStickerToSet :: AddStickerToSetRequest -> ClientM (Response Bool)
-addStickerToSet r =
-  case stickerFileSticker $ addStickerToSetSticker r of
-    InputFile{} -> do
-      boundary <- liftIO genBoundary
-      client (Proxy @AddStickerToSetContent) (boundary, r)
-    _ -> client (Proxy @AddStickerToSetLink) r
+addStickerToSet = client (Proxy @AddStickerToSet)
 
 
 -- ** 'getStickerSet'
@@ -361,12 +276,12 @@ instance ToMultipart Tmp SetStickerSetThumbnailRequest where
       ]
 
 type SetStickerSetThumbnailContent
-  = "setStickerSetThumbThumbnail"
+  = "setStickerSetThumbnail"
   :> MultipartForm Tmp SetStickerSetThumbnailRequest
   :> Post '[JSON] (Response Bool)
 
 type SetStickerSetThumbnailLink
-  = "setStickerSetThumbThumbnail"
+  = "setStickerSetThumbnail"
   :> ReqBody '[JSON] SetStickerSetThumbnailRequest
   :> Post '[JSON] (Response Bool)
 
