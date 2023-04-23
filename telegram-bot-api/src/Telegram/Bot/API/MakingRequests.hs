@@ -1,6 +1,6 @@
+{-# LANGUAGE CPP                        #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings          #-}
 module Telegram.Bot.API.MakingRequests where
 
@@ -28,14 +28,28 @@ botBaseUrl :: Token -> BaseUrl
 botBaseUrl token = BaseUrl Https "api.telegram.org" 443
   (Text.unpack ("/bot" <> toUrlPiece token))
 
+botBaseUrlTest :: Token -> BaseUrl
+botBaseUrlTest token = BaseUrl Https "api.telegram.org" 443
+  (Text.unpack ("/bot" <> toUrlPiece token <> "/test"))
+
 defaultTelegramClientEnv :: Token -> IO ClientEnv
 defaultTelegramClientEnv token = mkClientEnv
   <$> newManager tlsManagerSettings
   <*> pure (botBaseUrl token)
 
+defaultTelegramClientEnvTest :: Token -> IO ClientEnv
+defaultTelegramClientEnvTest token = mkClientEnv
+  <$> newManager tlsManagerSettings
+  <*> pure (botBaseUrlTest token)
+
 defaultRunBot :: Token -> ClientM a -> IO (Either ClientError a)
 defaultRunBot token bot = do
   env <- defaultTelegramClientEnv token
+  runClientM bot env
+
+defaultRunBotTest :: Token -> ClientM a -> IO (Either ClientError a)
+defaultRunBotTest token bot = do
+  env <- defaultTelegramClientEnvTest token
   runClientM bot env
 
 data Response a = Response
