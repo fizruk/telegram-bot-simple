@@ -75,6 +75,7 @@ commandWithBotName botname commandname = do
     then pure $ Text.stripStart rest
     else fail "not that command"
 
+-- | Obtain 'CallbackQuery' @data@ associated with the callback button in an inline keyboard if present in 'Update' message. 
 callbackQueryDataRead :: Read a => UpdateParser a
 callbackQueryDataRead = mkParser $ \update -> do
   query <- updateCallbackQuery update
