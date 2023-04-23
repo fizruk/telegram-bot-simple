@@ -182,26 +182,6 @@ data InlineQueryResult
     }
   deriving (Generic, Show)
 
-{-
-    InputMediaVideo imgt width height duration streaming spoiler ->
-      addJsonFields (toJSON imgt)
-                (addType "video"
-                [ "width" .= width
-                , "height" .= height
-                , "duration" .= duration
-                , "support_streaming" .= streaming
-                , "has_spoiler" .= spoiler
-                ])
-    InputMediaAnimation imgt width height duration spoiler ->
-      addJsonFields (toJSON imgt)
-                (addType "animation"
-                [ "width" .= width
-                , "height" .= height
-                , "duration" .= duration
-                , "has_spoiler" .= spoiler
-                ])
--}
-
 instance ToJSON InlineQueryResult where
   toJSON = \case
     InlineQueryResultArticle g url hideUrl ->
@@ -428,6 +408,43 @@ instance FromJSON InlineQueryResult where
     where
       parseFileId o fileField = o .:? fileField :: Parser (Maybe FileId)
     
+defInlineQueryResultArticle :: InlineQueryResultGenericThumbnail -> InlineQueryResult
+defInlineQueryResultArticle g = InlineQueryResultArticle g Nothing Nothing
+
+defInlineQueryResultPhotoUrl :: InlineQueryResultGenericThumbnail -> Text -> InlineQueryResult
+defInlineQueryResultPhotoUrl g photoUrl = InlineQueryResultPhoto g photoUrl Nothing Nothing
+
+defInlineQueryResultGif :: InlineQueryResultGenericThumbnail -> Text -> InlineQueryResult
+defInlineQueryResultGif g gifUrl = InlineQueryResultGif g gifUrl Nothing Nothing Nothing
+
+defInlineQueryResultMpeg4Gif :: InlineQueryResultGenericThumbnail -> Text -> InlineQueryResult
+defInlineQueryResultMpeg4Gif g mpeg4Url = InlineQueryResultMpeg4Gif g mpeg4Url Nothing Nothing Nothing
+
+defInlineQueryResultVideo :: InlineQueryResultGenericThumbnail -> Text -> Text -> InlineQueryResult
+defInlineQueryResultVideo g videoUrl mimeType
+  = InlineQueryResultVideo g videoUrl mimeType Nothing Nothing Nothing
+
+defInlineQueryResultAudio :: InlineQueryResultGeneric -> Text -> InlineQueryResult
+defInlineQueryResultAudio g audioUrl = InlineQueryResultAudio g audioUrl Nothing Nothing
+
+defInlineQueryResultVoice :: InlineQueryResultGeneric -> Text -> InlineQueryResult
+defInlineQueryResultVoice g voiceUrl = InlineQueryResultVoice g voiceUrl Nothing
+
+defInlineQueryResultDocument :: InlineQueryResultGenericThumbnail -> Text -> Text -> InlineQueryResult
+defInlineQueryResultDocument = InlineQueryResultDocument
+
+defInlineQueryResultLocation :: InlineQueryResultGenericThumbnail -> Float -> Float -> InlineQueryResult
+defInlineQueryResultLocation g lat lon
+  = InlineQueryResultLocation g lat lon Nothing Nothing Nothing Nothing
+
+defInlineQueryResultVenue :: InlineQueryResultGenericThumbnail -> Float -> Float -> Text -> InlineQueryResult
+defInlineQueryResultVenue g lat lon address
+  = InlineQueryResultVenue g lat lon address Nothing Nothing Nothing Nothing
+
+defInlineQueryResultContact :: InlineQueryResultGenericThumbnail -> Text -> Text -> InlineQueryResult
+defInlineQueryResultContact g phoneNumber firstName
+  = InlineQueryResultContact g phoneNumber firstName Nothing Nothing
+
 foldMap makeDefault
   [ ''InlineQueryResultGeneric
   , ''InlineQueryResultGenericThumbnail

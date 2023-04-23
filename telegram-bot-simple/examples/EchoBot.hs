@@ -49,11 +49,7 @@ handleAction action model = case action of
           , inlineQueryResultInputMessageContent = Just (defaultInputTextMessageContent msg)
           }
         thumbnail = defInlineQueryResultGenericThumbnail result
-        article = InlineQueryResultArticle
-          { inlineQueryResultArticleGeneric = thumbnail
-          , inlineQueryResultArticleUrl = Nothing
-          , inlineQueryResultArticleHideUrl = Nothing
-          }
+        article = defInlineQueryResultArticle thumbnail
         answerInlineQueryRequest = defAnswerInlineQuery queryId [article]
     _ <- runTG  answerInlineQueryRequest
     return ()
