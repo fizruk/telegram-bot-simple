@@ -18,6 +18,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.BotCommand
   , module Telegram.Bot.API.Types.BotCommandScope
   , module Telegram.Bot.API.Types.BotDescription
+  , module Telegram.Bot.API.Types.BotName
   , module Telegram.Bot.API.Types.BotShortDescription
   , module Telegram.Bot.API.Types.CallbackGame
   , module Telegram.Bot.API.Types.CallbackQuery
@@ -105,6 +106,7 @@ import Telegram.Bot.API.Types.Audio
 import Telegram.Bot.API.Types.BotCommand
 import Telegram.Bot.API.Types.BotCommandScope
 import Telegram.Bot.API.Types.BotDescription
+import Telegram.Bot.API.Types.BotName
 import Telegram.Bot.API.Types.BotShortDescription
 import Telegram.Bot.API.Types.CallbackGame
 import Telegram.Bot.API.Types.CallbackQuery
