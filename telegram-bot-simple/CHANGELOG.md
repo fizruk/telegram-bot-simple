@@ -1,3 +1,17 @@
+0.12 -- 2023-04-29
+---
+
+- Add support for testing WebApps (see [#148](https://github.com/fizruk/telegram-bot-simple/pull/148));
+- Add nix flake (see [#149](https://github.com/fizruk/telegram-bot-simple/pull/149));
+- Improve documentation for `callbackQueryDataRead` (see [#153](https://github.com/fizruk/telegram-bot-simple/pull/153));
+- Support `telegram-bot-api == 0.7` (breaking changes included).
+
+- **Migration guide**:
+
+    1. Provide `InlineQueryResultGeneric` (see `defInlineQueryResultGeneric`).
+    2. Provide `InlineQueryResultGenericThumbnail` (see `defInlineQueryResultGenericThumbnail`).
+    3. Specify your own `InlineQueryResult` (see helpers for each data constructor).
+
 0.11.1
 ---
 
