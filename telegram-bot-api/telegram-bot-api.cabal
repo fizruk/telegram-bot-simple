@@ -64,6 +64,7 @@ library
       Telegram.Bot.API.Methods.GetMyCommands
       Telegram.Bot.API.Methods.GetMyDefaultAdministratorRights
       Telegram.Bot.API.Methods.GetMyDescription
+      Telegram.Bot.API.Methods.GetMyName
       Telegram.Bot.API.Methods.GetMyShortDescription
       Telegram.Bot.API.Methods.GetUserProfilePhotos
       Telegram.Bot.API.Methods.LeaveChat
@@ -97,6 +98,7 @@ library
       Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
       Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
       Telegram.Bot.API.Methods.SetMyDescription
+      Telegram.Bot.API.Methods.SetMyName
       Telegram.Bot.API.Methods.SetMyShortDescription
       Telegram.Bot.API.Methods.SetStickerEmojiList
       Telegram.Bot.API.Methods.SetStickerKeywords
@@ -118,6 +120,7 @@ library
       Telegram.Bot.API.Types.BotCommand
       Telegram.Bot.API.Types.BotCommandScope
       Telegram.Bot.API.Types.BotDescription
+      Telegram.Bot.API.Types.BotName
       Telegram.Bot.API.Types.BotShortDescription
       Telegram.Bot.API.Types.CallbackGame
       Telegram.Bot.API.Types.CallbackQuery
@@ -185,6 +188,7 @@ library
       Telegram.Bot.API.Types.SomeReplyMarkup
       Telegram.Bot.API.Types.Sticker
       Telegram.Bot.API.Types.SuccessfulPayment
+      Telegram.Bot.API.Types.SwitchInlineQueryChosenChat
       Telegram.Bot.API.Types.User
       Telegram.Bot.API.Types.UserProfilePhotos
       Telegram.Bot.API.Types.UserShared
