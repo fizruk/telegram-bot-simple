@@ -106,8 +106,12 @@ instance (GSomeJSON f, GSomeJSON g) => GSomeJSON (f :+: g) where
     <|> R1 <$> gsomeParseJSON js
 
 addJsonFields :: Value -> [Pair] -> Value
-addJsonFields (Object obj) pairs = Object $  Map.union obj (Map.fromList pairs)
+addJsonFields (Object obj) pairs = Object $  Map.union obj $ Map.fromList (filter (not . isNull) pairs)
 addJsonFields x _ = x
+
+isNull :: Pair -> Bool
+isNull (_, Null) = True
+isNull _ = False
 
 addMultipartFields :: [Input] -> MultipartData tag -> MultipartData tag
 addMultipartFields newFields (MultipartData currenFields files)
