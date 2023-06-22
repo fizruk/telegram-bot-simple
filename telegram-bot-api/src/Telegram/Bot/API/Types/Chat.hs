@@ -57,6 +57,7 @@ data ChatType
   | ChatTypeGroup
   | ChatTypeSupergroup
   | ChatTypeChannel
+  | ChatTypeSender
   deriving (Generic, Show)
 
 instance ToJSON   ChatType where
