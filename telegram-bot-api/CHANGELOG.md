@@ -1,5 +1,9 @@
 # telegram-bot-api
 
+## 6.7.1 -- 2023-06-26
+
+- Fix Inline Mode (see [#157](https://github.com/fizruk/telegram-bot-simple/pull/157)).
+
 ## 6.7 -- 2023-04-29
 
 ### Bot API 6.6 support

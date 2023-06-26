@@ -35,10 +35,10 @@ You can use a [Nix flake](https://nixos.wiki/wiki/Flakes) from this repo to get 
 
 ## Compatibility
 
-| telegram-bot-api  | telegram-bot-simple |
+| telegram-bot-simple  | telegram-bot-api |
 | ------------- | ------------- |
 | 0.10  | 6.5  |
 | 0.11.1  | 6.5.1  |
-| 0.12 | 6.7 |
+| 0.12 | 6.7.1 |
 
 _Nick_
