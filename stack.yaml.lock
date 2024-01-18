@@ -5,22 +5,19 @@
 
 packages:
 - completed:
-    hackage: servant-client-0.18.3@sha256:570145df5209b245a141eec6841fbca6785cd88e073e85eecbeff4438ca34784,4602
+    commit: 5f5b662a1d7abc3951ea5a2a625bbf3e83f7a11a
+    git: git@github.com:MichaelXavier/cron.git
+    name: cron
     pantry-tree:
-      size: 1300
-      sha256: 4f3a9dd501ea02289559f8c49df88fb00a2f34ac225c2d9ae1df5970bf8ce4db
+      sha256: 35668ccb5971639bc3a95ffd339bd016581354878eb3583853c42f0c710b4813
+      size: 1927
+    version: 0.7.0
   original:
-    hackage: servant-client-0.18.3@sha256:570145df5209b245a141eec6841fbca6785cd88e073e85eecbeff4438ca34784,4602
-- completed:
-    hackage: servant-multipart-client-0.12.1@sha256:d043063e2f33eab86840f87c4bdb16eb3fe4a5847a0b118e4f4265cf3ba4c9b3,1892
-    pantry-tree:
-      size: 400
-      sha256: cb02eea7894a94e5dedf5cb74fd5fc6b989711ebb46a0e14d77f74f3b89dcbe0
-  original:
-    hackage: servant-multipart-client-0.12.1@sha256:d043063e2f33eab86840f87c4bdb16eb3fe4a5847a0b118e4f4265cf3ba4c9b3,1892
+    commit: 5f5b662a1d7abc3951ea5a2a625bbf3e83f7a11a
+    git: git@github.com:MichaelXavier/cron.git
 snapshots:
 - completed:
-    size: 534950
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2021/7/2.yaml
-    sha256: 0e8821927af7615313e384b71d292e845a8f01a596f73b59f3d6295fa1f7dd1d
-  original: nightly-2021-07-02
+    sha256: 8b211c5a6aad3787e023dfddaf7de7868968e4f240ecedf14ad1c5b2199046ca
+    size: 714097
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/22/4.yaml
+  original: lts-22.4

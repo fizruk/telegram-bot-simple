@@ -3,6 +3,7 @@
 module Telegram.Bot.Simple.Reply where
 
 import           Control.Applicative     ((<|>))
+import           Control.Monad
 import           Control.Monad.Reader
 import           Data.String
 import           Data.Text               (Text)
