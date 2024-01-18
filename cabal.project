@@ -1,3 +1,9 @@
 packages:
   telegram-bot-api/
   telegram-bot-simple/
+
+-- Switch from fork once it's merged in upstream
+source-repository-package
+  type: git
+  location: https://github.com/TristanCacqueray/cron.git
+  tag: 5f5b662a1d7abc3951ea5a2a625bbf3e83f7a11a
