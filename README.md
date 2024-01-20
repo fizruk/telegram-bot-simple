@@ -23,6 +23,15 @@ If you are building with stack then use `stack build --flag telegram-bot-simple:
 Contributions are welcome!
 Feel free to ping me on GitHub, file an issue or submit a PR :)
 
+For local development you can use following command:
+
+```
+cabal repl -fexamples <target> -O0
+```
+
+where `<target>` could be `telegram-bot-simple` or `telegram-bot-api`
+
+
 ### Nix
 
 You can use a [Nix flake](https://nixos.wiki/wiki/Flakes) from this repo to get several development tools.
