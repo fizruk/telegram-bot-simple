@@ -187,6 +187,7 @@ library
       Telegram.Bot.API.Types.ShippingQuery
       Telegram.Bot.API.Types.SomeReplyMarkup
       Telegram.Bot.API.Types.Sticker
+      Telegram.Bot.API.Types.Story
       Telegram.Bot.API.Types.SuccessfulPayment
       Telegram.Bot.API.Types.SwitchInlineQueryChosenChat
       Telegram.Bot.API.Types.User
