@@ -32,6 +32,9 @@ data PromoteChatMemberRequest = PromoteChatMemberRequest
   , promoteChatMemberCanChangeInfo :: Maybe Bool -- ^ Pass 'True', if the administrator can change chat title, photo and other settings.
   , promoteChatMemberCanInviteUsers :: Maybe Bool -- ^ Pass 'True', if the administrator can invite new users to the chat.
   , promoteChatMemberCanPinMessages :: Maybe Bool -- ^ Pass 'True', if the administrator can pin messages, supergroups only.
+  , promoteChatMemberCanPostStories :: Maybe Bool -- ^ Pass 'True' if the administrator can post stories in the channel; channels only.
+  , promoteChatMemberCanEditStories :: Maybe Bool -- ^ Pass 'True' if the administrator can edit stories posted by other users; channels only.
+  , promoteChatMemberCanDeleteStories :: Maybe Bool -- ^ Pass 'True' if the administrator can delete stories posted by other users; channels only.
   , promoteChatMemberCanManageTopics :: Maybe Bool -- ^ Pass 'True', if the user is allowed to create, rename, close, and reopen forum topics, supergroups only.
   }
   deriving Generic
