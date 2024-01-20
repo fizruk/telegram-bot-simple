@@ -83,6 +83,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.ShippingOption
   , module Telegram.Bot.API.Types.ShippingQuery
   , module Telegram.Bot.API.Types.Sticker
+  , module Telegram.Bot.API.Types.Story
   , module Telegram.Bot.API.Types.SuccessfulPayment
   , module Telegram.Bot.API.Types.User
   , module Telegram.Bot.API.Types.UserProfilePhotos
@@ -171,6 +172,7 @@ import Telegram.Bot.API.Types.ShippingAddress
 import Telegram.Bot.API.Types.ShippingOption
 import Telegram.Bot.API.Types.ShippingQuery
 import Telegram.Bot.API.Types.Sticker
+import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
 import Telegram.Bot.API.Types.User
 import Telegram.Bot.API.Types.UserProfilePhotos

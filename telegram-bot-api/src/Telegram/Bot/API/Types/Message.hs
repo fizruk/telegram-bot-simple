@@ -29,6 +29,7 @@ import Telegram.Bot.API.Types.PhotoSize
 import Telegram.Bot.API.Types.Poll
 import Telegram.Bot.API.Types.ProximityAlertTriggered
 import Telegram.Bot.API.Types.Sticker
+import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
 import Telegram.Bot.API.Types.User
 import Telegram.Bot.API.Types.UserShared
@@ -74,6 +75,7 @@ data Message = Message
   , messageDocument              :: Maybe Document -- ^ Message is a general file, information about the file.
   , messagePhoto                 :: Maybe [PhotoSize] -- ^ Message is a photo, available sizes of the photo
   , messageSticker               :: Maybe Sticker -- ^ Message is a sticker, information about the sticker
+  , messageStory                 :: Maybe Story -- ^ Message is a forwarded story.
   , messageVideo                 :: Maybe Video -- ^ Message is a video, information about the video
   , messageVideoNote             :: Maybe VideoNote -- ^ Message is a video note, information about the video message
   , messageVoice                 :: Maybe Voice -- ^ Message is a voice message, information about the file
