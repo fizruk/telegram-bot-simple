@@ -29,19 +29,3 @@ jobs:
           restore-keys: ${{ runner.os }}-v2-${{ matrix.ghc }}-
       - run: |
           cabal build all -fexamples
-
-  stack:
-    name: build and test (stack)
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: haskell/actions/setup@v1
-        with:
-          ghc-version: "9.0.2"
-          enable-stack: true
-          stack-version: "latest"
-      - run: |
-          stack build --flag telegram-bot-simple:examples
