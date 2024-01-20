@@ -21,6 +21,9 @@ data ChatAdministratorRights = ChatAdministratorRights
   , chatAdministratorRightsCanPostMessages     :: Maybe Bool -- ^ 'True', if the administrator can post in the channel; channels only.
   , chatAdministratorRightsCanEditMessages     :: Maybe Bool -- ^ 'True', if the administrator can edit messages of other users and can pin messages; channels only.
   , chatAdministratorRightsCanPinMessages      :: Maybe Bool -- ^ 'True', if the user is allowed to pin messages; groups and supergroups only
+  , chatAdministratorRightsCanPostStories      :: Maybe Bool -- ^ 'True', if the administrator can post stories in the channel; channels only.
+  , chatAdministratorRightsCanEditStories      :: Maybe Bool -- ^ 'True', if the administrator can edit stories posted by other users; channels only.
+  , chatAdministratorRightsCanDeleteStories    :: Maybe Bool -- ^ 'True', if the administrator can delete stories posted by other users; channels only.
   , chatAdministratorRightsCanManageTopics     :: Maybe Bool -- ^ 'True', if the user is allowed to create, rename, close, and reopen forum topics; supergroups only.
   }
   deriving (Generic, Show)

@@ -33,6 +33,9 @@ data ChatMember = ChatMember
   , chatMemberCanChangeInfo         :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can change the chat title, photo and other settings.
   , chatMemberCanPostMessages       :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can post in the channel, channels only.
   , chatMemberCanEditMessages       :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can edit messages of other users and can pin messages, channels only.
+  , chatMemberCanPostStories        :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can post stories in the channel; channels only.
+  , chatMemberCanEditStories        :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can edit stories posted by other users; channels only.
+  , chatMemberCanDeleteStories        :: Maybe Bool -- ^ Administrators only. 'True', if the administrator can delete stories posted by other users; channels only.
 
   -- administrator, restricted
   , chatMemberCanInviteUsers        :: Maybe Bool -- ^ Administrators and restricted only. 'True', if the administrator can invite new users to the chat.
