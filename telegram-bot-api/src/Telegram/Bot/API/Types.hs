@@ -65,6 +65,8 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Message
   , module Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
   , module Telegram.Bot.API.Types.MessageEntity
+  , module Telegram.Bot.API.Types.MessageReactionCountUpdated
+  , module Telegram.Bot.API.Types.MessageReactionUpdated
   , module Telegram.Bot.API.Types.OrderInfo
   , module Telegram.Bot.API.Types.PassportData
   , module Telegram.Bot.API.Types.PassportElementError
@@ -76,6 +78,8 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.PollType
   , module Telegram.Bot.API.Types.PreCheckoutQuery
   , module Telegram.Bot.API.Types.ProximityAlertTriggered
+  , module Telegram.Bot.API.Types.ReactionCount
+  , module Telegram.Bot.API.Types.ReactionType
   , module Telegram.Bot.API.Types.ReplyKeyboardMarkup
   , module Telegram.Bot.API.Types.ReplyKeyboardRemove
   , module Telegram.Bot.API.Types.ResponseParameters
@@ -154,6 +158,8 @@ import Telegram.Bot.API.Types.MenuButton
 import Telegram.Bot.API.Types.Message
 import Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
 import Telegram.Bot.API.Types.MessageEntity
+import Telegram.Bot.API.Types.MessageReactionCountUpdated
+import Telegram.Bot.API.Types.MessageReactionUpdated
 import Telegram.Bot.API.Types.OrderInfo
 import Telegram.Bot.API.Types.PassportData
 import Telegram.Bot.API.Types.PassportElementError
@@ -165,6 +171,8 @@ import Telegram.Bot.API.Types.PollOption
 import Telegram.Bot.API.Types.PollType
 import Telegram.Bot.API.Types.PreCheckoutQuery
 import Telegram.Bot.API.Types.ProximityAlertTriggered
+import Telegram.Bot.API.Types.ReactionCount
+import Telegram.Bot.API.Types.ReactionType
 import Telegram.Bot.API.Types.ReplyKeyboardMarkup
 import Telegram.Bot.API.Types.ReplyKeyboardRemove
 import Telegram.Bot.API.Types.ResponseParameters

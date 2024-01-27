@@ -11,6 +11,7 @@ import Telegram.Bot.API.Types.ChatPhoto
 import Telegram.Bot.API.Types.ChatPermissions
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.Message
+import Telegram.Bot.API.Types.ReactionType
 import Telegram.Bot.API.Internal.Utils
 
 -- ** Chat
@@ -28,6 +29,7 @@ data Chat = Chat
   , chatIsForum          :: Maybe Bool      -- ^ 'True', if the supergroup chat is a forum (has topics enabled).
   , chatPhoto            :: Maybe ChatPhoto -- ^ Chat photo. Returned only in getChat.
   , chatActiveUsernames  :: Maybe Text      -- ^ If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in 'getChat'.
+  , chatAvailableReactions :: Maybe [ReactionType] -- ^ List of available reactions allowed in the chat. If omitted, then all emoji reactions are allowed. Returned only in 'getChat'.
   , chatEmojiStatusCustomEmojiId :: Maybe Text -- ^ Custom emoji identifier of emoji status of the other party in a private chat. Returned only in 'getChat'.
   , chatEmojiStatusExpirationDate :: Maybe Int -- ^ Expiration date of the emoji status of the chat or the other party in a private chat, in Unix time, if any. Returned only in 'getChat'.
   , chatBio              :: Maybe Text      -- ^ Bio of the other party in a private chat. Returned only in `getChat`.

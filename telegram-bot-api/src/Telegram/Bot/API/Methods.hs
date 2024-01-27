@@ -68,6 +68,7 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.SetChatPhoto
   , module Telegram.Bot.API.Methods.SetChatStickerSet
   , module Telegram.Bot.API.Methods.SetChatTitle
+  , module Telegram.Bot.API.Methods.SetMessageReaction
   , module Telegram.Bot.API.Methods.SetMyCommands
   , module Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
   , module Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
@@ -147,6 +148,7 @@ import Telegram.Bot.API.Methods.SetChatPermissions
 import Telegram.Bot.API.Methods.SetChatPhoto
 import Telegram.Bot.API.Methods.SetChatStickerSet
 import Telegram.Bot.API.Methods.SetChatTitle
+import Telegram.Bot.API.Methods.SetMessageReaction
 import Telegram.Bot.API.Methods.SetMyCommands
 import Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
 import Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights

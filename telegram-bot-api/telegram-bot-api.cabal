@@ -94,6 +94,7 @@ library
       Telegram.Bot.API.Methods.SetChatPhoto
       Telegram.Bot.API.Methods.SetChatStickerSet
       Telegram.Bot.API.Methods.SetChatTitle
+      Telegram.Bot.API.Methods.SetMessageReaction
       Telegram.Bot.API.Methods.SetMyCommands
       Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
       Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
@@ -167,6 +168,8 @@ library
       Telegram.Bot.API.Types.Message
       Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
       Telegram.Bot.API.Types.MessageEntity
+      Telegram.Bot.API.Types.MessageReactionCountUpdated
+      Telegram.Bot.API.Types.MessageReactionUpdated
       Telegram.Bot.API.Types.OrderInfo
       Telegram.Bot.API.Types.ParseMode
       Telegram.Bot.API.Types.PassportData
@@ -179,6 +182,8 @@ library
       Telegram.Bot.API.Types.PollType
       Telegram.Bot.API.Types.PreCheckoutQuery
       Telegram.Bot.API.Types.ProximityAlertTriggered
+      Telegram.Bot.API.Types.ReactionCount
+      Telegram.Bot.API.Types.ReactionType
       Telegram.Bot.API.Types.ReplyKeyboardMarkup
       Telegram.Bot.API.Types.ReplyKeyboardRemove
       Telegram.Bot.API.Types.ResponseParameters

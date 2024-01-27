@@ -32,6 +32,8 @@ data Update = Update
   , updateMessage           :: Maybe Message -- ^ New incoming message of any kind — text, photo, sticker, etc.
   , updateEditedMessage     :: Maybe Message -- ^ New version of a message that is known to the bot and was edited
   , updateChannelPost       :: Maybe Message -- ^ New incoming channel post of any kind — text, photo, sticker, etc.
+  , updateMessageReaction   :: Maybe MessageReactionUpdated -- ^ A reaction to a message was changed by a user. The bot must be an administrator in the chat and must explicitly specify "message_reaction" in the list of allowed_updates to receive these updates. The update isn't received for reactions set by bots.
+  , updateMessageReactionCount :: Maybe MessageReactionCountUpdated -- ^ Reactions to a message with anonymous reactions were changed. The bot must be an administrator in the chat and must explicitly specify "message_reaction_count" in the list of allowed_updates to receive these updates. The updates are grouped and can be sent with delay up to a few minutes.
   , updateEditedChannelPost :: Maybe Message -- ^ New version of a channel post that is known to the bot and was edited
 
   , updateInlineQuery       :: Maybe InlineQuery -- ^ New incoming inline query
