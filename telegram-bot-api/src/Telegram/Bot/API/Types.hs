@@ -59,6 +59,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.KeyboardButtonRequestChat
   , module Telegram.Bot.API.Types.KeyboardButtonRequestUser
   , module Telegram.Bot.API.Types.LabeledPrice
+  , module Telegram.Bot.API.Types.LinkPreviewOptions
   , module Telegram.Bot.API.Types.Location
   , module Telegram.Bot.API.Types.LoginUrl
   , module Telegram.Bot.API.Types.MaskPosition
@@ -155,6 +156,7 @@ import Telegram.Bot.API.Types.KeyboardButton
 import Telegram.Bot.API.Types.KeyboardButtonRequestChat
 import Telegram.Bot.API.Types.KeyboardButtonRequestUser
 import Telegram.Bot.API.Types.LabeledPrice
+import Telegram.Bot.API.Types.LinkPreviewOptions
 import Telegram.Bot.API.Types.Location
 import Telegram.Bot.API.Types.LoginUrl
 import Telegram.Bot.API.Types.MaskPosition

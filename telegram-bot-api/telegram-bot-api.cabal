@@ -162,6 +162,7 @@ library
       Telegram.Bot.API.Types.KeyboardButtonRequestChat
       Telegram.Bot.API.Types.KeyboardButtonRequestUser
       Telegram.Bot.API.Types.LabeledPrice
+      Telegram.Bot.API.Types.LinkPreviewOptions
       Telegram.Bot.API.Types.Location
       Telegram.Bot.API.Types.LoginUrl
       Telegram.Bot.API.Types.MaskPosition

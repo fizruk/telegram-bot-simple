@@ -22,6 +22,7 @@ import Telegram.Bot.API.Types.ForumTopicReopened
 import Telegram.Bot.API.Types.Game
 import Telegram.Bot.API.Types.InlineKeyboardMarkup
 import Telegram.Bot.API.Types.Invoice
+import Telegram.Bot.API.Types.LinkPreviewOptions
 import Telegram.Bot.API.Types.Location
 import Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
 import Telegram.Bot.API.Types.MessageEntity
@@ -74,6 +75,7 @@ data Message = Message
   , messageAuthorSignature       :: Maybe Text -- ^ Signature of the post author for messages in channels
   , messageText                  :: Maybe Text -- ^ For text messages, the actual UTF-8 text of the message, 0-4096 characters.
   , messageEntities              :: Maybe [MessageEntity] -- ^ For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text
+  , messageLinkPreviewOptions    :: Maybe LinkPreviewOptions -- ^ Options used for link preview generation for the message, if it is a text message and link preview options were changed.
   , messageAnimation             :: Maybe Animation -- ^ Message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set.
   , messageAudio                 :: Maybe Audio -- ^ Message is an audio file, information about the file
   , messageDocument              :: Maybe Document -- ^ Message is a general file, information about the file.

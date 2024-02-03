@@ -35,7 +35,7 @@ data SendMessageRequest = SendMessageRequest
   , sendMessageText                  :: Text -- ^ Text of the message to be sent.
   , sendMessageParseMode             :: Maybe ParseMode -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendMessageEntities              :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
-  , sendMessageDisableWebPagePreview :: Maybe Bool -- ^ Disables link previews for links in this message.
+  , sendMessageLinkPreviewOptions    :: Maybe LinkPreviewOptions -- ^ Link preview generation options for the message.
   , sendMessageDisableNotification   :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendMessageProtectContent        :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendMessageReplyToMessageId      :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
