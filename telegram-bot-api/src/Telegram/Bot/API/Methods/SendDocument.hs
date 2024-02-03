@@ -70,7 +70,7 @@ data SendDocumentRequest = SendDocumentRequest
   , sendDocumentDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendDocumentProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendDocumentReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
-  , sendDocumentAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
+  , sendDocumentReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendDocumentReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
@@ -106,7 +106,7 @@ instance ToMultipart Tmp SendDocumentRequest where
         $ (maybe id (\t -> ((Input "disable_content_type_detection" (bool "false" "true" t)):)) sendDocumentDisableContentTypeDetection)
         $ (maybe id (\t -> ((Input "protect_content" (bool "false" "true" t)):)) sendDocumentProtectContent)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyToMessageId)
-        $ (maybe id (\t -> ((Input "allow_sending_without_reply" (bool "false" "true" t)):)) sendDocumentAllowSendingWithoutReply)
+        $ (maybe id (\t -> ((Input "reply_parameters" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyParameters)
         $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyMarkup)
         [])
     files

@@ -26,7 +26,7 @@ data SendDiceRequest = SendDiceRequest
   , sendDiceDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendDiceProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding
   , sendDiceReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
-  , sendDiceAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found
+  , sendDiceReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendDiceReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic

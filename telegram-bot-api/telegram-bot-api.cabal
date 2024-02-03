@@ -142,6 +142,7 @@ library
       Telegram.Bot.API.Types.Document
       Telegram.Bot.API.Types.EncryptedCredentials
       Telegram.Bot.API.Types.EncryptedPassportElement
+      Telegram.Bot.API.Types.ExternalReplyInfo
       Telegram.Bot.API.Types.File
       Telegram.Bot.API.Types.ForceReply
       Telegram.Bot.API.Types.ForumTopic
@@ -168,6 +169,7 @@ library
       Telegram.Bot.API.Types.Message
       Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
       Telegram.Bot.API.Types.MessageEntity
+      Telegram.Bot.API.Types.MessageOrigin
       Telegram.Bot.API.Types.MessageReactionCountUpdated
       Telegram.Bot.API.Types.MessageReactionUpdated
       Telegram.Bot.API.Types.OrderInfo
@@ -186,6 +188,7 @@ library
       Telegram.Bot.API.Types.ReactionType
       Telegram.Bot.API.Types.ReplyKeyboardMarkup
       Telegram.Bot.API.Types.ReplyKeyboardRemove
+      Telegram.Bot.API.Types.ReplyParameters
       Telegram.Bot.API.Types.ResponseParameters
       Telegram.Bot.API.Types.ShippingAddress
       Telegram.Bot.API.Types.ShippingOption
@@ -195,6 +198,7 @@ library
       Telegram.Bot.API.Types.Story
       Telegram.Bot.API.Types.SuccessfulPayment
       Telegram.Bot.API.Types.SwitchInlineQueryChosenChat
+      Telegram.Bot.API.Types.TextQuote
       Telegram.Bot.API.Types.User
       Telegram.Bot.API.Types.UserProfilePhotos
       Telegram.Bot.API.Types.UserShared

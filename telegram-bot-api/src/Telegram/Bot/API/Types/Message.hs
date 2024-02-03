@@ -14,6 +14,7 @@ import Telegram.Bot.API.Types.ChatShared
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.Contact
 import Telegram.Bot.API.Types.Dice
+import {-# SOURCE #-} Telegram.Bot.API.Types.ExternalReplyInfo
 import Telegram.Bot.API.Types.ForumTopicEdited
 import Telegram.Bot.API.Types.ForumTopicClosed
 import Telegram.Bot.API.Types.ForumTopicCreated
@@ -31,6 +32,7 @@ import Telegram.Bot.API.Types.ProximityAlertTriggered
 import Telegram.Bot.API.Types.Sticker
 import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
+import Telegram.Bot.API.Types.TextQuote
 import Telegram.Bot.API.Types.User
 import Telegram.Bot.API.Types.UserShared
 import Telegram.Bot.API.Types.Venue
@@ -63,6 +65,8 @@ data Message = Message
   , messageIsTopicMessage        :: Maybe Bool -- ^ 'True', if the message is sent to a forum topic.
   , messageIsAutomaticForward    :: Maybe Bool -- ^ 'True', if the message is a channel post that was automatically forwarded to the connected discussion group.
   , messageReplyToMessage        :: Maybe Message -- ^ For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
+  , messageExternalReply         :: Maybe ExternalReplyInfo -- ^ Information about the message that is being replied to, which may come from another chat or forum topic.
+  , quote                        :: Maybe TextQuote -- ^ For replies that quote part of the original message, the quoted part of the message.
   , messageViaBot                :: Maybe User -- ^ Bot through which the message was sent.
   , messageEditDate              :: Maybe POSIXTime -- ^ Date the message was last edited in Unix time
   , messageHasProtectedContent   :: Maybe Bool -- ^ 'True', if the message can't be forwarded.

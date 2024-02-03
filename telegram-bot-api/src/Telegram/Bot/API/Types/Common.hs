@@ -78,7 +78,7 @@ newtype CallbackQueryId = CallbackQueryId Text
 data SomeChatId
   = SomeChatId ChatId       -- ^ Unique chat ID.
   | SomeChatUsername Text   -- ^ Username of the target channel.
-  deriving (Generic)
+  deriving (Generic, Show)
 
 instance ToJSON   SomeChatId where toJSON = genericSomeToJSON
 instance FromJSON SomeChatId where parseJSON = genericSomeParseJSON

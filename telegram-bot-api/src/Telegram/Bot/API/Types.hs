@@ -39,6 +39,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Document
   , module Telegram.Bot.API.Types.EncryptedCredentials
   , module Telegram.Bot.API.Types.EncryptedPassportElement
+  , module Telegram.Bot.API.Types.ExternalReplyInfo
   , module Telegram.Bot.API.Types.File
   , module Telegram.Bot.API.Types.ForceReply
   , module Telegram.Bot.API.Types.ForumTopic
@@ -65,6 +66,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Message
   , module Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
   , module Telegram.Bot.API.Types.MessageEntity
+  , module Telegram.Bot.API.Types.MessageOrigin
   , module Telegram.Bot.API.Types.MessageReactionCountUpdated
   , module Telegram.Bot.API.Types.MessageReactionUpdated
   , module Telegram.Bot.API.Types.OrderInfo
@@ -82,6 +84,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.ReactionType
   , module Telegram.Bot.API.Types.ReplyKeyboardMarkup
   , module Telegram.Bot.API.Types.ReplyKeyboardRemove
+  , module Telegram.Bot.API.Types.ReplyParameters
   , module Telegram.Bot.API.Types.ResponseParameters
   , module Telegram.Bot.API.Types.ShippingAddress
   , module Telegram.Bot.API.Types.ShippingOption
@@ -132,6 +135,7 @@ import Telegram.Bot.API.Types.Dice
 import Telegram.Bot.API.Types.Document
 import Telegram.Bot.API.Types.EncryptedCredentials
 import Telegram.Bot.API.Types.EncryptedPassportElement
+import Telegram.Bot.API.Types.ExternalReplyInfo
 import Telegram.Bot.API.Types.File
 import Telegram.Bot.API.Types.ForceReply
 import Telegram.Bot.API.Types.ForumTopic
@@ -158,6 +162,7 @@ import Telegram.Bot.API.Types.MenuButton
 import Telegram.Bot.API.Types.Message
 import Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
 import Telegram.Bot.API.Types.MessageEntity
+import Telegram.Bot.API.Types.MessageOrigin
 import Telegram.Bot.API.Types.MessageReactionCountUpdated
 import Telegram.Bot.API.Types.MessageReactionUpdated
 import Telegram.Bot.API.Types.OrderInfo
@@ -175,6 +180,7 @@ import Telegram.Bot.API.Types.ReactionCount
 import Telegram.Bot.API.Types.ReactionType
 import Telegram.Bot.API.Types.ReplyKeyboardMarkup
 import Telegram.Bot.API.Types.ReplyKeyboardRemove
+import Telegram.Bot.API.Types.ReplyParameters
 import Telegram.Bot.API.Types.ResponseParameters
 import Telegram.Bot.API.Types.ShippingAddress
 import Telegram.Bot.API.Types.ShippingOption

@@ -51,7 +51,7 @@ data SendAnimationRequest = SendAnimationRequest
   , sendAnimationDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendAnimationProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendAnimationReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
-  , sendAnimationAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found.
+  , sendAnimationReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendAnimationReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
@@ -90,8 +90,8 @@ instance ToMultipart Tmp SendAnimationRequest where
         \t -> Input "protect_content" (bool "false" "true" t)
       , sendAnimationReplyToMessageId <&>
         \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
-      , sendAnimationAllowSendingWithoutReply <&>
-        \t -> Input "allow_sending_without_reply" (bool "false" "true" t)
+      , sendAnimationReplyParameters <&>
+        \t -> Input "reply_parameters" (TL.toStrict $ encodeToLazyText t)
       , sendAnimationReplyMarkup <&>
         \t -> Input "reply_markup" (TL.toStrict $ encodeToLazyText t)
       ]

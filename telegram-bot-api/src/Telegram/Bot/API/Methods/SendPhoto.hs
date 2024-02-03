@@ -72,7 +72,7 @@ data SendPhotoRequest = SendPhotoRequest
   , sendPhotoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendPhotoProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendPhotoReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
-  , sendPhotoAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
+  , sendPhotoReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendPhotoReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
@@ -94,7 +94,7 @@ instance ToMultipart Tmp SendPhotoRequest where
         $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendPhotoDisableNotification)
         $ (maybe id (\t -> ((Input "protect_content" (bool "false" "true" t)):)) sendPhotoProtectContent)
         $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyToMessageId)
-        $ (maybe id (\t -> ((Input "allow_sending_without_reply" (bool "false" "true" t)):)) sendPhotoAllowSendingWithoutReply)
+        $ (maybe id (\t -> ((Input "reply_parameters" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyParameters)
         $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyMarkup)
         [])
     files
