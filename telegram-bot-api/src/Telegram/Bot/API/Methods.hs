@@ -18,17 +18,20 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.BanChatMember
   , module Telegram.Bot.API.Methods.BanChatSenderChat
   , module Telegram.Bot.API.Methods.CopyMessage
+  , module Telegram.Bot.API.Methods.CopyMessages
   , module Telegram.Bot.API.Methods.CreateChatInviteLink
   , module Telegram.Bot.API.Methods.DeclineChatJoinRequest
   , module Telegram.Bot.API.Methods.DeleteChatPhoto
   , module Telegram.Bot.API.Methods.DeleteChatStickerSet
   , module Telegram.Bot.API.Methods.DeleteMessage
+  , module Telegram.Bot.API.Methods.DeleteMessages
   , module Telegram.Bot.API.Methods.DeleteMyCommands
   , module Telegram.Bot.API.Methods.DeleteStickerSet
   , module Telegram.Bot.API.Methods.EditChatInviteLink
   , module Telegram.Bot.API.Methods.EditMessageLiveLocation
   , module Telegram.Bot.API.Methods.ExportChatInviteLink
   , module Telegram.Bot.API.Methods.ForwardMessage
+  , module Telegram.Bot.API.Methods.ForwardMessages
   , module Telegram.Bot.API.Methods.GetChat
   , module Telegram.Bot.API.Methods.GetChatAdministrators
   , module Telegram.Bot.API.Methods.GetChatMember
@@ -98,17 +101,20 @@ import Telegram.Bot.API.Methods.ApproveChatJoinRequest
 import Telegram.Bot.API.Methods.BanChatMember
 import Telegram.Bot.API.Methods.BanChatSenderChat
 import Telegram.Bot.API.Methods.CopyMessage
+import Telegram.Bot.API.Methods.CopyMessages
 import Telegram.Bot.API.Methods.CreateChatInviteLink
 import Telegram.Bot.API.Methods.DeclineChatJoinRequest
 import Telegram.Bot.API.Methods.DeleteChatPhoto
 import Telegram.Bot.API.Methods.DeleteChatStickerSet
 import Telegram.Bot.API.Methods.DeleteMessage
+import Telegram.Bot.API.Methods.DeleteMessages
 import Telegram.Bot.API.Methods.DeleteMyCommands
 import Telegram.Bot.API.Methods.DeleteStickerSet
 import Telegram.Bot.API.Methods.EditChatInviteLink
 import Telegram.Bot.API.Methods.EditMessageLiveLocation
 import Telegram.Bot.API.Methods.ExportChatInviteLink
 import Telegram.Bot.API.Methods.ForwardMessage
+import Telegram.Bot.API.Methods.ForwardMessages
 import Telegram.Bot.API.Methods.GetChat
 import Telegram.Bot.API.Methods.GetChatAdministrators
 import Telegram.Bot.API.Methods.GetChatMember

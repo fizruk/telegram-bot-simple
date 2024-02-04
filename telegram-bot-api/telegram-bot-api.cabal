@@ -43,17 +43,20 @@ library
       Telegram.Bot.API.Methods.BanChatMember
       Telegram.Bot.API.Methods.BanChatSenderChat
       Telegram.Bot.API.Methods.CopyMessage
+      Telegram.Bot.API.Methods.CopyMessages
       Telegram.Bot.API.Methods.CreateChatInviteLink
       Telegram.Bot.API.Methods.DeclineChatJoinRequest
       Telegram.Bot.API.Methods.DeleteChatPhoto
       Telegram.Bot.API.Methods.DeleteChatStickerSet
       Telegram.Bot.API.Methods.DeleteMessage
+      Telegram.Bot.API.Methods.DeleteMessages
       Telegram.Bot.API.Methods.DeleteMyCommands
       Telegram.Bot.API.Methods.DeleteStickerSet
       Telegram.Bot.API.Methods.EditChatInviteLink
       Telegram.Bot.API.Methods.EditMessageLiveLocation
       Telegram.Bot.API.Methods.ExportChatInviteLink
       Telegram.Bot.API.Methods.ForwardMessage
+      Telegram.Bot.API.Methods.ForwardMessages
       Telegram.Bot.API.Methods.GetChat
       Telegram.Bot.API.Methods.GetChatAdministrators
       Telegram.Bot.API.Methods.GetChatMember
