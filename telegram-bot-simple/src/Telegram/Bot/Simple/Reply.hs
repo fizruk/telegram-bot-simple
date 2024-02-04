@@ -45,7 +45,7 @@ data ReplyMessage = ReplyMessage
   , replyMessageDisableNotification   :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , replyMessageProtectContent        :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , replyMessageReplyToMessageId      :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
- , replyMessageReplyParameters        :: Maybe ReplyParameters -- ^ Description of the message to reply to.
+  , replyMessageReplyParameters        :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , replyMessageReplyMarkup           :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   } deriving (Generic)
 
@@ -69,7 +69,7 @@ replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageReques
   , sendMessageProtectContent = replyMessageProtectContent
   , sendMessageReplyToMessageId = replyMessageReplyToMessageId
   , sendMessageReplyMarkup = replyMessageReplyMarkup
-  , sendMessageAllowSendingWithoutReply = replyMessageAllowSendingWithoutReply
+  , sendMessageReplyParameters = replyMessageReplyParameters
   }
 
 -- | Reply in a chat with a given 'SomeChatId'.
