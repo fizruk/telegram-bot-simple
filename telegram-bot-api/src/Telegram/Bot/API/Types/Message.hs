@@ -20,6 +20,12 @@ import Telegram.Bot.API.Types.ForumTopicClosed
 import Telegram.Bot.API.Types.ForumTopicCreated
 import Telegram.Bot.API.Types.ForumTopicReopened
 import Telegram.Bot.API.Types.Game
+import Telegram.Bot.API.Types.GeneralForumTopicHidden
+import Telegram.Bot.API.Types.GeneralForumTopicUnhidden
+import {-# SOURCE #-} Telegram.Bot.API.Types.Giveaway
+import {-# SOURCE #-} Telegram.Bot.API.Types.GiveawayCompleted
+import Telegram.Bot.API.Types.GiveawayCreated
+import {-# SOURCE #-} Telegram.Bot.API.Types.GiveawayWinners
 import Telegram.Bot.API.Types.InlineKeyboardMarkup
 import Telegram.Bot.API.Types.Invoice
 import Telegram.Bot.API.Types.LinkPreviewOptions
@@ -120,6 +126,12 @@ data Message = Message
   , messageForumTopicEdited     :: Maybe ForumTopicEdited -- ^ Service message: forum topic edited.
   , messageForumTopicClosed     :: Maybe ForumTopicClosed -- ^ Service message: forum topic closed.
   , messageForumTopicReopened     :: Maybe ForumTopicReopened -- ^ Service message: forum topic reopened.
+  , messageGeneralForumTopicHidden :: Maybe GeneralForumTopicHidden -- ^ Service message: the 'General' forum topic hidden.
+  , messageGeneralForumTopicUnhidden :: Maybe GeneralForumTopicUnhidden -- ^ Service message: the 'General' forum topic unhidden
+  , messageGiveawayCreated       :: Maybe GiveawayCreated -- ^ Service message: a scheduled giveaway was created.
+  , messageGiveaway              :: Maybe Giveaway -- ^ The message is a scheduled giveaway message.
+  , messageGiveawayWinners       :: Maybe GiveawayWinners -- ^ A giveaway with public winners was completed.
+  , messageGiveawayCompleted     :: Maybe GiveawayCompleted -- ^ Service message: a giveaway without public winners was completed.
   , messageVideoChatScheduled    :: Maybe VideoChatScheduled -- ^ Service message: video chat scheduled.
   , messageVideoChatStarted      :: Maybe VideoChatStarted -- ^ Service message: video chat started
   , messageVideoChatEnded        :: Maybe VideoChatEnded -- ^ Service message: video chat ended.

@@ -53,6 +53,10 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.ForumTopicReopened
   , module Telegram.Bot.API.Types.Game
   , module Telegram.Bot.API.Types.GameHighScore
+  , module Telegram.Bot.API.Types.Giveaway
+  , module Telegram.Bot.API.Types.GiveawayCompleted
+  , module Telegram.Bot.API.Types.GiveawayCreated
+  , module Telegram.Bot.API.Types.GiveawayWinners
   , module Telegram.Bot.API.Types.GeneralForumTopicHidden
   , module Telegram.Bot.API.Types.GeneralForumTopicUnhidden
   , module Telegram.Bot.API.Types.InlineKeyboardButton
@@ -156,6 +160,10 @@ import Telegram.Bot.API.Types.ForumTopicCreated
 import Telegram.Bot.API.Types.ForumTopicReopened
 import Telegram.Bot.API.Types.Game
 import Telegram.Bot.API.Types.GameHighScore
+import Telegram.Bot.API.Types.Giveaway
+import Telegram.Bot.API.Types.GiveawayCompleted
+import Telegram.Bot.API.Types.GiveawayCreated
+import Telegram.Bot.API.Types.GiveawayWinners
 import Telegram.Bot.API.Types.GeneralForumTopicHidden
 import Telegram.Bot.API.Types.GeneralForumTopicUnhidden
 import Telegram.Bot.API.Types.InlineKeyboardButton

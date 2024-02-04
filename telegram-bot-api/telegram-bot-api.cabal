@@ -160,6 +160,10 @@ library
       Telegram.Bot.API.Types.ForumTopicReopened
       Telegram.Bot.API.Types.Game
       Telegram.Bot.API.Types.GameHighScore
+      Telegram.Bot.API.Types.Giveaway
+      Telegram.Bot.API.Types.GiveawayCompleted
+      Telegram.Bot.API.Types.GiveawayCreated
+      Telegram.Bot.API.Types.GiveawayWinners
       Telegram.Bot.API.Types.GeneralForumTopicHidden
       Telegram.Bot.API.Types.GeneralForumTopicUnhidden
       Telegram.Bot.API.Types.InlineKeyboardButton
