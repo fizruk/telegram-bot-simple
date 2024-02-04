@@ -47,7 +47,7 @@ data SendInvoiceRequest = SendInvoiceRequest
   , sendInvoiceDisableNotification       :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendInvoiceProtectContent            :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendInvoiceReplyToMessageId          :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
-  , sendInvoiceAllowSendingWithoutReply  :: Maybe Bool                 -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
+  , sendInvoiceReplyParameters           :: Maybe ReplyParameters      -- ^ Description of the message to reply to.
   , sendInvoiceReplyMarkup               :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
   }
   deriving (Generic, Show)

@@ -32,7 +32,7 @@ instance FromJSON PassportErrorSource where parseJSON = gparseJSON
 
 data PassportElementError
   = PassportElementError
-    { passportElementErroSource       :: PassportErrorSource -- ^ Error source, must be one of 'PassportErrorSource'.
+    { passportElementErrorSource      :: PassportErrorSource -- ^ Error source, must be one of 'PassportErrorSource'.
     , passportElementErrorType        :: PassportElementType -- ^ The section of the user's Telegram Passport which has the error, one of 'PassportElementType'.
     , passportElementErrorName        :: Text                -- ^ Name of the data field which has the error.
     , passportElementErrorHash        :: Maybe Text          -- ^ Base64-encoded data hash.

@@ -23,6 +23,10 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.CallbackGame
   , module Telegram.Bot.API.Types.CallbackQuery
   , module Telegram.Bot.API.Types.Chat
+  , module Telegram.Bot.API.Types.ChatBoost
+  , module Telegram.Bot.API.Types.ChatBoostRemoved
+  , module Telegram.Bot.API.Types.ChatBoostSource
+  , module Telegram.Bot.API.Types.ChatBoostUpdated
   , module Telegram.Bot.API.Types.ChatAdministratorRights
   , module Telegram.Bot.API.Types.ChatInviteLink
   , module Telegram.Bot.API.Types.ChatJoinRequest
@@ -39,6 +43,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Document
   , module Telegram.Bot.API.Types.EncryptedCredentials
   , module Telegram.Bot.API.Types.EncryptedPassportElement
+  , module Telegram.Bot.API.Types.ExternalReplyInfo
   , module Telegram.Bot.API.Types.File
   , module Telegram.Bot.API.Types.ForceReply
   , module Telegram.Bot.API.Types.ForumTopic
@@ -48,6 +53,10 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.ForumTopicReopened
   , module Telegram.Bot.API.Types.Game
   , module Telegram.Bot.API.Types.GameHighScore
+  , module Telegram.Bot.API.Types.Giveaway
+  , module Telegram.Bot.API.Types.GiveawayCompleted
+  , module Telegram.Bot.API.Types.GiveawayCreated
+  , module Telegram.Bot.API.Types.GiveawayWinners
   , module Telegram.Bot.API.Types.GeneralForumTopicHidden
   , module Telegram.Bot.API.Types.GeneralForumTopicUnhidden
   , module Telegram.Bot.API.Types.InlineKeyboardButton
@@ -56,8 +65,9 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Invoice
   , module Telegram.Bot.API.Types.KeyboardButton
   , module Telegram.Bot.API.Types.KeyboardButtonRequestChat
-  , module Telegram.Bot.API.Types.KeyboardButtonRequestUser
+  , module Telegram.Bot.API.Types.KeyboardButtonRequestUsers
   , module Telegram.Bot.API.Types.LabeledPrice
+  , module Telegram.Bot.API.Types.LinkPreviewOptions
   , module Telegram.Bot.API.Types.Location
   , module Telegram.Bot.API.Types.LoginUrl
   , module Telegram.Bot.API.Types.MaskPosition
@@ -65,6 +75,9 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Message
   , module Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
   , module Telegram.Bot.API.Types.MessageEntity
+  , module Telegram.Bot.API.Types.MessageOrigin
+  , module Telegram.Bot.API.Types.MessageReactionCountUpdated
+  , module Telegram.Bot.API.Types.MessageReactionUpdated
   , module Telegram.Bot.API.Types.OrderInfo
   , module Telegram.Bot.API.Types.PassportData
   , module Telegram.Bot.API.Types.PassportElementError
@@ -76,8 +89,11 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.PollType
   , module Telegram.Bot.API.Types.PreCheckoutQuery
   , module Telegram.Bot.API.Types.ProximityAlertTriggered
+  , module Telegram.Bot.API.Types.ReactionCount
+  , module Telegram.Bot.API.Types.ReactionType
   , module Telegram.Bot.API.Types.ReplyKeyboardMarkup
   , module Telegram.Bot.API.Types.ReplyKeyboardRemove
+  , module Telegram.Bot.API.Types.ReplyParameters
   , module Telegram.Bot.API.Types.ResponseParameters
   , module Telegram.Bot.API.Types.ShippingAddress
   , module Telegram.Bot.API.Types.ShippingOption
@@ -86,7 +102,9 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Story
   , module Telegram.Bot.API.Types.SuccessfulPayment
   , module Telegram.Bot.API.Types.User
+  , module Telegram.Bot.API.Types.UserChatBoosts
   , module Telegram.Bot.API.Types.UserProfilePhotos
+  , module Telegram.Bot.API.Types.UsersShared
   , module Telegram.Bot.API.Types.UserShared
   , module Telegram.Bot.API.Types.Venue
   , module Telegram.Bot.API.Types.Video
@@ -112,6 +130,10 @@ import Telegram.Bot.API.Types.BotShortDescription
 import Telegram.Bot.API.Types.CallbackGame
 import Telegram.Bot.API.Types.CallbackQuery
 import Telegram.Bot.API.Types.Chat
+import Telegram.Bot.API.Types.ChatBoost
+import Telegram.Bot.API.Types.ChatBoostRemoved
+import Telegram.Bot.API.Types.ChatBoostSource
+import Telegram.Bot.API.Types.ChatBoostUpdated
 import Telegram.Bot.API.Types.ChatAdministratorRights
 import Telegram.Bot.API.Types.ChatInviteLink
 import Telegram.Bot.API.Types.ChatJoinRequest
@@ -128,6 +150,7 @@ import Telegram.Bot.API.Types.Dice
 import Telegram.Bot.API.Types.Document
 import Telegram.Bot.API.Types.EncryptedCredentials
 import Telegram.Bot.API.Types.EncryptedPassportElement
+import Telegram.Bot.API.Types.ExternalReplyInfo
 import Telegram.Bot.API.Types.File
 import Telegram.Bot.API.Types.ForceReply
 import Telegram.Bot.API.Types.ForumTopic
@@ -137,6 +160,10 @@ import Telegram.Bot.API.Types.ForumTopicCreated
 import Telegram.Bot.API.Types.ForumTopicReopened
 import Telegram.Bot.API.Types.Game
 import Telegram.Bot.API.Types.GameHighScore
+import Telegram.Bot.API.Types.Giveaway
+import Telegram.Bot.API.Types.GiveawayCompleted
+import Telegram.Bot.API.Types.GiveawayCreated
+import Telegram.Bot.API.Types.GiveawayWinners
 import Telegram.Bot.API.Types.GeneralForumTopicHidden
 import Telegram.Bot.API.Types.GeneralForumTopicUnhidden
 import Telegram.Bot.API.Types.InlineKeyboardButton
@@ -145,8 +172,9 @@ import Telegram.Bot.API.Types.InputMedia
 import Telegram.Bot.API.Types.Invoice
 import Telegram.Bot.API.Types.KeyboardButton
 import Telegram.Bot.API.Types.KeyboardButtonRequestChat
-import Telegram.Bot.API.Types.KeyboardButtonRequestUser
+import Telegram.Bot.API.Types.KeyboardButtonRequestUsers
 import Telegram.Bot.API.Types.LabeledPrice
+import Telegram.Bot.API.Types.LinkPreviewOptions
 import Telegram.Bot.API.Types.Location
 import Telegram.Bot.API.Types.LoginUrl
 import Telegram.Bot.API.Types.MaskPosition
@@ -154,6 +182,9 @@ import Telegram.Bot.API.Types.MenuButton
 import Telegram.Bot.API.Types.Message
 import Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
 import Telegram.Bot.API.Types.MessageEntity
+import Telegram.Bot.API.Types.MessageOrigin
+import Telegram.Bot.API.Types.MessageReactionCountUpdated
+import Telegram.Bot.API.Types.MessageReactionUpdated
 import Telegram.Bot.API.Types.OrderInfo
 import Telegram.Bot.API.Types.PassportData
 import Telegram.Bot.API.Types.PassportElementError
@@ -165,8 +196,11 @@ import Telegram.Bot.API.Types.PollOption
 import Telegram.Bot.API.Types.PollType
 import Telegram.Bot.API.Types.PreCheckoutQuery
 import Telegram.Bot.API.Types.ProximityAlertTriggered
+import Telegram.Bot.API.Types.ReactionCount
+import Telegram.Bot.API.Types.ReactionType
 import Telegram.Bot.API.Types.ReplyKeyboardMarkup
 import Telegram.Bot.API.Types.ReplyKeyboardRemove
+import Telegram.Bot.API.Types.ReplyParameters
 import Telegram.Bot.API.Types.ResponseParameters
 import Telegram.Bot.API.Types.ShippingAddress
 import Telegram.Bot.API.Types.ShippingOption
@@ -175,7 +209,9 @@ import Telegram.Bot.API.Types.Sticker
 import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
 import Telegram.Bot.API.Types.User
+import Telegram.Bot.API.Types.UserChatBoosts
 import Telegram.Bot.API.Types.UserProfilePhotos
+import Telegram.Bot.API.Types.UsersShared
 import Telegram.Bot.API.Types.UserShared
 import Telegram.Bot.API.Types.Venue
 import Telegram.Bot.API.Types.Video

@@ -8,7 +8,7 @@ data ParseMode
   = Markdown
   | HTML
   | MarkdownV2
-  deriving (Generic)
+  deriving (Generic, Show)
 
 instance ToJSON   ParseMode
 instance FromJSON ParseMode

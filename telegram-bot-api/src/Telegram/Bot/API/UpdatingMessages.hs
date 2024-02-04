@@ -38,7 +38,7 @@ data EditMessageTextRequest = EditMessageTextRequest
   , editMessageTextText                  :: Text -- ^ Text of the message to be sent.
   , editMessageTextParseMode             :: Maybe ParseMode -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , editMessageEntities                  :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
-  , editMessageTextDisableWebPagePreview :: Maybe Bool -- ^ Disables link previews for links in this message.
+  , editMessageTextLinkPreviewOptions    :: Maybe LinkPreviewOptions -- ^ Link preview generation options for the message.
   , editMessageTextReplyMarkup           :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 } deriving (Generic)
 

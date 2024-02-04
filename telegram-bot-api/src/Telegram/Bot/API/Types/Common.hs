@@ -1,6 +1,8 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeApplications #-}
 module Telegram.Bot.API.Types.Common where
 
@@ -30,6 +32,10 @@ newtype UserId = UserId Integer
 
 instance ToHttpApiData UserId where
   toUrlPiece = pack . show @Integer . coerce
+
+-- | Unique identifier of the boost.
+newtype BoostId = BoostId Text
+  deriving (Eq, Show, Generic, ToJSON, FromJSON)
 
 -- | Unique identifier for this chat.
 newtype ChatId = ChatId Integer
@@ -78,7 +84,7 @@ newtype CallbackQueryId = CallbackQueryId Text
 data SomeChatId
   = SomeChatId ChatId       -- ^ Unique chat ID.
   | SomeChatUsername Text   -- ^ Username of the target channel.
-  deriving (Generic)
+  deriving (Generic, Show)
 
 instance ToJSON   SomeChatId where toJSON = genericSomeToJSON
 instance FromJSON SomeChatId where parseJSON = genericSomeParseJSON

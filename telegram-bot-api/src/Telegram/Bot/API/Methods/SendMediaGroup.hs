@@ -25,7 +25,7 @@ data SendMediaGroupRequest = SendMediaGroupRequest
   , sendMediaGroupDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendMediaGroupProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
   , sendMediaGroupReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
-  , sendMediaGroupAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found
+  , sendMediaGroupReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendMediaGroupReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic

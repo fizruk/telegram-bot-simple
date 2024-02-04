@@ -32,6 +32,8 @@ data Update = Update
   , updateMessage           :: Maybe Message -- ^ New incoming message of any kind — text, photo, sticker, etc.
   , updateEditedMessage     :: Maybe Message -- ^ New version of a message that is known to the bot and was edited
   , updateChannelPost       :: Maybe Message -- ^ New incoming channel post of any kind — text, photo, sticker, etc.
+  , updateMessageReaction   :: Maybe MessageReactionUpdated -- ^ A reaction to a message was changed by a user. The bot must be an administrator in the chat and must explicitly specify "message_reaction" in the list of allowed_updates to receive these updates. The update isn't received for reactions set by bots.
+  , updateMessageReactionCount :: Maybe MessageReactionCountUpdated -- ^ Reactions to a message with anonymous reactions were changed. The bot must be an administrator in the chat and must explicitly specify "message_reaction_count" in the list of allowed_updates to receive these updates. The updates are grouped and can be sent with delay up to a few minutes.
   , updateEditedChannelPost :: Maybe Message -- ^ New version of a channel post that is known to the bot and was edited
 
   , updateInlineQuery       :: Maybe InlineQuery -- ^ New incoming inline query
@@ -47,6 +49,8 @@ data Update = Update
   , updateMyChatMember      :: Maybe ChatMemberUpdated -- ^ The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
   , updateChatMember        :: Maybe ChatMemberUpdated -- ^ A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
   , updateChatJoinRequest   :: Maybe ChatJoinRequest -- ^ A request to join the chat has been sent. The bot must have the can_invite_users administrator right in the chat to receive these updates.
+  , updateChatBoost         :: Maybe ChatBoostUpdated -- ^ A chat boost was added or changed. The bot must be an administrator in the chat to receive these updates.
+  , updateRemovedChatBoost  :: Maybe ChatBoostRemoved -- ^ A boost was removed from a chat. The bot must be an administrator in the chat to receive these updates.
   } deriving (Generic, Show)
 
 instance ToJSON   Update where toJSON = gtoJSON

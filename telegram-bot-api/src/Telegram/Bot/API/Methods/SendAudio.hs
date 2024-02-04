@@ -50,7 +50,7 @@ data SendAudioRequest = SendAudioRequest
   , sendAudioDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendAudioProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
   , sendAudioReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
-  , sendAudioAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found
+  , sendAudioReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendAudioReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic
@@ -87,8 +87,8 @@ instance ToMultipart Tmp SendAudioRequest where
         \t -> Input "protect_content" (bool "false" "true" t)
       , sendAudioReplyToMessageId <&>
         \t -> Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)
-      , sendAudioAllowSendingWithoutReply <&>
-        \t -> Input "allow_sending_without_reply" (bool "false" "true" t)
+      , sendAudioReplyParameters <&>
+        \t -> Input "reply_parameters" (TL.toStrict $ encodeToLazyText t)
       , sendAudioReplyMarkup <&>
         \t -> Input "reply_markup" (TL.toStrict $ encodeToLazyText t)
       ]

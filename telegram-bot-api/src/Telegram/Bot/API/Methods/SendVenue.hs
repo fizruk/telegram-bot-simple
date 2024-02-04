@@ -33,7 +33,7 @@ data SendVenueRequest = SendVenueRequest
   , sendVenueDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendVenueProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
   , sendVenueReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
-  , sendVenueAllowSendingWithoutReply :: Maybe Bool -- ^ Pass True, if the message should be sent even if the specified replied-to message is not found
+  , sendVenueReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendVenueReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic

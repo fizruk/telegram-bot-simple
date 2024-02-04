@@ -8,7 +8,7 @@ import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.KeyboardButtonRequestChat
-import Telegram.Bot.API.Types.KeyboardButtonRequestUser
+import Telegram.Bot.API.Types.KeyboardButtonRequestUsers
 import Telegram.Bot.API.Types.PollType
 import Telegram.Bot.API.Internal.Utils
 
@@ -19,7 +19,7 @@ import Telegram.Bot.API.Internal.Utils
 -- to specify text of the button. Optional fields are mutually exclusive.
 data KeyboardButton = KeyboardButton
   { keyboardButtonText            :: Text       -- ^ Text of the button. If none of the optional fields are used, it will be sent as a message when the button is pressed.
-  , keyboardButtonRequestUser     :: Maybe KeyboardButtonRequestUser -- ^ If specified, pressing the button will open a list of suitable users. Tapping on any user will send their identifier to the bot in a “user_shared” service message. Available in private chats only.
+  , keyboardButtonRequestUsers    :: Maybe KeyboardButtonRequestUsers -- ^ If specified, pressing the button will open a list of suitable users. Identifiers of selected users will be sent to the bot in a “users_shared” service message. Available in private chats only.
   , keyboardButtonRequestChat     :: Maybe KeyboardButtonRequestChat -- ^ If specified, pressing the button will open a list of suitable chats. Tapping on a chat will send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
   , keyboardButtonRequestContact  :: Maybe Bool -- ^ If 'True', the user's phone number will be sent as a contact when the button is pressed. Available in private chats only.
   , keyboardButtonRequestLocation :: Maybe Bool -- ^ If 'True', the user's current location will be sent when the button is pressed. Available in private chats only.

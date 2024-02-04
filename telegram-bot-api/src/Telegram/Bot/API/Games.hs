@@ -15,8 +15,12 @@ import Servant.Client hiding (Response)
 
 import Telegram.Bot.API.Internal.Utils (deriveJSON')
 import Telegram.Bot.API.MakingRequests (Response)
-import Telegram.Bot.API.Types (ChatId, GameHighScore, InlineKeyboardMarkup, Message, MessageId, MessageThreadId, UserId)
+import Telegram.Bot.API.Types
+  ( ChatId, GameHighScore, InlineKeyboardMarkup, Message, MessageId, MessageThreadId
+  , ReplyParameters, UserId
+  )
 import Telegram.Bot.API.Internal.TH
+
 -- * Types
 
 -- ** 'SendGameRequest'
@@ -28,7 +32,7 @@ data SendGameRequest = SendGameRequest
   , sendGameDisableNotification      :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendGameProtectContent           :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendGameReplyToMessageId         :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
-  , sendGameAllowSendingWithoutReply :: Maybe Bool                 -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found
+  , sendGameReplyParameters          :: Maybe ReplyParameters      -- ^ Description of the message to reply to.
   , sendGameReplyMarkup              :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.
   }
   deriving (Generic, Show)

@@ -14,13 +14,21 @@ import Telegram.Bot.API.Types.ChatShared
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.Contact
 import Telegram.Bot.API.Types.Dice
+import {-# SOURCE #-} Telegram.Bot.API.Types.ExternalReplyInfo
 import Telegram.Bot.API.Types.ForumTopicEdited
 import Telegram.Bot.API.Types.ForumTopicClosed
 import Telegram.Bot.API.Types.ForumTopicCreated
 import Telegram.Bot.API.Types.ForumTopicReopened
 import Telegram.Bot.API.Types.Game
+import Telegram.Bot.API.Types.GeneralForumTopicHidden
+import Telegram.Bot.API.Types.GeneralForumTopicUnhidden
+import {-# SOURCE #-} Telegram.Bot.API.Types.Giveaway
+import {-# SOURCE #-} Telegram.Bot.API.Types.GiveawayCompleted
+import Telegram.Bot.API.Types.GiveawayCreated
+import {-# SOURCE #-} Telegram.Bot.API.Types.GiveawayWinners
 import Telegram.Bot.API.Types.InlineKeyboardMarkup
 import Telegram.Bot.API.Types.Invoice
+import Telegram.Bot.API.Types.LinkPreviewOptions
 import Telegram.Bot.API.Types.Location
 import Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
 import Telegram.Bot.API.Types.MessageEntity
@@ -31,8 +39,9 @@ import Telegram.Bot.API.Types.ProximityAlertTriggered
 import Telegram.Bot.API.Types.Sticker
 import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
+import Telegram.Bot.API.Types.TextQuote
 import Telegram.Bot.API.Types.User
-import Telegram.Bot.API.Types.UserShared
+import Telegram.Bot.API.Types.UsersShared
 import Telegram.Bot.API.Types.Venue
 import Telegram.Bot.API.Types.Video
 import Telegram.Bot.API.Types.VideoChatEnded
@@ -63,6 +72,8 @@ data Message = Message
   , messageIsTopicMessage        :: Maybe Bool -- ^ 'True', if the message is sent to a forum topic.
   , messageIsAutomaticForward    :: Maybe Bool -- ^ 'True', if the message is a channel post that was automatically forwarded to the connected discussion group.
   , messageReplyToMessage        :: Maybe Message -- ^ For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
+  , messageExternalReply         :: Maybe ExternalReplyInfo -- ^ Information about the message that is being replied to, which may come from another chat or forum topic.
+  , quote                        :: Maybe TextQuote -- ^ For replies that quote part of the original message, the quoted part of the message.
   , messageViaBot                :: Maybe User -- ^ Bot through which the message was sent.
   , messageEditDate              :: Maybe POSIXTime -- ^ Date the message was last edited in Unix time
   , messageHasProtectedContent   :: Maybe Bool -- ^ 'True', if the message can't be forwarded.
@@ -70,6 +81,7 @@ data Message = Message
   , messageAuthorSignature       :: Maybe Text -- ^ Signature of the post author for messages in channels
   , messageText                  :: Maybe Text -- ^ For text messages, the actual UTF-8 text of the message, 0-4096 characters.
   , messageEntities              :: Maybe [MessageEntity] -- ^ For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text
+  , messageLinkPreviewOptions    :: Maybe LinkPreviewOptions -- ^ Options used for link preview generation for the message, if it is a text message and link preview options were changed.
   , messageAnimation             :: Maybe Animation -- ^ Message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set.
   , messageAudio                 :: Maybe Audio -- ^ Message is an audio file, information about the file
   , messageDocument              :: Maybe Document -- ^ Message is a general file, information about the file.
@@ -101,10 +113,10 @@ data Message = Message
   , messageHasHiddenMembers      :: Maybe Bool -- ^ 'True', if non-administrators can only get the list of bots and administrators in the chat. Returned only in 'getChat'.
   , messageMigrateToChatId       :: Maybe ChatId -- ^ The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
   , messageMigrateFromChatId     :: Maybe ChatId -- ^ The supergroup has been migrated from a group with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
-  , messagePinnedMessage         :: Maybe Message -- ^ Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply.
+  , messagePinnedMessage         :: Maybe Message -- ^ Specified message was pinned. Note that the Message object in this field will not contain further @reply_to_message@ fields even if it itself is a reply. Use 'isInaccessibleMessage' to understand whether a message was deleted or is otherwise inaccessible to the bot.
   , messageInvoice               :: Maybe Invoice -- ^ Message is an invoice for a payment, information about the invoice.
   , messageSuccessfulPayment     :: Maybe SuccessfulPayment -- ^ Message is a service message about a successful payment, information about the payment.
-  , messageUserShared            :: Maybe UserShared -- ^ Service message: a user was shared with the bot.
+  , messageUsersShared           :: Maybe UsersShared -- ^ Service message: users were shared with the bot.
   , messageChatShared            :: Maybe ChatShared -- ^ Service message: a chat was shared with the bot.
   , messageConnectedWebsite      :: Maybe Text -- ^ The domain name of the website on which the user has logged in.
   , messageWriteAccessAllowed    :: Maybe WriteAccessAllowed -- ^ Service message: the user allowed the bot added to the attachment menu to write messages.
@@ -114,6 +126,12 @@ data Message = Message
   , messageForumTopicEdited     :: Maybe ForumTopicEdited -- ^ Service message: forum topic edited.
   , messageForumTopicClosed     :: Maybe ForumTopicClosed -- ^ Service message: forum topic closed.
   , messageForumTopicReopened     :: Maybe ForumTopicReopened -- ^ Service message: forum topic reopened.
+  , messageGeneralForumTopicHidden :: Maybe GeneralForumTopicHidden -- ^ Service message: the 'General' forum topic hidden.
+  , messageGeneralForumTopicUnhidden :: Maybe GeneralForumTopicUnhidden -- ^ Service message: the 'General' forum topic unhidden
+  , messageGiveawayCreated       :: Maybe GiveawayCreated -- ^ Service message: a scheduled giveaway was created.
+  , messageGiveaway              :: Maybe Giveaway -- ^ The message is a scheduled giveaway message.
+  , messageGiveawayWinners       :: Maybe GiveawayWinners -- ^ A giveaway with public winners was completed.
+  , messageGiveawayCompleted     :: Maybe GiveawayCompleted -- ^ Service message: a giveaway without public winners was completed.
   , messageVideoChatScheduled    :: Maybe VideoChatScheduled -- ^ Service message: video chat scheduled.
   , messageVideoChatStarted      :: Maybe VideoChatStarted -- ^ Service message: video chat started
   , messageVideoChatEnded        :: Maybe VideoChatEnded -- ^ Service message: video chat ended.
@@ -125,3 +143,6 @@ data Message = Message
 
 instance ToJSON   Message where toJSON = gtoJSON
 instance FromJSON Message where parseJSON = gparseJSON
+
+isInaccessibleMessage :: Message -> Bool
+isInaccessibleMessage = (== 0) . messageDate

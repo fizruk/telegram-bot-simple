@@ -41,11 +41,11 @@ data ReplyMessage = ReplyMessage
   , replyMessageMessageThreadId       :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , replyMessageParseMode             :: Maybe ParseMode -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , replyMessageEntities              :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
-  , replyMessageDisableWebPagePreview :: Maybe Bool -- ^ Disables link previews for links in this message.
+  , replyMessageLinkPreviewOptions    :: Maybe LinkPreviewOptions -- ^ Link preview generation options for the message.
   , replyMessageDisableNotification   :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , replyMessageProtectContent        :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , replyMessageReplyToMessageId      :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
- , replyMessageAllowSendingWithoutReply :: Maybe Bool -- ^ Pass 'True', if the message should be sent even if the specified replied-to message is not found.
+  , replyMessageReplyParameters        :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , replyMessageReplyMarkup           :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   } deriving (Generic)
 
@@ -64,12 +64,12 @@ replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageReques
   , sendMessageText = replyMessageText
   , sendMessageParseMode = replyMessageParseMode
   , sendMessageEntities = replyMessageEntities
-  , sendMessageDisableWebPagePreview = replyMessageDisableWebPagePreview
+  , sendMessageLinkPreviewOptions = replyMessageLinkPreviewOptions
   , sendMessageDisableNotification = replyMessageDisableNotification
   , sendMessageProtectContent = replyMessageProtectContent
   , sendMessageReplyToMessageId = replyMessageReplyToMessageId
   , sendMessageReplyMarkup = replyMessageReplyMarkup
-  , sendMessageAllowSendingWithoutReply = replyMessageAllowSendingWithoutReply
+  , sendMessageReplyParameters = replyMessageReplyParameters
   }
 
 -- | Reply in a chat with a given 'SomeChatId'.
@@ -93,7 +93,7 @@ replyText = reply . toReplyMessage
 data EditMessage = EditMessage
   { editMessageText                  :: Text
   , editMessageParseMode             :: Maybe ParseMode
-  , editMessageDisableWebPagePreview :: Maybe Bool
+  , editMessageLinkPreviewOptions    :: Maybe LinkPreviewOptions
   , editMessageReplyMarkup           :: Maybe SomeReplyMarkup
   }
 
@@ -113,7 +113,7 @@ editMessageToEditMessageTextRequest editMessageId EditMessage{..}
   = EditMessageTextRequest
     { editMessageTextText = editMessageText
     , editMessageTextParseMode = editMessageParseMode
-    , editMessageTextDisableWebPagePreview = editMessageDisableWebPagePreview
+    , editMessageTextLinkPreviewOptions = editMessageLinkPreviewOptions
     , editMessageTextReplyMarkup = editMessageReplyMarkup
     , editMessageEntities = Nothing
     , ..
@@ -131,7 +131,7 @@ editMessageToEditMessageTextRequest editMessageId EditMessage{..}
 editMessageToReplyMessage :: EditMessage -> ReplyMessage
 editMessageToReplyMessage EditMessage{..} = (toReplyMessage editMessageText)
   { replyMessageParseMode = editMessageParseMode
-  , replyMessageDisableWebPagePreview = editMessageDisableWebPagePreview
+  , replyMessageLinkPreviewOptions = editMessageLinkPreviewOptions
   , replyMessageReplyMarkup = editMessageReplyMarkup
   }
 

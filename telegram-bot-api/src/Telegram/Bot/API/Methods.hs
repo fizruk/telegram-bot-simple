@@ -18,17 +18,20 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.BanChatMember
   , module Telegram.Bot.API.Methods.BanChatSenderChat
   , module Telegram.Bot.API.Methods.CopyMessage
+  , module Telegram.Bot.API.Methods.CopyMessages
   , module Telegram.Bot.API.Methods.CreateChatInviteLink
   , module Telegram.Bot.API.Methods.DeclineChatJoinRequest
   , module Telegram.Bot.API.Methods.DeleteChatPhoto
   , module Telegram.Bot.API.Methods.DeleteChatStickerSet
   , module Telegram.Bot.API.Methods.DeleteMessage
+  , module Telegram.Bot.API.Methods.DeleteMessages
   , module Telegram.Bot.API.Methods.DeleteMyCommands
   , module Telegram.Bot.API.Methods.DeleteStickerSet
   , module Telegram.Bot.API.Methods.EditChatInviteLink
   , module Telegram.Bot.API.Methods.EditMessageLiveLocation
   , module Telegram.Bot.API.Methods.ExportChatInviteLink
   , module Telegram.Bot.API.Methods.ForwardMessage
+  , module Telegram.Bot.API.Methods.ForwardMessages
   , module Telegram.Bot.API.Methods.GetChat
   , module Telegram.Bot.API.Methods.GetChatAdministrators
   , module Telegram.Bot.API.Methods.GetChatMember
@@ -40,6 +43,7 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.GetMyDefaultAdministratorRights
   , module Telegram.Bot.API.Methods.GetMyDescription
   , module Telegram.Bot.API.Methods.GetMyShortDescription
+  , module Telegram.Bot.API.Methods.GetUserChatBoosts
   , module Telegram.Bot.API.Methods.GetUserProfilePhotos
   , module Telegram.Bot.API.Methods.LeaveChat
   , module Telegram.Bot.API.Methods.PinChatMessage
@@ -68,6 +72,7 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.SetChatPhoto
   , module Telegram.Bot.API.Methods.SetChatStickerSet
   , module Telegram.Bot.API.Methods.SetChatTitle
+  , module Telegram.Bot.API.Methods.SetMessageReaction
   , module Telegram.Bot.API.Methods.SetMyCommands
   , module Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
   , module Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
@@ -97,17 +102,20 @@ import Telegram.Bot.API.Methods.ApproveChatJoinRequest
 import Telegram.Bot.API.Methods.BanChatMember
 import Telegram.Bot.API.Methods.BanChatSenderChat
 import Telegram.Bot.API.Methods.CopyMessage
+import Telegram.Bot.API.Methods.CopyMessages
 import Telegram.Bot.API.Methods.CreateChatInviteLink
 import Telegram.Bot.API.Methods.DeclineChatJoinRequest
 import Telegram.Bot.API.Methods.DeleteChatPhoto
 import Telegram.Bot.API.Methods.DeleteChatStickerSet
 import Telegram.Bot.API.Methods.DeleteMessage
+import Telegram.Bot.API.Methods.DeleteMessages
 import Telegram.Bot.API.Methods.DeleteMyCommands
 import Telegram.Bot.API.Methods.DeleteStickerSet
 import Telegram.Bot.API.Methods.EditChatInviteLink
 import Telegram.Bot.API.Methods.EditMessageLiveLocation
 import Telegram.Bot.API.Methods.ExportChatInviteLink
 import Telegram.Bot.API.Methods.ForwardMessage
+import Telegram.Bot.API.Methods.ForwardMessages
 import Telegram.Bot.API.Methods.GetChat
 import Telegram.Bot.API.Methods.GetChatAdministrators
 import Telegram.Bot.API.Methods.GetChatMember
@@ -119,6 +127,7 @@ import Telegram.Bot.API.Methods.GetMyCommands
 import Telegram.Bot.API.Methods.GetMyDefaultAdministratorRights
 import Telegram.Bot.API.Methods.GetMyDescription
 import Telegram.Bot.API.Methods.GetMyShortDescription
+import Telegram.Bot.API.Methods.GetUserChatBoosts
 import Telegram.Bot.API.Methods.GetUserProfilePhotos
 import Telegram.Bot.API.Methods.LeaveChat
 import Telegram.Bot.API.Methods.PinChatMessage
@@ -147,6 +156,7 @@ import Telegram.Bot.API.Methods.SetChatPermissions
 import Telegram.Bot.API.Methods.SetChatPhoto
 import Telegram.Bot.API.Methods.SetChatStickerSet
 import Telegram.Bot.API.Methods.SetChatTitle
+import Telegram.Bot.API.Methods.SetMessageReaction
 import Telegram.Bot.API.Methods.SetMyCommands
 import Telegram.Bot.API.Methods.SetCustomEmojiStickerSetThumbnail
 import Telegram.Bot.API.Methods.SetMyDefaultAdministratorRights
