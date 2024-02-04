@@ -57,7 +57,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Invoice
   , module Telegram.Bot.API.Types.KeyboardButton
   , module Telegram.Bot.API.Types.KeyboardButtonRequestChat
-  , module Telegram.Bot.API.Types.KeyboardButtonRequestUser
+  , module Telegram.Bot.API.Types.KeyboardButtonRequestUsers
   , module Telegram.Bot.API.Types.LabeledPrice
   , module Telegram.Bot.API.Types.LinkPreviewOptions
   , module Telegram.Bot.API.Types.Location
@@ -95,6 +95,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.SuccessfulPayment
   , module Telegram.Bot.API.Types.User
   , module Telegram.Bot.API.Types.UserProfilePhotos
+  , module Telegram.Bot.API.Types.UsersShared
   , module Telegram.Bot.API.Types.UserShared
   , module Telegram.Bot.API.Types.Venue
   , module Telegram.Bot.API.Types.Video
@@ -154,7 +155,7 @@ import Telegram.Bot.API.Types.InputMedia
 import Telegram.Bot.API.Types.Invoice
 import Telegram.Bot.API.Types.KeyboardButton
 import Telegram.Bot.API.Types.KeyboardButtonRequestChat
-import Telegram.Bot.API.Types.KeyboardButtonRequestUser
+import Telegram.Bot.API.Types.KeyboardButtonRequestUsers
 import Telegram.Bot.API.Types.LabeledPrice
 import Telegram.Bot.API.Types.LinkPreviewOptions
 import Telegram.Bot.API.Types.Location
@@ -192,6 +193,7 @@ import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
 import Telegram.Bot.API.Types.User
 import Telegram.Bot.API.Types.UserProfilePhotos
+import Telegram.Bot.API.Types.UsersShared
 import Telegram.Bot.API.Types.UserShared
 import Telegram.Bot.API.Types.Venue
 import Telegram.Bot.API.Types.Video

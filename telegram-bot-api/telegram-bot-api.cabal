@@ -163,7 +163,7 @@ library
       Telegram.Bot.API.Types.Invoice
       Telegram.Bot.API.Types.KeyboardButton
       Telegram.Bot.API.Types.KeyboardButtonRequestChat
-      Telegram.Bot.API.Types.KeyboardButtonRequestUser
+      Telegram.Bot.API.Types.KeyboardButtonRequestUsers
       Telegram.Bot.API.Types.LabeledPrice
       Telegram.Bot.API.Types.LinkPreviewOptions
       Telegram.Bot.API.Types.Location
@@ -206,6 +206,7 @@ library
       Telegram.Bot.API.Types.User
       Telegram.Bot.API.Types.UserProfilePhotos
       Telegram.Bot.API.Types.UserShared
+      Telegram.Bot.API.Types.UsersShared
       Telegram.Bot.API.Types.Venue
       Telegram.Bot.API.Types.Video
       Telegram.Bot.API.Types.VideoChatEnded

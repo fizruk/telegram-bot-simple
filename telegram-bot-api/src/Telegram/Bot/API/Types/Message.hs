@@ -35,7 +35,7 @@ import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
 import Telegram.Bot.API.Types.TextQuote
 import Telegram.Bot.API.Types.User
-import Telegram.Bot.API.Types.UserShared
+import Telegram.Bot.API.Types.UsersShared
 import Telegram.Bot.API.Types.Venue
 import Telegram.Bot.API.Types.Video
 import Telegram.Bot.API.Types.VideoChatEnded
@@ -110,7 +110,7 @@ data Message = Message
   , messagePinnedMessage         :: Maybe Message -- ^ Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply.
   , messageInvoice               :: Maybe Invoice -- ^ Message is an invoice for a payment, information about the invoice.
   , messageSuccessfulPayment     :: Maybe SuccessfulPayment -- ^ Message is a service message about a successful payment, information about the payment.
-  , messageUserShared            :: Maybe UserShared -- ^ Service message: a user was shared with the bot.
+  , messageUsersShared           :: Maybe UsersShared -- ^ Service message: users were shared with the bot.
   , messageChatShared            :: Maybe ChatShared -- ^ Service message: a chat was shared with the bot.
   , messageConnectedWebsite      :: Maybe Text -- ^ The domain name of the website on which the user has logged in.
   , messageWriteAccessAllowed    :: Maybe WriteAccessAllowed -- ^ Service message: the user allowed the bot added to the attachment menu to write messages.
