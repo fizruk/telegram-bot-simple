@@ -49,6 +49,8 @@ data Update = Update
   , updateMyChatMember      :: Maybe ChatMemberUpdated -- ^ The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
   , updateChatMember        :: Maybe ChatMemberUpdated -- ^ A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
   , updateChatJoinRequest   :: Maybe ChatJoinRequest -- ^ A request to join the chat has been sent. The bot must have the can_invite_users administrator right in the chat to receive these updates.
+  , updateChatBoost         :: Maybe ChatBoostUpdated -- ^ A chat boost was added or changed. The bot must be an administrator in the chat to receive these updates.
+  , updateRemovedChatBoost  :: Maybe ChatBoostRemoved -- ^ A boost was removed from a chat. The bot must be an administrator in the chat to receive these updates.
   } deriving (Generic, Show)
 
 instance ToJSON   Update where toJSON = gtoJSON

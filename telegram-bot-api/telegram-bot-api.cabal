@@ -69,6 +69,7 @@ library
       Telegram.Bot.API.Methods.GetMyDescription
       Telegram.Bot.API.Methods.GetMyName
       Telegram.Bot.API.Methods.GetMyShortDescription
+      Telegram.Bot.API.Methods.GetUserChatBoosts
       Telegram.Bot.API.Methods.GetUserProfilePhotos
       Telegram.Bot.API.Methods.LeaveChat
       Telegram.Bot.API.Methods.PinChatMessage
@@ -129,6 +130,10 @@ library
       Telegram.Bot.API.Types.CallbackGame
       Telegram.Bot.API.Types.CallbackQuery
       Telegram.Bot.API.Types.Chat
+      Telegram.Bot.API.Types.ChatBoost
+      Telegram.Bot.API.Types.ChatBoostRemoved
+      Telegram.Bot.API.Types.ChatBoostSource
+      Telegram.Bot.API.Types.ChatBoostUpdated
       Telegram.Bot.API.Types.ChatAdministratorRights
       Telegram.Bot.API.Types.ChatInviteLink
       Telegram.Bot.API.Types.ChatJoinRequest
@@ -204,6 +209,7 @@ library
       Telegram.Bot.API.Types.SwitchInlineQueryChosenChat
       Telegram.Bot.API.Types.TextQuote
       Telegram.Bot.API.Types.User
+      Telegram.Bot.API.Types.UserChatBoosts
       Telegram.Bot.API.Types.UserProfilePhotos
       Telegram.Bot.API.Types.UserShared
       Telegram.Bot.API.Types.UsersShared

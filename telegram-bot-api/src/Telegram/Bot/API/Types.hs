@@ -23,6 +23,10 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.CallbackGame
   , module Telegram.Bot.API.Types.CallbackQuery
   , module Telegram.Bot.API.Types.Chat
+  , module Telegram.Bot.API.Types.ChatBoost
+  , module Telegram.Bot.API.Types.ChatBoostRemoved
+  , module Telegram.Bot.API.Types.ChatBoostSource
+  , module Telegram.Bot.API.Types.ChatBoostUpdated
   , module Telegram.Bot.API.Types.ChatAdministratorRights
   , module Telegram.Bot.API.Types.ChatInviteLink
   , module Telegram.Bot.API.Types.ChatJoinRequest
@@ -94,6 +98,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.Story
   , module Telegram.Bot.API.Types.SuccessfulPayment
   , module Telegram.Bot.API.Types.User
+  , module Telegram.Bot.API.Types.UserChatBoosts
   , module Telegram.Bot.API.Types.UserProfilePhotos
   , module Telegram.Bot.API.Types.UsersShared
   , module Telegram.Bot.API.Types.UserShared
@@ -121,6 +126,10 @@ import Telegram.Bot.API.Types.BotShortDescription
 import Telegram.Bot.API.Types.CallbackGame
 import Telegram.Bot.API.Types.CallbackQuery
 import Telegram.Bot.API.Types.Chat
+import Telegram.Bot.API.Types.ChatBoost
+import Telegram.Bot.API.Types.ChatBoostRemoved
+import Telegram.Bot.API.Types.ChatBoostSource
+import Telegram.Bot.API.Types.ChatBoostUpdated
 import Telegram.Bot.API.Types.ChatAdministratorRights
 import Telegram.Bot.API.Types.ChatInviteLink
 import Telegram.Bot.API.Types.ChatJoinRequest
@@ -192,6 +201,7 @@ import Telegram.Bot.API.Types.Sticker
 import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
 import Telegram.Bot.API.Types.User
+import Telegram.Bot.API.Types.UserChatBoosts
 import Telegram.Bot.API.Types.UserProfilePhotos
 import Telegram.Bot.API.Types.UsersShared
 import Telegram.Bot.API.Types.UserShared

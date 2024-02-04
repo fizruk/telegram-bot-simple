@@ -33,6 +33,10 @@ newtype UserId = UserId Integer
 instance ToHttpApiData UserId where
   toUrlPiece = pack . show @Integer . coerce
 
+-- | Unique identifier of the boost.
+newtype BoostId = BoostId Text
+  deriving (Eq, Show, Generic, ToJSON, FromJSON)
+
 -- | Unique identifier for this chat.
 newtype ChatId = ChatId Integer
   deriving (Eq, Show, ToJSON, FromJSON, Hashable)
