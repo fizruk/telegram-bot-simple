@@ -30,8 +30,12 @@ data Chat = Chat
   , chatPhoto            :: Maybe ChatPhoto -- ^ Chat photo. Returned only in getChat.
   , chatActiveUsernames  :: Maybe Text      -- ^ If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in 'getChat'.
   , chatAvailableReactions :: Maybe [ReactionType] -- ^ List of available reactions allowed in the chat. If omitted, then all emoji reactions are allowed. Returned only in 'getChat'.
+  , chatAccentColorId    :: Maybe Int -- ^ Identifier of the accent color for the chat name and backgrounds of the chat photo, reply header, and link preview. See [accent colors](https://core.telegram.org/bots/api#accent-colors) for more details. Returned only in 'getChat'. Always returned in 'getChat'.
+  , chatBackgroundCustomEmojiId :: Maybe Text -- ^ Custom emoji identifier of emoji chosen by the chat for the reply header and link preview background. Returned only in 'getChat'.
+  , chatProfileAccentColorId :: Maybe Int -- ^ Identifier of the accent color for the chat's profile background. See [profile accent colors](https://core.telegram.org/bots/api#profile-accent-colors) for more details. Returned only in getChat.
+  , chatProfileBackgroundCustomEmojiId :: Maybe Text -- ^ Custom emoji identifier of the emoji chosen by the chat for its profile background. Returned only in 'getChat'.
   , chatEmojiStatusCustomEmojiId :: Maybe Text -- ^ Custom emoji identifier of emoji status of the other party in a private chat. Returned only in 'getChat'.
-  , chatEmojiStatusExpirationDate :: Maybe Int -- ^ Expiration date of the emoji status of the chat or the other party in a private chat, in Unix time, if any. Returned only in 'getChat'.
+  , chatEmojiStatusExpirationDate :: Maybe POSIXTime -- ^ Expiration date of the emoji status of the chat or the other party in a private chat, in Unix time, if any. Returned only in 'getChat'.
   , chatBio              :: Maybe Text      -- ^ Bio of the other party in a private chat. Returned only in `getChat`.
   , chatHasPrivateForwards :: Maybe Bool    -- ^ 'True', if privacy settings of the other party in the private chat allows to use `tg://user?id=<user_id>` links only in chats with the user. Returned only in getChat.
   , chatHasRestrictedVoiceAndVideoMessages :: Maybe Bool -- ^ 'True', if the privacy settings of the other party restrict sending voice and video note messages in the private chat. Returned only in 'getChat'.
@@ -43,7 +47,10 @@ data Chat = Chat
   , chatPermissions      :: Maybe ChatPermissions -- ^ Default chat member permissions, for groups and supergroups.
   , chatSlowModeDelay    :: Maybe Int       -- ^ For supergroups, the minimum allowed delay between consecutive messages sent by each unpriviledged user; in seconds.
   , chatMessageAutoDeleteTime :: Maybe POSIXTime -- ^ The time after which all messages sent to the chat will be automatically deleted; in seconds.
+  , chatHasAggressiveAntiSpamEnabled :: Maybe Bool -- ^ 'True', if aggressive anti-spam checks are enabled in the supergroup. The field is only available to chat administrators. Returned only in 'getChat'.
+  , chatHasHiddenMembers :: Maybe Bool      -- ^ 'True', if non-administrators can only get the list of bots and administrators in the chat. Returned only in 'getChat'.
   , chatHasProtectedContent :: Maybe Bool   -- ^ 'True', if messages from the chat can't be forwarded to other chats.
+  , chatHasVisibleHistory :: Maybe Bool     -- ^ 'True', if new chat members will have access to old messages; available only to chat administrators. Returned only in 'getChat'.
   , chatStickerSetName   :: Maybe Text      -- ^ For supergroups, name of group sticker set. Returned only in getChat.
   , chatCanSetStickerSet :: Maybe Bool      -- ^ True, if the bot can change the group sticker set. Returned only in `getChat`.
   , chatLinkedChatId     :: Maybe ChatId    -- ^ Unique identifier for the linked chat, i.e. the discussion group identifier for a channel and vice versa; for supergroups and channel chats. This identifier may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.

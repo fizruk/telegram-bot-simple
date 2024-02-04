@@ -113,7 +113,7 @@ data Message = Message
   , messageHasHiddenMembers      :: Maybe Bool -- ^ 'True', if non-administrators can only get the list of bots and administrators in the chat. Returned only in 'getChat'.
   , messageMigrateToChatId       :: Maybe ChatId -- ^ The group has been migrated to a supergroup with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
   , messageMigrateFromChatId     :: Maybe ChatId -- ^ The supergroup has been migrated from a group with the specified identifier. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
-  , messagePinnedMessage         :: Maybe Message -- ^ Specified message was pinned. Note that the Message object in this field will not contain further reply_to_message fields even if it is itself a reply.
+  , messagePinnedMessage         :: Maybe Message -- ^ Specified message was pinned. Note that the Message object in this field will not contain further @reply_to_message@ fields even if it itself is a reply. Use 'isInaccessibleMessage' to understand whether a message was deleted or is otherwise inaccessible to the bot.
   , messageInvoice               :: Maybe Invoice -- ^ Message is an invoice for a payment, information about the invoice.
   , messageSuccessfulPayment     :: Maybe SuccessfulPayment -- ^ Message is a service message about a successful payment, information about the payment.
   , messageUsersShared           :: Maybe UsersShared -- ^ Service message: users were shared with the bot.
@@ -143,3 +143,6 @@ data Message = Message
 
 instance ToJSON   Message where toJSON = gtoJSON
 instance FromJSON Message where parseJSON = gparseJSON
+
+isInaccessibleMessage :: Message -> Bool
+isInaccessibleMessage = (== 0) . messageDate
