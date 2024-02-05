@@ -3,7 +3,8 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Telegram.Bot.Simple.BotApp.Internal where
 
-import           Control.Concurrent      (ThreadId, forkIO, threadDelay)
+import           Control.Concurrent       (ThreadId, threadDelay)
+import           Control.Concurrent.Async (Async, async, asyncThreadId, link)
 import           Control.Concurrent.STM
 import           Control.Monad           (forever, void, (<=<))
 import           Control.Monad.Except    (catchError)
@@ -117,14 +118,16 @@ processActionJob botApp botEnv@BotEnv{..} = do
 -- | Process incoming actions indefinitely.
 processActionsIndefinitely
   :: BotApp model action -> BotEnv model action -> IO ThreadId
-processActionsIndefinitely botApp botEnv = forkIO . forever $ do
-  runClientM (processActionJob botApp botEnv) (botClientEnv botEnv)
+processActionsIndefinitely botApp botEnv = do
+  a <- asyncLink $ forever $ do
+    runClientM (processActionJob botApp botEnv) (botClientEnv botEnv)
+  return (asyncThreadId a)
 
 -- | Start 'Telegram.Update' polling for a bot.
 startBotPolling :: BotApp model action -> BotEnv model action -> ClientM ()
 startBotPolling BotApp{..} botEnv@BotEnv{..} = startPolling handleUpdate
   where
-    handleUpdate update = liftIO . void . forkIO $ do
+    handleUpdate update = liftIO . void . asyncLink $ do
       maction <- botAction update <$> readTVarIO botModelVar
       case maction of
         Nothing     -> return ()
@@ -154,3 +157,15 @@ startPolling handleUpdate = go Nothing
           pure maxUpdateId
       liftIO $ threadDelay 1000000
       go nextUpdateId
+
+-- ** Helpers
+
+-- | Instead of 'forkIO' which hides exceptions,
+-- allow users to handle those exceptions separately.
+-- 
+-- See <https://github.com/fizruk/telegram-bot-simple/issues/159>.
+asyncLink :: IO a -> IO (Async a)
+asyncLink action = do
+  a <- async action
+  link a
+  return a

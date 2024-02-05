@@ -3,7 +3,6 @@
 {-# LANGUAGE TypeOperators         #-}
 module Telegram.Bot.Simple.Webhook (webhookApp) where
 
-import           Control.Concurrent                  (forkIO)
 import           Control.Concurrent.STM
 import           Control.Monad.IO.Class              (MonadIO (liftIO))
 import           Data.Functor                        (void)
@@ -20,7 +19,7 @@ server BotApp {..} botEnv@BotEnv {..} =
   where
     updateHandler :: Update -> Handler ()
     updateHandler update = liftIO $ handleUpdate update
-    handleUpdate update = liftIO . void . forkIO $ do
+    handleUpdate update = liftIO . void . asyncLink $ do
       maction <- botAction update <$> readTVarIO botModelVar
       case maction of
         Nothing     -> return ()
