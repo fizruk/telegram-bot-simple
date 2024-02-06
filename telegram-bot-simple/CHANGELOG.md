@@ -3,6 +3,7 @@
 
 - Support GHC 9.6 (see [#163](https://github.com/fizruk/telegram-bot-simple/pull/163)).
 - Support `telegram-bot-api == 0.7`.
+- Fix bot hanging via rethrowing exceptions (see [#170](https://github.com/fizruk/telegram-bot-simple/pull/170)).
 
 
 0.12 -- 2023-04-29
