@@ -30,5 +30,6 @@ Feel free to ping me on GitHub, file an issue or submit a PR :)
 | 0.10  | 6.5  |
 | 0.11.1  | 6.5.1  |
 | 0.12  | 6.7  |
+| 0.13 | 7.0 | 
 
 _Nick_

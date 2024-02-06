@@ -1,5 +1,64 @@
 # telegram-bot-api
 
+## 7.0 -- 2024-02-06
+
+- Support GHC 9.6 (see [#163](https://github.com/fizruk/telegram-bot-simple/pull/163)).
+
+### Bot API 6.8 support
+
+See [#165](https://github.com/fizruk/telegram-bot-simple/pull/165).
+
+- Add new methods:
+  - `unpinAllGeneralForumTopicMessages`.
+- Add new types:
+  - `Story`.
+- Modify existing types:
+  - `Message`, `Chat`, `PollAnswer`.
+
+### Bot API 6.9 support
+
+See [#168](https://github.com/fizruk/telegram-bot-simple/pull/168).
+
+- Modify methods:
+  - `promoteChatMember`.
+- Modify types:
+  - `ChatMember`.
+  - `ChatAdministratorRights`
+  - `WriteAccessAllowed`.
+
+### Bot API 7.0 support
+
+See [#169](https://github.com/fizruk/telegram-bot-simple/pull/169).
+
+- Reactions:
+  - New types: `ReactionType`, `ReactionCount`, `MessageReactionUpdated`, `MessageReactionCountUpdated`.
+  - Modified types: `Chat`.
+  - New method: `setMessageReaction`.
+- Replies 2.0:
+  - New types: `ExternalReplyInfo`, `MessageOrigin`, `TextQuote`, `ReplyParameters`.
+  - Modified types: `Message`.
+  - Modified methods: `copyMessage`, `sendAnimation`, `sendAudio`, `sendContact`, `sendDice`, `sendDocument`, `sendGame`, `sendInvoice`, `sendLocation`, `sendMediaGroup`, `sendMessage`, `sendPhoto`, `sendPoll`, `sendSticler`, `sendVenue`, `sendVideo`, `sendVideoNote`, `sendVoice`.
+- Link Preview Customization:
+  - New type: `LinkPreviewOptions`.
+  - Modified types: `Message`.
+  - Modified methods: `editMessage`, `sendMessage`.
+- Multiple Message Actions:
+  - New methods: `copyMessages`, `deleteMessages` and `forwardMessages`.
+- Request for multiple users:
+  - Deteled type: `KeyboardButtonRequestUser`
+  - New types: `KeyboardButtonRequestUsers`, `UsersShared`.
+  - Modified types: `KeyboardButton`, `Message`.
+- Chat Boost:
+  - New types: `ChatBoost`, `ChatBoostRemoved`, `ChatBoostSource`, `ChatBoostUpdated`, `UserChatBoosts`.
+  - New methods: `getUserChatBoosts`.
+- Giveaway:
+  - New types: `Giveaway`, `GiveawayCompleted`, `GiveawayCreated`, `GiveawayWinners`.
+  - Modified type: `Message`.
+- Other changes:
+  - `Message` could become inaccessible, see `isInaccessibleMessage` helper.
+  - `CallbackQuery` documentation improved.
+  - `Chat` type has been updated with extra fields, also enabled preliminary support of `WebApp`.
+
 ## 6.7.1 -- 2023-06-26
 
 - Fix Inline Mode (see [#157](https://github.com/fizruk/telegram-bot-simple/pull/157)).

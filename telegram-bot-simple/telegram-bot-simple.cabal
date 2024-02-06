@@ -1,7 +1,7 @@
 cabal-version: 1.12
 
 name:           telegram-bot-simple
-version:        0.12
+version:        0.13
 synopsis:       Easy to use library for building Telegram bots.
 description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
 category:       Web
