@@ -49,6 +49,7 @@ library
   build-depends:
       aeson
     , aeson-pretty
+    , async
     , base >=4.9 && <5
     , bytestring
     , cron >=0.7.0
