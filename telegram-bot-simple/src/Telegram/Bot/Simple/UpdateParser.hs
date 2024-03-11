@@ -25,6 +25,9 @@ mkParser f = ask >>= lift . f
 parseUpdate :: UpdateParser a -> Update -> Maybe a
 parseUpdate = runReaderT
 
+runUpdateParser :: UpdateParser a -> Update -> Maybe a
+runUpdateParser = runReaderT
+
 text :: UpdateParser Text
 text = mkParser (extractUpdateMessage >=> messageText)
 
