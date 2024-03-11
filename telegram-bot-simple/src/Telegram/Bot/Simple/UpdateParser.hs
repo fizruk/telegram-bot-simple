@@ -19,11 +19,14 @@ import           Telegram.Bot.API
 
 type UpdateParser a = ReaderT Update Maybe a
 
+mkParser :: (Update -> Maybe a) -> UpdateParser a
+mkParser f = ask >>= lift . f
+
 parseUpdate :: UpdateParser a -> Update -> Maybe a
 parseUpdate = runReaderT
 
 text :: UpdateParser Text
-text = ask >>= (lift . (extractUpdateMessage >=> messageText))
+text = mkParser (extractUpdateMessage >=> messageText)
 
 plainText :: UpdateParser Text
 plainText = do
@@ -50,7 +53,7 @@ commandWithBotName botname commandname = do
 
 -- | Obtain 'CallbackQuery' @data@ associated with the callback button in an inline keyboard if present in 'Update' message. 
 callbackQueryDataRead :: Read a => UpdateParser a
-callbackQueryDataRead = ask >>= (lift . (updateCallbackQuery >=> callbackQueryData >=> (readMaybe . Text.unpack)))
+callbackQueryDataRead = mkParser (updateCallbackQuery >=> callbackQueryData >=> (readMaybe . Text.unpack))
 
 updateMessageText :: Update -> Maybe Text
 updateMessageText = extractUpdateMessage >=> messageText
