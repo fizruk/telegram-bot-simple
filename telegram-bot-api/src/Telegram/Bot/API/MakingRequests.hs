@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP                        #-}
+{-# LANGUAGE DeriveFunctor              #-}
 {-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings          #-}
@@ -58,7 +59,7 @@ data Response a = Response
   , responseResult      :: a
   , responseErrorCode   :: Maybe Integer
   , responseParameters  :: Maybe ResponseParameters
-  } deriving (Show, Generic)
+  } deriving (Show, Generic, Functor)
 
 instance ToJSON   a => ToJSON   (Response a) where toJSON = gtoJSON
 instance FromJSON a => FromJSON (Response a) where parseJSON = gparseJSON
