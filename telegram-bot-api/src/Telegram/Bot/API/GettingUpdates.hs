@@ -6,7 +6,7 @@
 {-# LANGUAGE TypeOperators              #-}
 module Telegram.Bot.API.GettingUpdates where
 
-import           Data.Aeson                      (FromJSON (..), ToJSON (..))
+import           Data.Aeson                      (FromJSON (..), ToJSON (..), Value)
 import           Data.Foldable                   (asum)
 import           Data.Proxy
 import           GHC.Generics                    (Generic)
@@ -70,8 +70,10 @@ extractUpdateMessage Update{..} = asum
 
 -- ** 'getUpdates'
 
-type GetUpdates
-  = "getUpdates" :> ReqBody '[JSON] GetUpdatesRequest :> Get '[JSON] (Response [Update])
+type GetUpdatesAs a
+  = "getUpdates" :> ReqBody '[JSON] GetUpdatesRequest :> Get '[JSON] (Response [a])
+
+type GetUpdates = GetUpdatesAs Update
 
 -- | Use this method to receive incoming updates using long polling.
 -- An list of 'Update' objects is returned.
@@ -81,6 +83,14 @@ type GetUpdates
 -- NOTE: In order to avoid getting duplicate updates, recalculate offset after each server response.
 getUpdates :: GetUpdatesRequest -> ClientM (Response [Update])
 getUpdates = client (Proxy @GetUpdates)
+
+-- | More liberal version of `getUpdates` funcion.
+--
+-- It's useful  when you aren't sure that you can
+-- parse all the types of updates, so you would recieve
+-- a list of Value with updates, that you can parse later.
+getUpdatesAsValue :: GetUpdatesRequest -> ClientM (Response [Value])
+getUpdatesAsValue = client (Proxy @(GetUpdatesAs Value))
 
 -- | Request parameters for 'getUpdates'.
 data GetUpdatesRequest = GetUpdatesRequest
