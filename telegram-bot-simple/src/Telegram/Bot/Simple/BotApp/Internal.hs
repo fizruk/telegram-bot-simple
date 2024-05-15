@@ -16,6 +16,8 @@ import qualified System.Cron             as Cron
 
 import qualified Telegram.Bot.API        as Telegram
 import           Telegram.Bot.Simple.Eff
+import Data.Either (partitionEithers)
+import Data.Aeson.Types (parseEither, parseJSON)
 
 -- | A bot application.
 data BotApp model action = BotApp
@@ -141,7 +143,7 @@ startPolling handleUpdate = go Nothing
       let inc (Telegram.UpdateId n) = Telegram.UpdateId (n + 1)
           offset = fmap inc lastUpdateId
       res <-
-        (Right <$> Telegram.getUpdates
+        (Right <$> Telegram.getUpdatesAsValue
           (Telegram.GetUpdatesRequest offset Nothing (Just 25) Nothing))
         `catchError` (pure . Left)
 
@@ -150,19 +152,29 @@ startPolling handleUpdate = go Nothing
           liftIO (print servantErr)
           pure lastUpdateId
         Right result -> do
-          let updates = Telegram.responseResult result
+          let updateValues = Telegram.responseResult result
+              (errors, updates) = parseUpdates updateValues
               updateIds = map Telegram.updateUpdateId updates
               maxUpdateId = maximum (Nothing : map Just updateIds)
+          mapM_ reportParseError errors
           mapM_ handleUpdate updates
           pure maxUpdateId
       liftIO $ threadDelay 1000000
       go nextUpdateId
 
+    parseUpdates updates =
+      partitionEithers (map (parseEither parseJSON) updates)
+
+    reportParseError err =
+      liftIO $ putStrLn $
+        "Failed to parse an update! Please, make sure you have the latest version of `telegram-bot-api`\
+        \ library and consider opening an issue if so. Error message: " <> err
+
 -- ** Helpers
 
 -- | Instead of 'forkIO' which hides exceptions,
 -- allow users to handle those exceptions separately.
--- 
+--
 -- See <https://github.com/fizruk/telegram-bot-simple/issues/159>.
 asyncLink :: IO a -> IO (Async a)
 asyncLink action = do
