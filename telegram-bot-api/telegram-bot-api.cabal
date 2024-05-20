@@ -127,6 +127,8 @@ library
       Telegram.Bot.API.Types.BotDescription
       Telegram.Bot.API.Types.BotName
       Telegram.Bot.API.Types.BotShortDescription
+      Telegram.Bot.API.Types.BusinessConnection
+      Telegram.Bot.API.Types.BusinessMessagesDeleted
       Telegram.Bot.API.Types.CallbackGame
       Telegram.Bot.API.Types.CallbackQuery
       Telegram.Bot.API.Types.Chat

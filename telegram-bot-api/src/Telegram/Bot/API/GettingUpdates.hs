@@ -32,16 +32,16 @@ data Update = Update
   , updateMessage           :: Maybe Message -- ^ New incoming message of any kind — text, photo, sticker, etc.
   , updateEditedMessage     :: Maybe Message -- ^ New version of a message that is known to the bot and was edited
   , updateChannelPost       :: Maybe Message -- ^ New incoming channel post of any kind — text, photo, sticker, etc.
-  , updateMessageReaction   :: Maybe MessageReactionUpdated -- ^ A reaction to a message was changed by a user. The bot must be an administrator in the chat and must explicitly specify "message_reaction" in the list of allowed_updates to receive these updates. The update isn't received for reactions set by bots.
-  , updateMessageReactionCount :: Maybe MessageReactionCountUpdated -- ^ Reactions to a message with anonymous reactions were changed. The bot must be an administrator in the chat and must explicitly specify "message_reaction_count" in the list of allowed_updates to receive these updates. The updates are grouped and can be sent with delay up to a few minutes.
-  , updateEditedChannelPost :: Maybe Message -- ^ New version of a channel post that is known to the bot and was edited
-
-  , updateInlineQuery       :: Maybe InlineQuery -- ^ New incoming inline query
-
+  , updateEditedChannelPost :: Maybe Message -- ^ New version of a channel post that is known to the bot and was edited.
+  , updateBusinessConnection :: Maybe BusinessConnection -- ^ The bot was connected to or disconnected from a business account, or a user edited an existing connection with the bot.
+  , updateBusinessMessage :: Maybe Message -- ^ New message from a connected business account.
+  , updateEditedBusinessMessage :: Maybe Message -- ^ New version of a message from a connected business account.
+  , updateDeletedBusinessMessages :: Maybe BusinessMessagesDeleted -- ^ Messages were deleted from a connected business account.
+  , updateMessageReaction :: Maybe MessageReactionUpdated -- ^ A reaction to a message was changed by a user. The bot must be an administrator in the chat and must explicitly specify @message_reaction@ in the list of /allowed_updates/ to receive these updates. The update isn't received for reactions set by bots.
+  , updateMessageReactionCount :: Maybe MessageReactionCountUpdated -- ^ Reactions to a message with anonymous reactions were changed. The bot must be an administrator in the chat and must explicitly specify @message_reaction_count@ in the list of /allowed_updates/ to receive these updates. The updates are grouped and can be sent with delay up to a few minutes.
+  , updateInlineQuery       :: Maybe InlineQuery -- ^ New incoming inline query.
   , updateChosenInlineResult :: Maybe ChosenInlineResult -- ^ The result of an inline query that was chosen by a user and sent to their chat partner. Please see our documentation on the feedback collecting for details on how to enable these updates for your bot.
-
-  , updateCallbackQuery     :: Maybe CallbackQuery -- ^ New incoming callback query
-
+  , updateCallbackQuery     :: Maybe CallbackQuery -- ^ New incoming callback query.
   , updateShippingQuery     :: Maybe ShippingQuery -- ^ New incoming shipping query. Only for invoices with flexible price
   , updatePreCheckoutQuery  :: Maybe PreCheckoutQuery -- ^ New incoming pre-checkout query. Contains full information about checkout
   , updatePoll              :: Maybe Poll -- ^ New poll state. Bots receive only updates about stopped polls and polls, which are sent by the bot.
@@ -108,11 +108,24 @@ data UpdateType
   | UpdateEditedMessage
   | UpdateChannelPost
   | UpdateEditedChannelPost
+  | UpdateBusinessConnection
+  | UpdateBusinessMessage
+  | UpdateEditedBusinessMessage
+  | UpdateDeletedBusinessMessages
+  | UpdateMessageReaction
+  | UpdateMessageReactionCount
   | UpdateInlineQuery
   | UpdateChosenInlineResult
   | UpdateCallbackQuery
   | UpdateShippingQuery
   | UpdatePreCheckoutQuery
+  | UpdatePoll
+  | UpdatePollAnswer
+  | UpdateMyChatMember
+  | UpdateChatMember
+  | UpdateChatJoinRequest
+  | UpdateChatBoost
+  | UpdateRemovedChatBoost
   deriving (Generic)
 
 instance ToJSON   UpdateType where toJSON = gtoJSON
