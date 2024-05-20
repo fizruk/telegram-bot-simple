@@ -34,9 +34,9 @@ where `<target>` could be `telegram-bot-simple` or `telegram-bot-api`
 
 ### Nix
 
-You can use a [Nix flake](https://nixos.wiki/wiki/Flakes) from this repo to get several development tools.
+You can use a [Nix flake](https://wiki.nixos.org/wiki/Flakes) from this repo to get several development tools.
 
-1. [Enable flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes).
+1. [Enable flakes](https://wiki.nixos.org/wiki/Flakes#Enable_flakes).
 
 2. Run `nix develop`. This command will make available `cabal`, `ghc`, and `haskell-language-server`.
 
