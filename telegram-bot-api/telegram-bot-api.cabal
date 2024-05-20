@@ -133,6 +133,7 @@ library
       Telegram.Bot.API.Types.CallbackQuery
       Telegram.Bot.API.Types.Chat
       Telegram.Bot.API.Types.ChatBoost
+      Telegram.Bot.API.Types.ChatBoostAdded
       Telegram.Bot.API.Types.ChatBoostRemoved
       Telegram.Bot.API.Types.ChatBoostSource
       Telegram.Bot.API.Types.ChatBoostUpdated

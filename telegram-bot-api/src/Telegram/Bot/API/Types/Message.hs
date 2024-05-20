@@ -10,6 +10,7 @@ import Telegram.Bot.API.Types.Animation
 import Telegram.Bot.API.Types.Audio
 import Telegram.Bot.API.Types.Document
 import {-# SOURCE #-} Telegram.Bot.API.Types.Chat
+import Telegram.Bot.API.Types.ChatBoostAdded
 import Telegram.Bot.API.Types.ChatShared
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.Contact
@@ -37,7 +38,7 @@ import Telegram.Bot.API.Types.PhotoSize
 import Telegram.Bot.API.Types.Poll
 import Telegram.Bot.API.Types.ProximityAlertTriggered
 import Telegram.Bot.API.Types.Sticker
-import Telegram.Bot.API.Types.Story
+import {-# SOURCE #-} Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
 import Telegram.Bot.API.Types.TextQuote
 import Telegram.Bot.API.Types.User
@@ -61,6 +62,7 @@ data Message = Message
   , messageMessageThreadId       :: Maybe MessageThreadId -- ^ Unique identifier of a message thread to which the message belongs; for supergroups only.
   , messageFrom                  :: Maybe User -- ^ Sender, empty for messages sent to channels.
   , messageSenderChat            :: Maybe Chat -- ^ Sender of the message, sent on behalf of a chat. For example, the channel itself for channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
+  , messageSenderBoostCount      :: Maybe Int -- ^ If the sender of the message boosted the chat, the number of boosts added by the user.
   , messageDate                  :: POSIXTime -- ^ Date the message was sent in Unix time.
   , messageChat                  :: Chat -- ^ Conversation the message belongs to.
   , messageForwardFrom           :: Maybe User -- ^ For forwarded messages, sender of the original message.
@@ -73,7 +75,8 @@ data Message = Message
   , messageIsAutomaticForward    :: Maybe Bool -- ^ 'True', if the message is a channel post that was automatically forwarded to the connected discussion group.
   , messageReplyToMessage        :: Maybe Message -- ^ For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
   , messageExternalReply         :: Maybe ExternalReplyInfo -- ^ Information about the message that is being replied to, which may come from another chat or forum topic.
-  , quote                        :: Maybe TextQuote -- ^ For replies that quote part of the original message, the quoted part of the message.
+  , messageQuote                 :: Maybe TextQuote -- ^ For replies that quote part of the original message, the quoted part of the message.
+  , messageReplyToStory          :: Maybe Story -- ^ For replies to a story, the original story.
   , messageViaBot                :: Maybe User -- ^ Bot through which the message was sent.
   , messageEditDate              :: Maybe POSIXTime -- ^ Date the message was last edited in Unix time
   , messageHasProtectedContent   :: Maybe Bool -- ^ 'True', if the message can't be forwarded.
@@ -122,6 +125,7 @@ data Message = Message
   , messageWriteAccessAllowed    :: Maybe WriteAccessAllowed -- ^ Service message: the user allowed the bot added to the attachment menu to write messages.
   , messagePassportData          :: Maybe PassportData -- ^ Telegram Passport data.
   , messageProximityAlertTriggered :: Maybe ProximityAlertTriggered -- ^ Service message. A user in the chat triggered another user's proximity alert while sharing Live Location.
+  , messageBoostAdded            :: Maybe ChatBoostAdded -- ^ Service message: user boosted the chat.
   , messageForumTopicCreated     :: Maybe ForumTopicCreated -- ^ Service message: forum topic created.
   , messageForumTopicEdited     :: Maybe ForumTopicEdited -- ^ Service message: forum topic edited.
   , messageForumTopicClosed     :: Maybe ForumTopicClosed -- ^ Service message: forum topic closed.

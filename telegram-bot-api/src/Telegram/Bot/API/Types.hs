@@ -26,6 +26,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.CallbackQuery
   , module Telegram.Bot.API.Types.Chat
   , module Telegram.Bot.API.Types.ChatBoost
+  , module Telegram.Bot.API.Types.ChatBoostAdded
   , module Telegram.Bot.API.Types.ChatBoostRemoved
   , module Telegram.Bot.API.Types.ChatBoostSource
   , module Telegram.Bot.API.Types.ChatBoostUpdated
@@ -135,6 +136,7 @@ import Telegram.Bot.API.Types.CallbackGame
 import Telegram.Bot.API.Types.CallbackQuery
 import Telegram.Bot.API.Types.Chat
 import Telegram.Bot.API.Types.ChatBoost
+import Telegram.Bot.API.Types.ChatBoostAdded
 import Telegram.Bot.API.Types.ChatBoostRemoved
 import Telegram.Bot.API.Types.ChatBoostSource
 import Telegram.Bot.API.Types.ChatBoostUpdated
