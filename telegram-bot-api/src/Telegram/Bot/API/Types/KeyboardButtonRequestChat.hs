@@ -20,6 +20,9 @@ data KeyboardButtonRequestChat = KeyboardButtonRequestChat
   , keyboardButtonRequestChatUserAdministratorRights :: Maybe ChatAdministratorRights -- ^ A JSON-serialized object listing the required administrator rights of the user in the chat. The rights must be a superset of @bot_administrator_rights@. If not specified, no additional restrictions are applied.
   , keyboardButtonRequestChatBotAdministratorRights :: Maybe ChatAdministratorRights -- ^ A JSON-serialized object listing the required administrator rights of the bot in the chat. The rights must be a subset of @user_administrator_rights@. If not specified, no additional restrictions are applied.
   , keyboardButtonRequestChatBotIsMember :: Maybe Bool -- ^ Pass 'True' to request a chat with the bot as a member. Otherwise, no additional restrictions are applied.
+  , keyboardButtonRequestChatRequestTitle :: Maybe Bool -- ^ Pass 'True' to request the chat's title.
+  , keyboardButtonRequestChatRequestUsername :: Maybe Bool -- ^ Pass 'True' to request the chat's username.
+  , keyboardButtonRequestChatRequestPhoto :: Maybe Bool -- ^ Pass 'True' to request the chat's photo.
   }
   deriving (Generic, Show)
 

@@ -35,7 +35,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendVideoNote'.
 data SendVideoNoteRequest = SendVideoNoteRequest
-  { sendVideoNoteChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendVideoNoteBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendVideoNoteChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendVideoNoteMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVideoNoteVideoNote :: InputFile -- ^ Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. More info on Sending Files ». Sending video notes by a URL is currently unsupported
   , sendVideoNoteDuration :: Maybe Int -- ^ Duration of sent video in seconds

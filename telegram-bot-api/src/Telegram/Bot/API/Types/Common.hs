@@ -79,6 +79,10 @@ newtype WebAppInfo = WebAppInfo { webAppInfoUrl :: Text }
 newtype CallbackQueryId = CallbackQueryId Text
   deriving (Eq, Show, Generic, ToJSON, FromJSON)
 
+-- | Unique identifier of the business connection.
+newtype BusinessConnectionId = BusinessConnectionId Text
+  deriving (Eq, Show, Generic, ToHttpApiData, ToJSON, FromJSON)
+
 -- | Unique identifier for the target chat
 -- or username of the target channel (in the format @\@channelusername@).
 data SomeChatId

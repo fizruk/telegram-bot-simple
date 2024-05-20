@@ -45,10 +45,11 @@ data StickerFile = StickerFile {stickerFileSticker :: InputFile, stickerFileLabe
 
 -- | Request parameters for 'sendSticker'.
 data SendStickerRequest = SendStickerRequest
-  { sendStickerChatId                   :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendStickerBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendStickerChatId                   :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendStickerMessageThreadId          :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendStickerEmoji                    :: Maybe Text -- ^ Emoji associated with the sticker; only for just uploaded stickers.
-  , sendStickerSticker                  :: InputFile -- ^ Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a .WEBP file from the Internet, or upload a new one using multipart/form-data.
+  , sendStickerSticker                  :: InputFile -- ^ Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a __.WEBP__ sticker from the Internet, or upload a new __.WEBP__, __.TGS__, or __.WEBM__ sticker using multipart\/form-data. More information on Sending Files ». Video and animated stickers can't be sent via an HTTP URL.
   , sendStickerDisableNotification      :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendStickerProtectContent           :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
   , sendStickerReplyToMessageId         :: Maybe MessageId -- ^	If the message is a reply, ID of the original message
@@ -147,7 +148,7 @@ type UploadStickerFileLink
   :> ReqBody '[JSON] UploadStickerFileRequest
   :> Post '[JSON] (Response File)
 
--- | Use this method to upload f file in .WEBP, .PNG, .TGS, or .WEBM format
+-- | Use this method to upload f file in __.WEBP__, __.PNG__, __.TGS__, or __.WEBM__ format
 --   with a sticker for later use in createNewStickerSet
 --   and addStickerToSet methods (can be used multiple times).
 --   Returns the uploaded File on success.
@@ -168,8 +169,7 @@ data CreateNewStickerSetRequest = CreateNewStickerSetRequest
   , createNewStickerSetName          :: T.Text -- ^ Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals). Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in “_by_<bot username>”. <bot_username> is case insensitive. 1-64 characters.
   , createNewStickerSetTitle         :: T.Text -- ^ Sticker set title, 1-64 characters
   , createNewStickerSetStickers      :: [InputSticker] -- ^ A JSON-serialized list of 1-50 initial stickers to be added to the sticker set.
-  , createNewStickerFormat           :: Text -- ^ Format of stickers in the set, must be one of “static”, “animated”, “video”.
-  , createNewStickerSetType             :: Maybe StickerSetType -- ^ Type of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. By default, a regular sticker set is created.
+  , createNewStickerSetStickerType   :: Maybe StickerSetType -- ^ Type of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. By default, a regular sticker set is created.
   , createNewStickerSetNeedsRepainting :: Maybe Bool -- ^ 'True' if stickers in the sticker set must be repainted to the color of text when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context; for custom emoji sticker sets only.
   } deriving Generic
 
@@ -182,9 +182,7 @@ type CreateNewStickerSet
 
 -- | Use this method to create a new sticker
 --   set owned by a user. The bot will be able
---   to edit the sticker set thus created. You
---   must use exactly one of the fields png_sticker or tgs_sticker.
---   Returns True on success.
+--   to edit the sticker set thus created. Returns 'True' on success.
 createNewStickerSet :: CreateNewStickerSetRequest -> ClientM (Response Bool)
 createNewStickerSet = client (Proxy @CreateNewStickerSet)
 
@@ -263,6 +261,7 @@ data SetStickerSetThumbnailRequest = SetStickerSetThumbnailRequest
   { setStickerSetThumbnailName   :: T.Text -- ^ Sticker set name
   , setStickerSetThumbnailUserId :: UserId -- ^ User identifier of the sticker set owner
   , setStickerSetThumbnailThumbnail  :: InputFile -- ^ A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size; see <https:\/\/core.telegram.org\/animated_stickers#technical-requirements> for animated sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated sticker set thumbnail can't be uploaded via HTTP URL.
+  , setStickerSetThumbnailFormat :: Text -- ^ Format of the thumbnail, must be one of “static” for a __.WEBP__ or __.PNG__ image, “animated” for a __.TGS__ animation, or “video” for a WEBM video.
   } deriving Generic
 
 instance ToJSON SetStickerSetThumbnailRequest where toJSON = gtoJSON

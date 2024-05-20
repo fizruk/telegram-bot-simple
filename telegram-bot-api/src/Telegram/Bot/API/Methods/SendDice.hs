@@ -20,7 +20,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendDice'.
 data SendDiceRequest = SendDiceRequest
-  { sendDiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendDiceBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendDiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendDiceMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendDiceEmoji :: Maybe Text -- ^ Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”. Dice can have values 1-6 for “🎲”, “🎯” and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults to “🎲”
   , sendDiceDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.

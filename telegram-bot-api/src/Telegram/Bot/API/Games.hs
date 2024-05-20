@@ -16,7 +16,8 @@ import Servant.Client hiding (Response)
 import Telegram.Bot.API.Internal.Utils (deriveJSON')
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types
-  ( ChatId, GameHighScore, InlineKeyboardMarkup, Message, MessageId, MessageThreadId
+  ( BusinessConnectionId, ChatId, GameHighScore, InlineKeyboardMarkup
+  , Message, MessageId, MessageThreadId
   , ReplyParameters, UserId
   )
 import Telegram.Bot.API.Internal.TH
@@ -26,7 +27,8 @@ import Telegram.Bot.API.Internal.TH
 -- ** 'SendGameRequest'
 
 data SendGameRequest = SendGameRequest
-  { sendGameChatId                   :: ChatId                     -- ^ Unique identifier for the target chat.
+  { sendGameBusinessConnectionId     :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendGameChatId                   :: ChatId                     -- ^ Unique identifier for the target chat.
   , sendGameMessageThreadId          :: Maybe MessageThreadId      -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendGameGameShortName            :: Text                       -- ^ Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
   , sendGameDisableNotification      :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.

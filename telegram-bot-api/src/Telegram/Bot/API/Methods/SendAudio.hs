@@ -37,7 +37,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendAudio'.
 data SendAudioRequest = SendAudioRequest
-  { sendAudioChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendAudioBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendAudioChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendAudioMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendAudioAudio :: InputFile -- ^ Audio to send. Pass a file_id as String to send an audio that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a audio from the Internet, or upload a new audio using multipart/form-data. More info on Sending Files »
   , sendAudioDuration :: Maybe Int -- ^ Duration of sent audio in seconds
