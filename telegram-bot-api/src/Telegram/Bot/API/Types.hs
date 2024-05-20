@@ -20,6 +20,8 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.BotDescription
   , module Telegram.Bot.API.Types.BotName
   , module Telegram.Bot.API.Types.BotShortDescription
+  , module Telegram.Bot.API.Types.BusinessConnection
+  , module Telegram.Bot.API.Types.BusinessMessagesDeleted
   , module Telegram.Bot.API.Types.CallbackGame
   , module Telegram.Bot.API.Types.CallbackQuery
   , module Telegram.Bot.API.Types.Chat
@@ -127,6 +129,8 @@ import Telegram.Bot.API.Types.BotCommandScope
 import Telegram.Bot.API.Types.BotDescription
 import Telegram.Bot.API.Types.BotName
 import Telegram.Bot.API.Types.BotShortDescription
+import Telegram.Bot.API.Types.BusinessConnection
+import Telegram.Bot.API.Types.BusinessMessagesDeleted
 import Telegram.Bot.API.Types.CallbackGame
 import Telegram.Bot.API.Types.CallbackQuery
 import Telegram.Bot.API.Types.Chat
