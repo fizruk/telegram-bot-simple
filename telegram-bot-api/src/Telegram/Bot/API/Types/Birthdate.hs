@@ -3,7 +3,8 @@
 module Telegram.Bot.API.Types.Birthdate where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
-import Data.Time.Calendar
+import Data.Time.Calendar.MonthDay (DayOfMonth, MonthOfYear)
+import Data.Time.Calendar.OrdinalDate (Year)
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Internal.Utils
