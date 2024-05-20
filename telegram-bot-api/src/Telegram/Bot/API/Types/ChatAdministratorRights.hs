@@ -18,12 +18,12 @@ data ChatAdministratorRights = ChatAdministratorRights
   , chatAdministratorRightsCanPromoteMembers   :: Bool -- ^ 'True', if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user).
   , chatAdministratorRightsCanChangeInfo       :: Bool -- ^ 'True', if the user is allowed to change the chat title, photo and other settings.
   , chatAdministratorRightsCanInviteUsers      :: Bool -- ^ 'True', if the user is allowed to invite new users to the chat.
+  , chatAdministratorRightsCanPostStories      :: Maybe Bool -- ^ 'True', if the administrator can post stories to the chat.
+  , chatAdministratorRightsCanEditStories      :: Maybe Bool -- ^ 'True', if the administrator can edit stories posted by other users, post stories to the chat page, pin chat stories, and access the chat's story archive.
+  , chatAdministratorRightsCanDeleteStories    :: Maybe Bool -- ^ 'True', if the administrator can delete stories posted by other users.
   , chatAdministratorRightsCanPostMessages     :: Maybe Bool -- ^ 'True', if the administrator can post in the channel; channels only.
   , chatAdministratorRightsCanEditMessages     :: Maybe Bool -- ^ 'True', if the administrator can edit messages of other users and can pin messages; channels only.
   , chatAdministratorRightsCanPinMessages      :: Maybe Bool -- ^ 'True', if the user is allowed to pin messages; groups and supergroups only
-  , chatAdministratorRightsCanPostStories      :: Maybe Bool -- ^ 'True', if the administrator can post stories in the channel; channels only.
-  , chatAdministratorRightsCanEditStories      :: Maybe Bool -- ^ 'True', if the administrator can edit stories posted by other users; channels only.
-  , chatAdministratorRightsCanDeleteStories    :: Maybe Bool -- ^ 'True', if the administrator can delete stories posted by other users; channels only.
   , chatAdministratorRightsCanManageTopics     :: Maybe Bool -- ^ 'True', if the user is allowed to create, rename, close, and reopen forum topics; supergroups only.
   }
   deriving (Generic, Show)

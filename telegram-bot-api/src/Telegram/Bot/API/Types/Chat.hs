@@ -46,6 +46,7 @@ data Chat = Chat
   , chatPinnedMessage    :: Maybe Message   -- ^ Pinned message, for supergroups. Returned only in getChat.
   , chatPermissions      :: Maybe ChatPermissions -- ^ Default chat member permissions, for groups and supergroups.
   , chatSlowModeDelay    :: Maybe Int       -- ^ For supergroups, the minimum allowed delay between consecutive messages sent by each unpriviledged user; in seconds.
+  , chatUnrestrictBootCount :: Maybe Int -- ^ For supergroups, the minimum number of boosts that a non-administrator user needs to add in order to ignore slow mode and chat permissions.
   , chatMessageAutoDeleteTime :: Maybe POSIXTime -- ^ The time after which all messages sent to the chat will be automatically deleted; in seconds.
   , chatHasAggressiveAntiSpamEnabled :: Maybe Bool -- ^ 'True', if aggressive anti-spam checks are enabled in the supergroup. The field is only available to chat administrators. Returned only in 'getChat'.
   , chatHasHiddenMembers :: Maybe Bool      -- ^ 'True', if non-administrators can only get the list of bots and administrators in the chat. Returned only in 'getChat'.
@@ -53,6 +54,7 @@ data Chat = Chat
   , chatHasVisibleHistory :: Maybe Bool     -- ^ 'True', if new chat members will have access to old messages; available only to chat administrators. Returned only in 'getChat'.
   , chatStickerSetName   :: Maybe Text      -- ^ For supergroups, name of group sticker set. Returned only in getChat.
   , chatCanSetStickerSet :: Maybe Bool      -- ^ True, if the bot can change the group sticker set. Returned only in `getChat`.
+  , chatCustomEmojiStickerSet :: Maybe Text -- ^ For supergroups, the name of the group's custom emoji sticker set. Custom emoji from this set can be used by all users and bots in the group.
   , chatLinkedChatId     :: Maybe ChatId    -- ^ Unique identifier for the linked chat, i.e. the discussion group identifier for a channel and vice versa; for supergroups and channel chats. This identifier may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
   , chatLocation         :: Maybe ChatLocation -- ^ For supergroups, the location to which the supergroup is connected. Returned only in getChat.
   }
