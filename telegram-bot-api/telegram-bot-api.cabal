@@ -234,10 +234,6 @@ library
   hs-source-dirs:
       src
   ghc-options: -Wall
-
-  if os(darwin)
-    ghc-options: -fllvm
-
   build-depends:
       aeson
     , aeson-pretty

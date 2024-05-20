@@ -46,10 +46,6 @@ library
   hs-source-dirs:
       src
   ghc-options: -Wall
-
-  if os(darwin)
-    ghc-options: -fllvm
-
   build-depends:
       aeson
     , aeson-pretty
@@ -88,10 +84,6 @@ executable example-echo-bot
   other-modules:
       Paths_telegram_bot_simple
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
-
-  if os(darwin)
-    ghc-options: -fllvm
-
   build-depends:
       aeson
     , aeson-pretty
@@ -134,10 +126,6 @@ executable example-echo-bot-webhook
   other-modules:
       Paths_telegram_bot_simple
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
-
-  if os(darwin)
-    ghc-options: -fllvm
-
   build-depends:
       aeson
     , aeson-pretty
@@ -180,10 +168,6 @@ executable example-game-bot
   other-modules:
       Paths_telegram_bot_simple
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
-
-  if os(darwin)
-    ghc-options: -fllvm
-
   build-depends:
       aeson
     , aeson-pretty
@@ -239,10 +223,6 @@ executable example-todo-bot
   other-modules:
       Paths_telegram_bot_simple
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
-
-  if os(darwin)
-    ghc-options: -fllvm
-
   build-depends:
       aeson
     , aeson-pretty

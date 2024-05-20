@@ -12,7 +12,7 @@ jobs:
       matrix:
         ghc: ["8.10.7", "9.0.2", "9.4", "9.6"]
         cabal: ["3.10.2.1"]
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest]
     name: build and test (cabal)
     steps:
       - uses: actions/checkout@v2
