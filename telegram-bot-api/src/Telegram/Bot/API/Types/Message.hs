@@ -8,13 +8,13 @@ import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Animation
 import Telegram.Bot.API.Types.Audio
-import Telegram.Bot.API.Types.Document
 import {-# SOURCE #-} Telegram.Bot.API.Types.Chat
 import Telegram.Bot.API.Types.ChatBoostAdded
 import Telegram.Bot.API.Types.ChatShared
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.Contact
 import Telegram.Bot.API.Types.Dice
+import Telegram.Bot.API.Types.Document
 import {-# SOURCE #-} Telegram.Bot.API.Types.ExternalReplyInfo
 import Telegram.Bot.API.Types.ForumTopicEdited
 import Telegram.Bot.API.Types.ForumTopicClosed
@@ -33,6 +33,7 @@ import Telegram.Bot.API.Types.LinkPreviewOptions
 import Telegram.Bot.API.Types.Location
 import Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
 import Telegram.Bot.API.Types.MessageEntity
+import {-# SOURCE #-} Telegram.Bot.API.Types.MessageOrigin
 import Telegram.Bot.API.Types.PassportData
 import Telegram.Bot.API.Types.PhotoSize
 import Telegram.Bot.API.Types.Poll
@@ -63,14 +64,11 @@ data Message = Message
   , messageFrom                  :: Maybe User -- ^ Sender, empty for messages sent to channels.
   , messageSenderChat            :: Maybe Chat -- ^ Sender of the message, sent on behalf of a chat. For example, the channel itself for channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
   , messageSenderBoostCount      :: Maybe Int -- ^ If the sender of the message boosted the chat, the number of boosts added by the user.
+  , messageSenderBusinessBot     :: Maybe User -- ^ The bot that actually sent the message on behalf of the business account. Available only for outgoing messages sent on behalf of the connected business account.
   , messageDate                  :: POSIXTime -- ^ Date the message was sent in Unix time.
+  , messageBusinessConnectionId  :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection from which the message was received. If non-empty, the message belongs to a chat of the corresponding business account that is independent from any potential bot chat which might share the same identifier.
   , messageChat                  :: Chat -- ^ Conversation the message belongs to.
-  , messageForwardFrom           :: Maybe User -- ^ For forwarded messages, sender of the original message.
-  , messageForwardFromChat       :: Maybe Chat -- ^ For messages forwarded from channels, information about the original channel.
-  , messageForwardFromMessageId  :: Maybe MessageId -- ^ For messages forwarded from channels, identifier of the original message in the channel.
-  , messageForwardSignature      :: Maybe Text -- ^ For messages forwarded from channels, signature of the post author if present.
-  , messageForwardSenderName     :: Maybe Text -- ^ Sender's name for messages forwarded from users who disallow adding a link to their account in forwarded messages.
-  , messageForwardDate           :: Maybe POSIXTime -- ^ For forwarded messages, date the original message was sent in Unix time
+  , messageForwardOrigin         :: Maybe MessageOrigin -- ^ Information about the original message for forwarded messages.
   , messageIsTopicMessage        :: Maybe Bool -- ^ 'True', if the message is sent to a forum topic.
   , messageIsAutomaticForward    :: Maybe Bool -- ^ 'True', if the message is a channel post that was automatically forwarded to the connected discussion group.
   , messageReplyToMessage        :: Maybe Message -- ^ For replies, the original message. Note that the Message object in this field will not contain further reply_to_message fields even if it itself is a reply.
@@ -80,6 +78,7 @@ data Message = Message
   , messageViaBot                :: Maybe User -- ^ Bot through which the message was sent.
   , messageEditDate              :: Maybe POSIXTime -- ^ Date the message was last edited in Unix time
   , messageHasProtectedContent   :: Maybe Bool -- ^ 'True', if the message can't be forwarded.
+  , messageIsFromOffline         :: Maybe Bool -- ^ 'True', if the message was sent by an implicit action, for example, as an away or a greeting business message, or as a scheduled message.
   , messageMediaGroupId          :: Maybe MediaGroupId -- ^ The unique identifier of a media message group this message belongs to
   , messageAuthorSignature       :: Maybe Text -- ^ Signature of the post author for messages in channels
   , messageText                  :: Maybe Text -- ^ For text messages, the actual UTF-8 text of the message, 0-4096 characters.

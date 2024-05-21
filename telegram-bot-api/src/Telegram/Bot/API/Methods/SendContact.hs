@@ -20,7 +20,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendContact'.
 data SendContactRequest = SendContactRequest
-  { sendContactChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendContactBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendContactChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendContactMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendContactPhoneNumber :: Text -- ^ Contact's phone number
   , sendContactFirstName  :: Text -- ^ Contact's first name

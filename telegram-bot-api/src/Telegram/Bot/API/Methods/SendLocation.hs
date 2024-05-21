@@ -19,7 +19,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendLocation'.
 data SendLocationRequest = SendLocationRequest
-  { sendLocationChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendLocationBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendLocationChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendLocationMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendLocationLatitude :: Float -- ^ Latitude of new location
   , sendLocationLongitude :: Float -- ^ Longitude of new location

@@ -19,7 +19,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendMediaGroup'.
 data SendMediaGroupRequest = SendMediaGroupRequest
-  { sendMediaGroupChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendMediaGroupBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendMediaGroupChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendMediaGroupMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendMediaGroupMedia :: [InputMedia] -- ^ A JSON-serialized array describing messages to be sent, must include 2-10 items. InputMediaAudio, InputMediaDocument, InputMediaPhoto or InputMediaVideo.
   , sendMediaGroupDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.

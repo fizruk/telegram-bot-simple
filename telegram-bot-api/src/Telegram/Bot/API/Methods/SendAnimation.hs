@@ -37,7 +37,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendAnimation'.
 data SendAnimationRequest = SendAnimationRequest
-  { sendAnimationChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendAnimationBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendAnimationChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
   , sendAnimationMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendAnimationAnimation :: InputFile -- ^ Animation to send. Pass a file_id as String to send an animation that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an animation from the Internet, or upload a new animation using multipart/form-data. More info on Sending Files »
   , sendAnimationDuration :: Maybe Int -- ^ Duration of sent animation in seconds

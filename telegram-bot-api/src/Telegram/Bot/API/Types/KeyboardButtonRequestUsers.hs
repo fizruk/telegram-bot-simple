@@ -17,6 +17,9 @@ data KeyboardButtonRequestUsers = KeyboardButtonRequestUsers
   , keyboardButtonRequestUsersUserIsBot :: Maybe Bool -- ^ Pass 'True' to request a bot, pass 'False' to request a regular user. If not specified, no additional restrictions are applied.
   , keyboardButtonRequestUsersUserIsPremium :: Maybe Bool -- ^ Pass 'True' to request a premium user, pass 'False' to request a non-premium user. If not specified, no additional restrictions are applied.
   , keyboardButtonRequestUsersMaxQuantity :: Maybe Int -- ^ The maximum number of users to be selected; 1-10. Defaults to 1.
+  , keyboardButtonRequestUsersRequestName :: Maybe Bool -- ^ Pass 'True' to request the users' first and last names.
+  , keyboardButtonRequestUsersRequestUsername :: Maybe Bool -- ^ Pass 'True' to request the users' usernames.
+  , keyboardButtonRequestUsersRequestPhoto :: Maybe Bool -- ^ Pass 'True' to request the users' photos.
   }
   deriving (Generic, Show)
 

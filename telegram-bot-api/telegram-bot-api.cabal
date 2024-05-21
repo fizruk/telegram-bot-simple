@@ -57,6 +57,7 @@ library
       Telegram.Bot.API.Methods.ExportChatInviteLink
       Telegram.Bot.API.Methods.ForwardMessage
       Telegram.Bot.API.Methods.ForwardMessages
+      Telegram.Bot.API.Methods.GetBusinessConnection
       Telegram.Bot.API.Methods.GetChat
       Telegram.Bot.API.Methods.GetChatAdministrators
       Telegram.Bot.API.Methods.GetChatMember
@@ -122,13 +123,18 @@ library
       -- Types
       Telegram.Bot.API.Types.Animation
       Telegram.Bot.API.Types.Audio
+      Telegram.Bot.API.Types.Birthdate
       Telegram.Bot.API.Types.BotCommand
       Telegram.Bot.API.Types.BotCommandScope
       Telegram.Bot.API.Types.BotDescription
       Telegram.Bot.API.Types.BotName
       Telegram.Bot.API.Types.BotShortDescription
       Telegram.Bot.API.Types.BusinessConnection
+      Telegram.Bot.API.Types.BusinessIntro
       Telegram.Bot.API.Types.BusinessMessagesDeleted
+      Telegram.Bot.API.Types.BusinessLocation
+      Telegram.Bot.API.Types.BusinessOpeningHours
+      Telegram.Bot.API.Types.BusinessOpeningHoursInterval
       Telegram.Bot.API.Types.CallbackGame
       Telegram.Bot.API.Types.CallbackQuery
       Telegram.Bot.API.Types.Chat
@@ -206,6 +212,7 @@ library
       Telegram.Bot.API.Types.ReplyKeyboardRemove
       Telegram.Bot.API.Types.ReplyParameters
       Telegram.Bot.API.Types.ResponseParameters
+      Telegram.Bot.API.Types.SharedUser
       Telegram.Bot.API.Types.ShippingAddress
       Telegram.Bot.API.Types.ShippingOption
       Telegram.Bot.API.Types.ShippingQuery
@@ -240,7 +247,7 @@ library
   build-depends:
       aeson
     , aeson-pretty
-    , base >=4.9 && <5
+    , base >=4.16 && <5
     , bytestring
     , cron >=0.7.0
     , filepath

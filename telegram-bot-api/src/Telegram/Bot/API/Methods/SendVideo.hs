@@ -37,7 +37,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendVideo'.
 data SendVideoRequest = SendVideoRequest
-  { sendVideoChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+  { sendVideoBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendVideoChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
   , sendVideoMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVideoVideo :: InputFile -- ^ Video to send. Pass a file_id as String to send an video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. More info on Sending Files »
   , sendVideoDuration :: Maybe Int -- ^ Duration of sent video in seconds

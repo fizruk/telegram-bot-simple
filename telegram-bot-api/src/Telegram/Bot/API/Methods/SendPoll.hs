@@ -21,7 +21,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendPoll'.
 data SendPollRequest = SendPollRequest
-  { sendPollChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendPollBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendPollChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendPollMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendPollQuestion :: Text -- ^ Poll question, 1-300 characters
   , sendPollOptions :: [Text] -- ^ A JSON-serialized list of answer options, 2-10 strings 1-100 characters each

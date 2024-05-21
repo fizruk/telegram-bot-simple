@@ -10,8 +10,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        ghc: ["8.10.7", "9.0.2", "9.4", "9.6"]
-        cabal: ["3.10.2.1"]
+        ghc: ["9.2", "9.4", "9.6", "9.8", "9.10"]
+        cabal: ["3.10.3.0"]
         os: [ubuntu-latest]
     name: build and test (cabal)
     steps:

@@ -1,3 +1,39 @@
 packages:
   telegram-bot-api/
   telegram-bot-simple/
+
+
+allow-newer: deepseq:base
+allow-newer: vault:base
+allow-newer: array:base
+allow-newer: wai-app-static:wai
+allow-newer: http2:containers
+allow-newer: servant-server:warp
+allow-newer: servant-server:wai-app-static
+allow-newer: servant-server:http-types
+allow-newer: servant-server:either
+allow-newer: servant-server:base
+allow-newer: servant-client-core:base
+allow-newer: servant-client-core:containers
+allow-newer: servant-client-core:template-haskell
+allow-newer: servant-multipart-client:servant-server
+allow-newer: servant-multipart:servant-server
+allow-newer: servant-server:containers
+allow-newer: servant-server:base-compat
+allow-newer: servant-docs:base-compat
+allow-newer: servant-docs:base
+allow-newer: servant-client:base
+allow-newer: servant-client:containers
+allow-newer: servant:base
+allow-newer: servant-foreign:base
+allow-newer: singleton-bool:base
+allow-newer: http-api-data:base
+allow-newer: http-api-data:containers
+allow-newer: uuid-types:template-haskell
+allow-newer: dhall:containers
+allow-newer: dhall:template-haskell
+allow-newer: repline:containers
+allow-newer: haskeline:base
+allow-newer: serialise:base
+allow-newer: cborg:base
+allow-newer: cborg-json:base

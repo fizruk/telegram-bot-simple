@@ -32,6 +32,7 @@ module Telegram.Bot.API.Methods
   , module Telegram.Bot.API.Methods.ExportChatInviteLink
   , module Telegram.Bot.API.Methods.ForwardMessage
   , module Telegram.Bot.API.Methods.ForwardMessages
+  , module Telegram.Bot.API.Methods.GetBusinessConnection
   , module Telegram.Bot.API.Methods.GetChat
   , module Telegram.Bot.API.Methods.GetChatAdministrators
   , module Telegram.Bot.API.Methods.GetChatMember
@@ -116,6 +117,7 @@ import Telegram.Bot.API.Methods.EditMessageLiveLocation
 import Telegram.Bot.API.Methods.ExportChatInviteLink
 import Telegram.Bot.API.Methods.ForwardMessage
 import Telegram.Bot.API.Methods.ForwardMessages
+import Telegram.Bot.API.Methods.GetBusinessConnection
 import Telegram.Bot.API.Methods.GetChat
 import Telegram.Bot.API.Methods.GetChatAdministrators
 import Telegram.Bot.API.Methods.GetChatMember

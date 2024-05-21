@@ -37,7 +37,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendVoice'.
 data SendVoiceRequest = SendVoiceRequest
-  { sendVoiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendVoiceBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendVoiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendVoiceMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVoiceVoice :: InputFile -- ^ Audio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More info on Sending Files »
   , sendVoiceCaption :: Maybe Text -- ^ Voice message caption, 0-1024 characters after entities parsing

@@ -2,7 +2,6 @@
 module Telegram.Bot.API.Types.BusinessMessagesDeleted where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
-import Data.Text (Text)
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Chat
@@ -13,7 +12,7 @@ import Telegram.Bot.API.Internal.Utils
 
 -- | This object is received when messages are deleted from a connected business account.
 data BusinessMessagesDeleted = BusinessMessagesDeleted
-  { businessMessagesDeletedBusinessConnectionId :: Text -- ^ Unique identifier of the business connection.
+  { businessMessagesDeletedBusinessConnectionId :: BusinessConnectionId -- ^ Unique identifier of the business connection.
   , businessMessagesDeletedChat :: Chat -- ^ Information about a chat in the business account. The bot may not have access to the chat or the corresponding user.
   , businessMessagesDeletedMessageIds :: [MessageId] -- ^ The list of identifiers of deleted messages in the chat of the business account.
   }

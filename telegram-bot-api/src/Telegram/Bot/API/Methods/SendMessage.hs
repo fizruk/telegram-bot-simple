@@ -30,7 +30,8 @@ sendMessage = client (Proxy @SendMessage)
 
 -- | Request parameters for 'sendMessage'.
 data SendMessageRequest = SendMessageRequest
-  { sendMessageChatId                :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
+  { sendMessageBusinessConnectionId  :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendMessageChatId                :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
   , sendMessageMessageThreadId       :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendMessageText                  :: Text -- ^ Text of the message to be sent.
   , sendMessageParseMode             :: Maybe ParseMode -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.

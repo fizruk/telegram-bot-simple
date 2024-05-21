@@ -18,10 +18,15 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.BotCommand
   , module Telegram.Bot.API.Types.BotCommandScope
   , module Telegram.Bot.API.Types.BotDescription
+  , module Telegram.Bot.API.Types.Birthdate
   , module Telegram.Bot.API.Types.BotName
   , module Telegram.Bot.API.Types.BotShortDescription
   , module Telegram.Bot.API.Types.BusinessConnection
+  , module Telegram.Bot.API.Types.BusinessIntro
   , module Telegram.Bot.API.Types.BusinessMessagesDeleted
+  , module Telegram.Bot.API.Types.BusinessLocation
+  , module Telegram.Bot.API.Types.BusinessOpeningHours
+  , module Telegram.Bot.API.Types.BusinessOpeningHoursInterval
   , module Telegram.Bot.API.Types.CallbackGame
   , module Telegram.Bot.API.Types.CallbackQuery
   , module Telegram.Bot.API.Types.Chat
@@ -98,6 +103,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.ReplyKeyboardRemove
   , module Telegram.Bot.API.Types.ReplyParameters
   , module Telegram.Bot.API.Types.ResponseParameters
+  , module Telegram.Bot.API.Types.SharedUser
   , module Telegram.Bot.API.Types.ShippingAddress
   , module Telegram.Bot.API.Types.ShippingOption
   , module Telegram.Bot.API.Types.ShippingQuery
@@ -128,10 +134,15 @@ import Telegram.Bot.API.Types.Audio
 import Telegram.Bot.API.Types.BotCommand
 import Telegram.Bot.API.Types.BotCommandScope
 import Telegram.Bot.API.Types.BotDescription
+import Telegram.Bot.API.Types.Birthdate
 import Telegram.Bot.API.Types.BotName
 import Telegram.Bot.API.Types.BotShortDescription
 import Telegram.Bot.API.Types.BusinessConnection
+import Telegram.Bot.API.Types.BusinessIntro
 import Telegram.Bot.API.Types.BusinessMessagesDeleted
+import Telegram.Bot.API.Types.BusinessLocation
+import Telegram.Bot.API.Types.BusinessOpeningHours
+import Telegram.Bot.API.Types.BusinessOpeningHoursInterval
 import Telegram.Bot.API.Types.CallbackGame
 import Telegram.Bot.API.Types.CallbackQuery
 import Telegram.Bot.API.Types.Chat
@@ -208,6 +219,7 @@ import Telegram.Bot.API.Types.ReplyKeyboardMarkup
 import Telegram.Bot.API.Types.ReplyKeyboardRemove
 import Telegram.Bot.API.Types.ReplyParameters
 import Telegram.Bot.API.Types.ResponseParameters
+import Telegram.Bot.API.Types.SharedUser
 import Telegram.Bot.API.Types.ShippingAddress
 import Telegram.Bot.API.Types.ShippingOption
 import Telegram.Bot.API.Types.ShippingQuery

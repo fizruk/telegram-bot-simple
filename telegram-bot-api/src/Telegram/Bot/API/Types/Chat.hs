@@ -6,6 +6,10 @@ import Data.Time.Clock.POSIX (POSIXTime)
 import Data.Text (Text)
 import GHC.Generics (Generic)
 
+import Telegram.Bot.API.Types.Birthdate
+import Telegram.Bot.API.Types.BusinessIntro
+import Telegram.Bot.API.Types.BusinessLocation
+import Telegram.Bot.API.Types.BusinessOpeningHours
 import Telegram.Bot.API.Types.ChatLocation
 import Telegram.Bot.API.Types.ChatPhoto
 import Telegram.Bot.API.Types.ChatPermissions
@@ -21,16 +25,23 @@ import Telegram.Bot.API.Internal.Utils
 -- <https://core.telegram.org/bots/api#chat>
 data Chat = Chat
   { chatId               :: ChatId          -- ^ Unique identifier for this chat. This number may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
+  , chatIsBot            :: Maybe Bool      -- ^ 'True', if this user is a bot.
   , chatType             :: ChatType        -- ^ Type of chat.
   , chatTitle            :: Maybe Text      -- ^ Title, for supergroups, channels and group chats
   , chatUsername         :: Maybe Text      -- ^ Username, for private chats, supergroups and channels if available
   , chatFirstName        :: Maybe Text      -- ^ First name of the other party in a private chat
   , chatLastName         :: Maybe Text      -- ^ Last name of the other party in a private chat
   , chatIsForum          :: Maybe Bool      -- ^ 'True', if the supergroup chat is a forum (has topics enabled).
+  , chatAccentColorId    :: Maybe Int -- ^ Identifier of the accent color for the chat name and backgrounds of the chat photo, reply header, and link preview. See [accent colors](https://core.telegram.org/bots/api#accent-colors) for more details. Returned only in 'getChat'. Always returned in 'getChat'.
+  , chatMaxReactionCount :: Int -- ^ The maximum number of reactions that can be set on a message in the chat.
   , chatPhoto            :: Maybe ChatPhoto -- ^ Chat photo. Returned only in getChat.
   , chatActiveUsernames  :: Maybe Text      -- ^ If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in 'getChat'.
+  , chatBirthdate        :: Maybe Birthdate -- ^ For private chats, the date of birth of the user.
+  , chatBusinessIntro    :: Maybe BusinessIntro -- ^ For private chats with business accounts, the intro of the business.
+  , chatBusinessLocation :: Maybe BusinessLocation -- ^ For private chats with business accounts, the location of the business.
+  , chatBusinessOpeningHours :: Maybe BusinessOpeningHours -- ^ For private chats with business accounts, the opening hours of the business.
+  , chatPersonalChat     :: Maybe Chat -- ^ For private chats, the personal channel of the user. 
   , chatAvailableReactions :: Maybe [ReactionType] -- ^ List of available reactions allowed in the chat. If omitted, then all emoji reactions are allowed. Returned only in 'getChat'.
-  , chatAccentColorId    :: Maybe Int -- ^ Identifier of the accent color for the chat name and backgrounds of the chat photo, reply header, and link preview. See [accent colors](https://core.telegram.org/bots/api#accent-colors) for more details. Returned only in 'getChat'. Always returned in 'getChat'.
   , chatBackgroundCustomEmojiId :: Maybe Text -- ^ Custom emoji identifier of emoji chosen by the chat for the reply header and link preview background. Returned only in 'getChat'.
   , chatProfileAccentColorId :: Maybe Int -- ^ Identifier of the accent color for the chat's profile background. See [profile accent colors](https://core.telegram.org/bots/api#profile-accent-colors) for more details. Returned only in getChat.
   , chatProfileBackgroundCustomEmojiId :: Maybe Text -- ^ Custom emoji identifier of the emoji chosen by the chat for its profile background. Returned only in 'getChat'.

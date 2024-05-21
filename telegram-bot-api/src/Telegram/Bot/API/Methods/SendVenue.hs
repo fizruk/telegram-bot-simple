@@ -20,7 +20,8 @@ import Telegram.Bot.API.Internal.TH
 
 -- | Request parameters for 'sendVenue'.
 data SendVenueRequest = SendVenueRequest
-  { sendVenueChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
+  { sendVenueBusinessConnectionId :: Maybe BusinessConnectionId -- ^ Unique identifier of the business connection on behalf of which the message will be sent.
+  , sendVenueChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendVenueMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVenueLatitude :: Float -- ^ Latitude of the venue
   , sendVenueLongitude :: Float -- ^ Longitude of the venue
