@@ -247,7 +247,7 @@ library
   build-depends:
       aeson
     , aeson-pretty
-    , base >=4.9 && <5
+    , base >=4.16 && <5
     , bytestring
     , cron >=0.7.0
     , filepath
