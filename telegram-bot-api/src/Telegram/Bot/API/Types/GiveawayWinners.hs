@@ -7,7 +7,7 @@ import Data.Time.Clock.POSIX (POSIXTime)
 import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Internal.Utils
-import {-# SOURCE #-} Telegram.Bot.API.Types.Chat
+import Telegram.Bot.API.Types.Chat
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.User
 
