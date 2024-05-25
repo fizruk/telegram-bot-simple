@@ -50,5 +50,6 @@ You can use a [Nix flake](https://wiki.nixos.org/wiki/Flakes) from this repo to 
 | 0.11.1  | 6.5.1  |
 | 0.12 | 6.7.1 |
 | 0.13 | 7.0 | 
+| 0.14 | 7.3 | 
 
 _Nick_

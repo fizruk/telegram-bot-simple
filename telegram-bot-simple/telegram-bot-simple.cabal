@@ -1,7 +1,7 @@
 cabal-version: 1.12
 
 name:           telegram-bot-simple
-version:        0.13
+version:        0.14
 synopsis:       Easy to use library for building Telegram bots.
 description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
 category:       Web
@@ -70,7 +70,7 @@ library
     , split
     , stm
     , template-haskell
-    , telegram-bot-api
+    , telegram-bot-api >= 7.3
     , text
     , time
     , transformers
@@ -117,7 +117,7 @@ executable example-echo-bot
   if flag(examples)
     build-depends:
         telegram-bot-simple
-      , telegram-bot-api
+      , telegram-bot-api >= 7.3
   else
     buildable: False
 
@@ -159,7 +159,7 @@ executable example-echo-bot-webhook
   if flag(examples)
     build-depends:
         telegram-bot-simple
-      , telegram-bot-api
+      , telegram-bot-api >= 7.3
   else
     buildable: False
 
@@ -212,7 +212,7 @@ executable example-game-bot
       , servant-server
       , signal
       , telegram-bot-simple
-      , telegram-bot-api
+      , telegram-bot-api >= 7.3
       , uuid
       , warp
   else
@@ -256,6 +256,6 @@ executable example-todo-bot
   if flag(examples)
     build-depends:
         telegram-bot-simple
-      , telegram-bot-api
+      , telegram-bot-api >= 7.3
   else
     buildable: False

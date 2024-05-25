@@ -1,5 +1,41 @@
 # telegram-bot-api
 
+## 7.3 -- 2024-05-25
+
+- Drop support GHC 8.10, 9.0, add support GHC 9.8, 9.10 (see [#182](https://github.com/fizruk/telegram-bot-simple/pull/182)).
+- Fix missing `blockquote` MessageEntityType (see [#184](https://github.com/fizruk/telegram-bot-simple/pull/184)).
+
+### Bot API 7.1 support
+
+See [#181](https://github.com/fizruk/telegram-bot-simple/pull/181).
+
+- Add `ChatBoostAdded` type.
+- Modify existing types: `Chat`, `ChatAdministratorRights`, `Message`, `Story`.
+
+### Bot API 7.2 support
+
+See [#182](https://github.com/fizruk/telegram-bot-simple/pull/182).
+
+- Add new types:
+  - `Birthdate`, `BusinessIntro`, `BusinessLocation`, `BusinessOpeningHours`, `BusinessOpeningHoursInterval`, `SharedUser`.
+- Modify existing types: `BusinessConnection`, `BusinessMessageDeleted`, `Chat`, `ChatShared`, `KeyboardButtonRequestChat`, `KeyboardButtonRequestUser`, `Message`, `InputSticker`, `UsersShared`.
+- Add new methods: 
+  - `GetBusinessConnection`.
+- Modify existing methods (with business connection identifier mostly):
+  - `sendGameRequest`, `sendAnimation`, `sendAudio`, `sendChatAction`, `sendContact`, `sendDice`, `sendDocument`, `sendLocation`, `sendMediaGroup`, `sendMessage`, `sendPhoto`, `sendPoll`, `sendVenue`, `sendVideo`, `sendVideoNote`, `sendVoice`, `sendSticker`.
+
+### Bot API 7.3 support
+
+See [#183](https://github.com/fizruk/telegram-bot-simple/pull/183).
+
+- Add new types:
+  - `BackgroundType`, `BackgroundFill`, `ChatBackground`, `InputPollOption`.
+- `Chat` type split into `Chat`, `ChatType` and `ChatFullInfo` (most of `Chat` fields were moved there).
+- Modify existing types: 
+  - `ChatMemberUpdated`, `GiveawayWinners`, `InlineKeyboardButton`, `Message`, `Poll`, `PollOption`.
+- Modify existing methods:
+  - `editMessageLiveLocation`, `getChat`, `sendPoll`.
+
 ## 7.0 -- 2024-02-06
 
 - Support GHC 9.6 (see [#163](https://github.com/fizruk/telegram-bot-simple/pull/163)).

@@ -1,8 +1,15 @@
+0.14 -- 2024-05-25
+---
+
+- Drop support GHC 8.10, 9.0, add support GHC 9.8, 9.10 (see [#182](https://github.com/fizruk/telegram-bot-simple/pull/182)).
+- Support `telegram-bot-api == 7.3`.
+- Ignore updates that produces parsing errors (see [#175](https://github.com/fizruk/telegram-bot-simple/pull/175)).
+
 0.13 -- 2024-02-06
 ---
 
 - Support GHC 9.6 (see [#163](https://github.com/fizruk/telegram-bot-simple/pull/163)).
-- Support `telegram-bot-api == 0.7`.
+- Support `telegram-bot-api == 7.0`.
 - Fix bot hanging via rethrowing exceptions (see [#170](https://github.com/fizruk/telegram-bot-simple/pull/170)).
 
 
@@ -12,7 +19,7 @@
 - Add support for testing WebApps (see [#148](https://github.com/fizruk/telegram-bot-simple/pull/148));
 - Add nix flake (see [#149](https://github.com/fizruk/telegram-bot-simple/pull/149));
 - Improve documentation for `callbackQueryDataRead` (see [#153](https://github.com/fizruk/telegram-bot-simple/pull/153));
-- Support `telegram-bot-api == 0.6.7` (breaking changes included).
+- Support `telegram-bot-api == 6.7` (breaking changes included).
 
 - **Migration guide**:
 
