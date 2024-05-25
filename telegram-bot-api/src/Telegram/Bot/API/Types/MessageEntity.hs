@@ -37,13 +37,14 @@ data MessageEntityType
   | MessageEntityItalic
   | MessageEntityUnderline -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_underline.html>
   | MessageEntityStrikethrough -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_strikethrough.html>
+  | MessageEntitySpoiler
+  | MessageEntityBlockquote
   | MessageEntityCode
   | MessageEntityPre
   | MessageEntityTextLink
   | MessageEntityTextMention
   | MessageEntityCashtag -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_cashtag.html>.
   | MessageEntityPhoneNumber -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_phone_number.html>.
-  | MessageEntitySpoiler
   | MessageEntityCustomEmoji
   deriving (Eq, Show, Generic)
 
