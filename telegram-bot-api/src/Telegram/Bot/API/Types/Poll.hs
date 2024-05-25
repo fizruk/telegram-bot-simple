@@ -17,8 +17,9 @@ import Telegram.Bot.API.Internal.Utils
 data Poll = Poll
   { pollId                    :: PollId                -- ^ Unique poll identifier.
   , pollQuestion              :: Text                  -- ^ Poll question, 1-300 characters.
+  , pollQuestionEntities      :: Maybe [MessageEntity] -- ^ Special entities that appear in the @question@. Currently, only custom emoji entities are allowed in poll questions.
   , pollOptions               :: [PollOption]          -- ^ List of poll options.
-  , pollTotalVoterCount       :: Int                 -- ^ Total number of users that voted in the poll.
+  , pollTotalVoterCount       :: Int                   -- ^ Total number of users that voted in the poll.
   , pollIsClosed              :: Bool                  -- ^ 'True', if the poll is closed.
   , pollIsAnonymous           :: Bool                  -- ^ 'True', if the poll is anonymous.
   , pollType                  :: PollType              -- ^ Poll type, currently can be “regular” or “quiz”.

@@ -8,14 +8,15 @@ import GHC.Generics (Generic)
 
 import Telegram.Bot.API.Types.Animation
 import Telegram.Bot.API.Types.Audio
-import {-# SOURCE #-} Telegram.Bot.API.Types.Chat
+import Telegram.Bot.API.Types.Chat
+import Telegram.Bot.API.Types.ChatBackground
 import Telegram.Bot.API.Types.ChatBoostAdded
 import Telegram.Bot.API.Types.ChatShared
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.Contact
 import Telegram.Bot.API.Types.Dice
 import Telegram.Bot.API.Types.Document
-import {-# SOURCE #-} Telegram.Bot.API.Types.ExternalReplyInfo
+import Telegram.Bot.API.Types.ExternalReplyInfo
 import Telegram.Bot.API.Types.ForumTopicEdited
 import Telegram.Bot.API.Types.ForumTopicClosed
 import Telegram.Bot.API.Types.ForumTopicCreated
@@ -23,23 +24,23 @@ import Telegram.Bot.API.Types.ForumTopicReopened
 import Telegram.Bot.API.Types.Game
 import Telegram.Bot.API.Types.GeneralForumTopicHidden
 import Telegram.Bot.API.Types.GeneralForumTopicUnhidden
-import {-# SOURCE #-} Telegram.Bot.API.Types.Giveaway
+import Telegram.Bot.API.Types.Giveaway
 import {-# SOURCE #-} Telegram.Bot.API.Types.GiveawayCompleted
 import Telegram.Bot.API.Types.GiveawayCreated
-import {-# SOURCE #-} Telegram.Bot.API.Types.GiveawayWinners
+import Telegram.Bot.API.Types.GiveawayWinners
 import Telegram.Bot.API.Types.InlineKeyboardMarkup
 import Telegram.Bot.API.Types.Invoice
 import Telegram.Bot.API.Types.LinkPreviewOptions
 import Telegram.Bot.API.Types.Location
 import Telegram.Bot.API.Types.MessageAutoDeleteTimerChanged
 import Telegram.Bot.API.Types.MessageEntity
-import {-# SOURCE #-} Telegram.Bot.API.Types.MessageOrigin
+import Telegram.Bot.API.Types.MessageOrigin
 import Telegram.Bot.API.Types.PassportData
 import Telegram.Bot.API.Types.PhotoSize
 import Telegram.Bot.API.Types.Poll
 import Telegram.Bot.API.Types.ProximityAlertTriggered
 import Telegram.Bot.API.Types.Sticker
-import {-# SOURCE #-} Telegram.Bot.API.Types.Story
+import Telegram.Bot.API.Types.Story
 import Telegram.Bot.API.Types.SuccessfulPayment
 import Telegram.Bot.API.Types.TextQuote
 import Telegram.Bot.API.Types.User
@@ -125,6 +126,7 @@ data Message = Message
   , messagePassportData          :: Maybe PassportData -- ^ Telegram Passport data.
   , messageProximityAlertTriggered :: Maybe ProximityAlertTriggered -- ^ Service message. A user in the chat triggered another user's proximity alert while sharing Live Location.
   , messageBoostAdded            :: Maybe ChatBoostAdded -- ^ Service message: user boosted the chat.
+  , messageChatBackgroundSet     :: Maybe ChatBackground -- ^ Service message: chat background set.
   , messageForumTopicCreated     :: Maybe ForumTopicCreated -- ^ Service message: forum topic created.
   , messageForumTopicEdited     :: Maybe ForumTopicEdited -- ^ Service message: forum topic edited.
   , messageForumTopicClosed     :: Maybe ForumTopicClosed -- ^ Service message: forum topic closed.

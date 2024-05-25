@@ -14,7 +14,7 @@ import Telegram.Bot.API.Types
 
 type GetChat = "getChat"
   :> RequiredQueryParam "chat_id" SomeChatId
-  :> Post '[JSON] (Response Chat)
+  :> Post '[JSON] (Response ChatFullInfo)
 
 -- | Use this method to get up to date information
 --   about the chat (current name of the user for
@@ -22,5 +22,5 @@ type GetChat = "getChat"
 --   a user, group or channel, etc.).
 --   Returns a Chat object on success.
 getChat :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
-  -> ClientM (Response Chat)
+  -> ClientM (Response ChatFullInfo)
 getChat = client (Proxy @GetChat)

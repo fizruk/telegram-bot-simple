@@ -30,12 +30,13 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.CallbackGame
   , module Telegram.Bot.API.Types.CallbackQuery
   , module Telegram.Bot.API.Types.Chat
+  , module Telegram.Bot.API.Types.ChatAdministratorRights
   , module Telegram.Bot.API.Types.ChatBoost
   , module Telegram.Bot.API.Types.ChatBoostAdded
   , module Telegram.Bot.API.Types.ChatBoostRemoved
   , module Telegram.Bot.API.Types.ChatBoostSource
   , module Telegram.Bot.API.Types.ChatBoostUpdated
-  , module Telegram.Bot.API.Types.ChatAdministratorRights
+  , module Telegram.Bot.API.Types.ChatFullInfo
   , module Telegram.Bot.API.Types.ChatInviteLink
   , module Telegram.Bot.API.Types.ChatJoinRequest
   , module Telegram.Bot.API.Types.ChatLocation
@@ -44,6 +45,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.ChatPermissions
   , module Telegram.Bot.API.Types.ChatPhoto
   , module Telegram.Bot.API.Types.ChatShared
+  , module Telegram.Bot.API.Types.ChatType
   , module Telegram.Bot.API.Types.Common
   , module Telegram.Bot.API.Types.Contact
   , module Telegram.Bot.API.Types.CopyMessageId
@@ -70,6 +72,7 @@ module Telegram.Bot.API.Types
   , module Telegram.Bot.API.Types.InlineKeyboardButton
   , module Telegram.Bot.API.Types.InlineKeyboardMarkup
   , module Telegram.Bot.API.Types.InputMedia
+  , module Telegram.Bot.API.Types.InputPollOption
   , module Telegram.Bot.API.Types.Invoice
   , module Telegram.Bot.API.Types.KeyboardButton
   , module Telegram.Bot.API.Types.KeyboardButtonRequestChat
@@ -146,12 +149,13 @@ import Telegram.Bot.API.Types.BusinessOpeningHoursInterval
 import Telegram.Bot.API.Types.CallbackGame
 import Telegram.Bot.API.Types.CallbackQuery
 import Telegram.Bot.API.Types.Chat
+import Telegram.Bot.API.Types.ChatAdministratorRights
 import Telegram.Bot.API.Types.ChatBoost
 import Telegram.Bot.API.Types.ChatBoostAdded
 import Telegram.Bot.API.Types.ChatBoostRemoved
 import Telegram.Bot.API.Types.ChatBoostSource
 import Telegram.Bot.API.Types.ChatBoostUpdated
-import Telegram.Bot.API.Types.ChatAdministratorRights
+import Telegram.Bot.API.Types.ChatFullInfo
 import Telegram.Bot.API.Types.ChatInviteLink
 import Telegram.Bot.API.Types.ChatJoinRequest
 import Telegram.Bot.API.Types.ChatLocation
@@ -160,6 +164,7 @@ import Telegram.Bot.API.Types.ChatMemberUpdated
 import Telegram.Bot.API.Types.ChatPermissions
 import Telegram.Bot.API.Types.ChatPhoto
 import Telegram.Bot.API.Types.ChatShared
+import Telegram.Bot.API.Types.ChatType
 import Telegram.Bot.API.Types.Common
 import Telegram.Bot.API.Types.Contact
 import Telegram.Bot.API.Types.CopyMessageId
@@ -186,6 +191,7 @@ import Telegram.Bot.API.Types.GeneralForumTopicUnhidden
 import Telegram.Bot.API.Types.InlineKeyboardButton
 import Telegram.Bot.API.Types.InlineKeyboardMarkup
 import Telegram.Bot.API.Types.InputMedia
+import Telegram.Bot.API.Types.InputPollOption
 import Telegram.Bot.API.Types.Invoice
 import Telegram.Bot.API.Types.KeyboardButton
 import Telegram.Bot.API.Types.KeyboardButtonRequestChat

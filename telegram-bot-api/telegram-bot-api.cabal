@@ -123,6 +123,8 @@ library
       -- Types
       Telegram.Bot.API.Types.Animation
       Telegram.Bot.API.Types.Audio
+      Telegram.Bot.API.Types.BackgroundFill
+      Telegram.Bot.API.Types.BackgroundType
       Telegram.Bot.API.Types.Birthdate
       Telegram.Bot.API.Types.BotCommand
       Telegram.Bot.API.Types.BotCommandScope
@@ -138,12 +140,14 @@ library
       Telegram.Bot.API.Types.CallbackGame
       Telegram.Bot.API.Types.CallbackQuery
       Telegram.Bot.API.Types.Chat
+      Telegram.Bot.API.Types.ChatAdministratorRights
+      Telegram.Bot.API.Types.ChatBackground
       Telegram.Bot.API.Types.ChatBoost
       Telegram.Bot.API.Types.ChatBoostAdded
       Telegram.Bot.API.Types.ChatBoostRemoved
       Telegram.Bot.API.Types.ChatBoostSource
       Telegram.Bot.API.Types.ChatBoostUpdated
-      Telegram.Bot.API.Types.ChatAdministratorRights
+      Telegram.Bot.API.Types.ChatFullInfo
       Telegram.Bot.API.Types.ChatInviteLink
       Telegram.Bot.API.Types.ChatJoinRequest
       Telegram.Bot.API.Types.ChatLocation
@@ -152,6 +156,7 @@ library
       Telegram.Bot.API.Types.ChatPermissions
       Telegram.Bot.API.Types.ChatPhoto
       Telegram.Bot.API.Types.ChatShared
+      Telegram.Bot.API.Types.ChatType
       Telegram.Bot.API.Types.Common
       Telegram.Bot.API.Types.Contact
       Telegram.Bot.API.Types.CopyMessageId
@@ -178,6 +183,7 @@ library
       Telegram.Bot.API.Types.InlineKeyboardButton
       Telegram.Bot.API.Types.InlineKeyboardMarkup
       Telegram.Bot.API.Types.InputMedia
+      Telegram.Bot.API.Types.InputPollOption
       Telegram.Bot.API.Types.Invoice
       Telegram.Bot.API.Types.KeyboardButton
       Telegram.Bot.API.Types.KeyboardButtonRequestChat
