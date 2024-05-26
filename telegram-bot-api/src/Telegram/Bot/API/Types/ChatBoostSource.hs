@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Telegram.Bot.API.Types.ChatBoostSource where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), KeyValue ((.=)), Value (..), withObject, (.:))
+import Data.Aeson (FromJSON (..), ToJSON (..), KeyValue ((.=)), Value (..), withObject, (.:), (.:?))
 import Data.Aeson.Types (Parser)
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -22,6 +22,7 @@ import Telegram.Bot.API.Types.User
 -- * ChatBoostSourcePremium
 -- * ChatBoostSourceGiftCode
 -- * ChatBoostSourceGiveaway
+--
 data ChatBoostSource
   -- | The boost was obtained by subscribing to Telegram Premium or by gifting a Telegram Premium subscription to another user.
   = ChatBoostSourcePremium
@@ -68,6 +69,6 @@ instance FromJSON ChatBoostSource where
     "giveaway" -> ChatBoostSourceGiveaway
       <$> o .: "source"
       <*> o .: "giveaway_message_id"
-      <*> o .: "user"
-      <*> o .: "is_unclaimed"
+      <*> o .:? "user"
+      <*> o .:? "is_unclaimed"
     t -> fail $ Text.unpack ("Unknown source: " <> t)

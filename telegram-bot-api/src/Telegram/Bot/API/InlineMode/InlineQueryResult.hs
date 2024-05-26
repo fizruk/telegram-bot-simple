@@ -321,30 +321,30 @@ instance FromJSON InlineQueryResult where
     (o .: "type" :: Parser Text) >>= \case
     "article" -> InlineQueryResultArticle
       <$> parseJSON (Object o)
-      <*> o .: "url"
-      <*> o .: "hide_url"
+      <*> o .:? "url"
+      <*> o .:? "hide_url"
     "photo" -> parseFileId o "photo_file_id" >>= \case
       Nothing -> InlineQueryResultPhoto
         <$> parseJSON (Object o) -- generic thumbnail
         <*> o .: "photo_url"
-        <*> o .: "photo_width"
-        <*> o .: "photo_height"
+        <*> o .:? "photo_width"
+        <*> o .:? "photo_height"
       Just fileId -> InlineQueryResultCachedPhoto <$> parseJSON (Object o) <*> pure fileId
     "gif" -> parseFileId o "gif_file_id" >>= \case
       Nothing -> InlineQueryResultGif
         <$> parseJSON (Object o) -- generic thumbnail
         <*> o .: "gif_url"
-        <*> o .: "gif_width"
-        <*> o .: "gif_height"
-        <*> o .: "gif_duration"
+        <*> o .:? "gif_width"
+        <*> o .:? "gif_height"
+        <*> o .:? "gif_duration"
       Just fileId -> InlineQueryResultCachedGif <$> parseJSON (Object o) <*> pure fileId
     "mpeg4_gif" -> parseFileId o "mpeg4_file_id" >>= \case
       Nothing -> InlineQueryResultMpeg4Gif
         <$> parseJSON (Object o) -- generic thumbnail
         <*> o .: "mpeg4_url"
-        <*> o .: "mpeg4_width"
-        <*> o .: "mpeg4_height"
-        <*> o .: "mpeg4_duration"
+        <*> o .:? "mpeg4_width"
+        <*> o .:? "mpeg4_height"
+        <*> o .:? "mpeg4_duration"
       Just fileId -> InlineQueryResultCachedMpeg4Gif
         <$> parseJSON (Object o)
         <*> pure fileId
@@ -353,9 +353,9 @@ instance FromJSON InlineQueryResult where
         <$> parseJSON (Object o)
         <*> o .: "video_url"
         <*> o .: "mime_type"
-        <*> o .: "video_width"
-        <*> o .: "video_height"
-        <*> o .: "video_duration"
+        <*> o .:? "video_width"
+        <*> o .:? "video_height"
+        <*> o .:? "video_duration"
       Just fileId -> InlineQueryResultCachedVideo
         <$> parseJSON (Object o)
         <*> pure fileId
@@ -363,14 +363,14 @@ instance FromJSON InlineQueryResult where
       Nothing -> InlineQueryResultAudio
         <$> parseJSON (Object o)
         <*> o .: "audio_url"
-        <*> o .: "performer"
-        <*> o .: "duration"
+        <*> o .:? "performer"
+        <*> o .:? "duration"
       Just fileId -> InlineQueryResultCachedAudio <$> parseJSON (Object o) <*> pure fileId
     "voice" -> parseFileId o "voice_file_id" >>= \case
       Nothing -> InlineQueryResultVoice
         <$> parseJSON (Object o)
         <*> o .: "voice_url"
-        <*> o .: "voice_duration"
+        <*> o .:? "voice_duration"
       Just fileId -> InlineQueryResultCachedVoice <$> parseJSON (Object o) <*> pure fileId
     "document" -> parseFileId o "document_file_id" >>= \case
       Nothing -> InlineQueryResultDocument
@@ -382,25 +382,25 @@ instance FromJSON InlineQueryResult where
       <$> parseJSON (Object o)
       <*> o .: "latitude"
       <*> o .: "longitude"
-      <*> o .: "horizontal_accuracy"
-      <*> o .: "live_period"
-      <*> o .: "heading"
-      <*> o .: "proximity_alert_radius"
+      <*> o .:? "horizontal_accuracy"
+      <*> o .:? "live_period"
+      <*> o .:? "heading"
+      <*> o .:? "proximity_alert_radius"
     "venue" -> InlineQueryResultVenue
       <$> parseJSON (Object o)
       <*> o .: "latitude"
       <*> o .: "longitude"
       <*> o .: "address"
-      <*> o .: "foursquare_id"
-      <*> o .: "foursquare_type"
-      <*> o .: "google_place_id"
-      <*> o .: "google_place_type"
+      <*> o .:? "foursquare_id"
+      <*> o .:? "foursquare_type"
+      <*> o .:? "google_place_id"
+      <*> o .:? "google_place_type"
     "contact" -> InlineQueryResultContact
       <$> parseJSON (Object o)
       <*> o .: "phone_number"
       <*> o .: "first_name"
-      <*> o .: "last_name"
-      <*> o .: "vcard"
+      <*> o .:? "last_name"
+      <*> o .:? "vcard"
     "game" -> InlineQueryResultGame
       <$> parseJSON (Object o)
       <*> o .: "game_short_name"

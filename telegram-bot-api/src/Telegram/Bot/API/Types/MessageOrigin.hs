@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Telegram.Bot.API.Types.MessageOrigin where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), Value (..), (.=), (.:), withObject)
+import Data.Aeson (FromJSON (..), ToJSON (..), Value (..), (.=), (.:), (.:?), withObject)
 import Data.Aeson.Types (Parser)
 import Data.Text (Text)
 import Data.Time.Clock.POSIX (POSIXTime)
@@ -86,12 +86,12 @@ instance FromJSON MessageOrigin where
       <$> o .: "type"
       <*> o .: "date"
       <*> o .: "sender_chat"
-      <*> o .: "author_signature"
+      <*> o .:? "author_signature"
     "channel" -> MessageOriginChannel
       <$> o .: "type"
       <*> o .: "date"
       <*> o .: "chat"
       <*> o .: "message_id"
-      <*> o .: "author_signature"
+      <*> o .:? "author_signature"
     t -> fail $ Text.unpack ("Unknown type: " <> t)
 
