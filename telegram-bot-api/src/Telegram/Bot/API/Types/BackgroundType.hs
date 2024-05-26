@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Telegram.Bot.API.Types.BackgroundType where
 
-import Data.Aeson (FromJSON (..), ToJSON (..), Value (..), (.=), (.:), withObject)
+import Data.Aeson (FromJSON (..), ToJSON (..), Value (..), (.=), (.:), (.:?), withObject)
 import Data.Aeson.Types (Parser)
 import Data.Text (Text)
 import GHC.Generics (Generic)
@@ -82,15 +82,15 @@ instance FromJSON BackgroundType where
       <$> o .: "type"
       <*> o .: "document"
       <*> o .: "dark_theme_dimming"
-      <*> o .: "is_blurred"
-      <*> o .: "is_moving"
+      <*> o .:? "is_blurred"
+      <*> o .:? "is_moving"
     "pattern" -> BackgroundTypePattern
       <$> o .: "type"
       <*> o .: "document"
       <*> o .: "fill"
       <*> o .: "intensity"
-      <*> o .: "is_inverted"
-      <*> o .: "is_moving"
+      <*> o .:? "is_inverted"
+      <*> o .:? "is_moving"
     "chat_theme" -> BackgroundTypeChatTheme
       <$> o .: "type"
       <*> o .: "theme_name"
