@@ -1,5 +1,9 @@
 # telegram-bot-api
 
+## 7.3.1 -- 2024-05-26
+
+- Fix parsers for `InlineQueryResult`, `BackgroundType`, `ChatBoostSource`, `MessageOrigin`.
+
 ## 7.3 -- 2024-05-25
 
 - Drop support GHC 8.10, 9.0, add support GHC 9.8, 9.10 (see [#182](https://github.com/fizruk/telegram-bot-simple/pull/182)).

@@ -1,7 +1,7 @@
 cabal-version: 1.12
 
 name:           telegram-bot-api
-version:        7.3
+version:        7.3.1
 synopsis:       Easy to use library for building Telegram bots. Exports Telegram Bot API.
 description:    Please see the README on Github at <https://github.com/fizruk/telegram-bot-simple#readme>
                 .
