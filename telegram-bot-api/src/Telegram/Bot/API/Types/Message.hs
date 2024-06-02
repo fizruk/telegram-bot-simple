@@ -85,6 +85,7 @@ data Message = Message
   , messageText                  :: Maybe Text -- ^ For text messages, the actual UTF-8 text of the message, 0-4096 characters.
   , messageEntities              :: Maybe [MessageEntity] -- ^ For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text
   , messageLinkPreviewOptions    :: Maybe LinkPreviewOptions -- ^ Options used for link preview generation for the message, if it is a text message and link preview options were changed.
+  , messageEffectId              :: Maybe Text -- ^ Unique identifier of the message effect added to the message.
   , messageAnimation             :: Maybe Animation -- ^ Message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set.
   , messageAudio                 :: Maybe Audio -- ^ Message is an audio file, information about the file
   , messageDocument              :: Maybe Document -- ^ Message is a general file, information about the file.
@@ -96,6 +97,7 @@ data Message = Message
   , messageVoice                 :: Maybe Voice -- ^ Message is a voice message, information about the file
   , messageCaption               :: Maybe Text -- ^ Caption for the audio, document, photo, video or voice, 0-200 characters
   , messageCaptionEntities       :: Maybe [MessageEntity] -- ^ For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption.
+  , messageShowCaptionAboveMedia :: Maybe Bool -- ^ Pass 'True', if the caption must be shown above the message media.
   , messageHasMediaSpoiler       :: Maybe Bool -- ^ 'True', if the message media is covered by a spoiler animation.
   , messageContact               :: Maybe Contact -- ^ Message is a shared contact, information about the contact
   , messageDice                  :: Maybe Dice -- ^ Message is a dice with random value.

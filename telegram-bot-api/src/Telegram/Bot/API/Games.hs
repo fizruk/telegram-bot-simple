@@ -33,6 +33,7 @@ data SendGameRequest = SendGameRequest
   , sendGameGameShortName            :: Text                       -- ^ Short name of the game, serves as the unique identifier for the game. Set up your games via Botfather.
   , sendGameDisableNotification      :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendGameProtectContent           :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendGameMessageEffectId          :: Maybe Text                 -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
   , sendGameReplyToMessageId         :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
   , sendGameReplyParameters          :: Maybe ReplyParameters      -- ^ Description of the message to reply to.
   , sendGameReplyMarkup              :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.

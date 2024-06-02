@@ -49,7 +49,8 @@ data EditMessageCaptionRequest = EditMessageCaptionRequest
   , editMessageCaptionInlineMessageId  :: Maybe MessageId -- ^ Required if 'editMessageCaptionChatId' and 'editMessageCaptionMessageId' are not specified. Identifier of the sent message.
   , editMessageCaptionCaption          :: Maybe Text -- ^ New caption of the message, 0-1024 characters after entities parsing
   , editMessageCaptionParseMode        :: Maybe ParseMode -- ^ Mode for parsing entities in the message caption. See formatting options for more details.
-  , editMessageCaptionCaptionEntities  :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+  , editMessageCaptionCaptionEntities  :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of @parse_mode@.
+  , editMessageCaptionShowCaptionAboveMedia :: Maybe Bool -- ^ Pass 'True', if the caption must be shown above the message media.
   , editMessageCaptionReplyMarkup      :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 } deriving (Generic)
 

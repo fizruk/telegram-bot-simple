@@ -25,8 +25,9 @@ data SendDiceRequest = SendDiceRequest
   , sendDiceMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendDiceEmoji :: Maybe Text -- ^ Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”. Dice can have values 1-6 for “🎲”, “🎯” and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults to “🎲”
   , sendDiceDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendDiceProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding
-  , sendDiceReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
+  , sendDiceProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding.
+  , sendDiceMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
+  , sendDiceReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendDiceReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendDiceReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }

@@ -52,6 +52,7 @@ data SendStickerRequest = SendStickerRequest
   , sendStickerSticker                  :: InputFile -- ^ Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a __.WEBP__ sticker from the Internet, or upload a new __.WEBP__, __.TGS__, or __.WEBM__ sticker using multipart\/form-data. More information on Sending Files ». Video and animated stickers can't be sent via an HTTP URL.
   , sendStickerDisableNotification      :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendStickerProtectContent           :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendStickerMessageEffectId          :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
   , sendStickerReplyToMessageId         :: Maybe MessageId -- ^	If the message is a reply, ID of the original message
   , sendStickerReplyParameters          :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendStickerReplyMarkup              :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.

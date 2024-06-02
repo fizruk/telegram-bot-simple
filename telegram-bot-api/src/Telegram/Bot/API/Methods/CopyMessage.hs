@@ -41,7 +41,8 @@ data CopyMessageRequest = CopyMessageRequest
   , copyMessageMessageId :: MessageId -- ^ Message identifier in the chat specified in from_chat_id
   , copyMessageCaption :: Maybe Text -- ^ New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
   , copyMessageParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
-  , copyMessageCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+  , copyMessageCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of @parse_mode@.
+  , copyMessageShowCaptionAboveMedia :: Maybe Bool -- ^ Pass 'True', if the caption must be shown above the message media.
   , copyMessageDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , copyMessageProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
   , copyMessageReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message

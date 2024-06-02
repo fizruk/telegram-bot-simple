@@ -50,6 +50,7 @@ data SendAudioRequest = SendAudioRequest
   , sendAudioCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
   , sendAudioDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendAudioProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
+  , sendAudioMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
   , sendAudioReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
   , sendAudioReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendAudioReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.

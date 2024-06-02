@@ -29,6 +29,7 @@ data InputMediaGeneric = InputMediaGeneric
   , inputMediaGenericCaption :: Maybe Text -- ^ Caption of the photo to be sent, 0-1024 characters after entities parsing.
   , inputMediaGenericParseMode :: Maybe Text -- ^ Mode for parsing entities in the photo caption. See formatting options <https:\/\/core.telegram.org\/bots\/api#formatting-options> for more details.
   , inputMediaGenericCaptionEntities :: Maybe [MessageEntity] -- ^ List of special entities that appear in the caption, which can be specified instead of @parse_mode@.
+  , inputMediaGenericShowCaptionAboveMedia :: Maybe Bool -- ^ Pass 'True', if the caption must be shown above the message media.
   }
   deriving Generic
 

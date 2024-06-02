@@ -70,6 +70,7 @@ data SendDocumentRequest = SendDocumentRequest
   , sendDocumentDisableContentTypeDetection :: Maybe Bool -- ^ Disables automatic server-side content type detection for files uploaded using @multipart/form-data@.
   , sendDocumentDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendDocumentProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendDocumentMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
   , sendDocumentReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendDocumentReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendDocumentReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
