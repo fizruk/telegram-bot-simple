@@ -28,8 +28,9 @@ data SendContactRequest = SendContactRequest
   , sendContactLastName  :: Text -- ^ Contact's last name
   , sendContactVcard  :: Text -- ^ Additional data about the contact in the form of a vCard, 0-2048 bytes
   , sendContactDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendContactProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
-  , sendContactReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
+  , sendContactProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendContactMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
+  , sendContactReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendContactReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendContactReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }

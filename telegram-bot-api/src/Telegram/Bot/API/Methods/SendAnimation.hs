@@ -47,10 +47,12 @@ data SendAnimationRequest = SendAnimationRequest
   , sendAnimationThumbnail :: Maybe InputFile -- ^ Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More info on Sending Files »
   , sendAnimationCaption :: Maybe Text -- ^ Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
   , sendAnimationParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
-  , sendAnimationCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+  , sendAnimationCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of @parse_mode@.
+  , sendAnimationShowCaptionAboveMedia :: Maybe Bool -- ^ Pass 'True', if the caption must be shown above the message media.
   , sendAnimationHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the animation needs to be covered with a spoiler animation.
   , sendAnimationDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendAnimationProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendAnimationMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
   , sendAnimationReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendAnimationReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendAnimationReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.

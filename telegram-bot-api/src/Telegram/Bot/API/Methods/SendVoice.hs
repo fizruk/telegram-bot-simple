@@ -41,13 +41,14 @@ data SendVoiceRequest = SendVoiceRequest
   , sendVoiceChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
   , sendVoiceMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , sendVoiceVoice :: InputFile -- ^ Audio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More info on Sending Files »
-  , sendVoiceCaption :: Maybe Text -- ^ Voice message caption, 0-1024 characters after entities parsing
+  , sendVoiceCaption :: Maybe Text -- ^ Voice message caption, 0-1024 characters after entities parsing/
   , sendVoiceParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
-  , sendVoiceCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
-  , sendVoiceDuration :: Maybe Int -- ^ Duration of the voice message in seconds
+  , sendVoiceCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of @parse_mode@.
+  , sendVoiceDuration :: Maybe Int -- ^ Duration of the voice message in seconds.
   , sendVoiceDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendVoiceProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
-  , sendVoiceReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
+  , sendVoiceProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendVoiceMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
+  , sendVoiceReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendVoiceReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendVoiceReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }

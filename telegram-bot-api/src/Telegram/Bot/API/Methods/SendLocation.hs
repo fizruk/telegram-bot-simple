@@ -6,6 +6,7 @@ module Telegram.Bot.API.Methods.SendLocation where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Proxy
+import Data.Text (Text)
 import GHC.Generics (Generic)
 import Servant.API
 import Servant.Client hiding (Response)
@@ -29,8 +30,9 @@ data SendLocationRequest = SendLocationRequest
   , sendLocationHeading :: Maybe Int -- ^ Direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.
   , sendLocationProximityAlertRadius :: Maybe Int  -- ^ Maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
   , sendLocationDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendLocationProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
-  , sendLocationReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
+  , sendLocationProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendLocationMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
+  , sendLocationReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendLocationReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendLocationReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }

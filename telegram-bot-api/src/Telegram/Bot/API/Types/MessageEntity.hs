@@ -39,6 +39,7 @@ data MessageEntityType
   | MessageEntityStrikethrough -- ^ See <https://core.telegram.org/tdlib/docs/classtd_1_1td__api_1_1text_entity_type_strikethrough.html>
   | MessageEntitySpoiler
   | MessageEntityBlockquote
+  | MessageEntityExpandableBlockquote -- ^ See <https://core.telegram.org/bots/api#may-28-2024>
   | MessageEntityCode
   | MessageEntityPre
   | MessageEntityTextLink

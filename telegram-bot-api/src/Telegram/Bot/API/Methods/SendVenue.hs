@@ -32,8 +32,9 @@ data SendVenueRequest = SendVenueRequest
   , sendVenueGooglePlaceId :: Maybe Text -- ^ Google Places identifier of the venue
   , sendVenueGooglePlaceType :: Maybe Text -- ^ Google Places type of the venue. (See supported types <https:\/\/developers.google.com\/maps\/documentation\/places\/web-service\/supported_types>.)
   , sendVenueDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
-  , sendVenueProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving
-  , sendVenueReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message
+  , sendVenueProtectContent :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendVenueMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
+  , sendVenueReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendVenueReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendVenueReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }

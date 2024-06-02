@@ -31,6 +31,7 @@ data InlineQueryResultGeneric = InlineQueryResultGeneric
   , inlineQueryResultCaption :: Maybe Text -- ^ Caption of the media to be sent, 0-1024 characters after entities parsing.
   , inlineQueryResultParseMode :: Maybe Text -- ^ Mode for parsing entities in the photo caption. See formatting options <https:\/\/core.telegram.org\/bots\/api#formatting-options> for more details.
   , inlineQueryResultCaptionEntities :: Maybe [MessageEntity] -- ^ List of special entities that appear in the caption, which can be specified instead of @parse_mode@.
+  , inlineQueryResultShowCaptionAboveMedia :: Maybe Bool -- ^ Pass 'True', if the caption must be shown above the message media.
   , inlineQueryResultReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Inline keyboard attached to the message.
   , inlineQueryResultInputMessageContent :: Maybe InputMessageContent -- ^  Content of the message to be sent instead of the media.
   , inlineQueryResultDescription :: Maybe Text -- ^ Short description of the result.

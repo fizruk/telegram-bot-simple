@@ -26,7 +26,7 @@ data SendInvoiceRequest = SendInvoiceRequest
   , sendInvoiceTitle                     :: Text                       -- ^ Product name, 1-32 characters.
   , sendInvoiceDescription               :: Text                       -- ^ Product description, 1-255 characters.
   , sendInvoicePayload                   :: Text                       -- ^ Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
-  , sendInvoiceProviderToken             :: Text                       -- ^ Payments provider token, obtained via Botfather.
+  , sendInvoiceProviderToken             :: Text                       -- ^ Payments provider token, obtained via [\@Botfather](https://t.me/botfather). Pass an empty string for payments in [Telegram Stars](https://t.me/BotNews/90).
   , sendInvoiceCurrency                  :: Text                       -- ^ Three-letter ISO 4217 currency code, see more on currencies.
   , sendInvoicePrices                    :: [LabeledPrice]             -- ^ Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.).
   , sendInvoiceMaxTipAmount              :: Maybe Integer              -- ^ The maximum accepted amount for tips in the smallest units of the currency (integer, not float\/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0.
@@ -46,6 +46,7 @@ data SendInvoiceRequest = SendInvoiceRequest
   , sendInvoiceIsFlexible                :: Maybe Bool                 -- ^ Pass 'True', if the final price depends on the shipping method.
   , sendInvoiceDisableNotification       :: Maybe Bool                 -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendInvoiceProtectContent            :: Maybe Bool                 -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendInvoiceMessageEffectId           :: Maybe Text                 -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
   , sendInvoiceReplyToMessageId          :: Maybe MessageId            -- ^ If the message is a reply, ID of the original message.
   , sendInvoiceReplyParameters           :: Maybe ReplyParameters      -- ^ Description of the message to reply to.
   , sendInvoiceReplyMarkup               :: Maybe InlineKeyboardMarkup -- ^ A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
@@ -70,7 +71,7 @@ data CreateInvoiceLinkRequest = CreateInvoiceLinkRequest
   { createInvoiceLinkTitle                     :: Text            -- ^ Product name, 1-32 characters.
   , createInvoiceLinkDescription               :: Text            -- ^ Product description, 1-255 characters.
   , createInvoiceLinkPayload                   :: Text            -- ^ Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
-  , createInvoiceLinkProviderToken             :: Text            -- ^ Payment provider token, obtained via BotFather.
+  , createInvoiceLinkProviderToken             :: Text            -- ^ Payments provider token, obtained via [\@Botfather](https://t.me/botfather). Pass an empty string for payments in [Telegram Stars](https://t.me/BotNews/90).
   , createInvoiceLinkCurrency                  :: Text            -- ^ Three-letter ISO 4217 currency code, see more on currencies.
   , createInvoiceLinkPrices                    :: [LabeledPrice]  -- ^ Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.).
   , createInvoiceLinkMaxTipAmount              :: Maybe Integer   -- ^ The maximum accepted amount for tips in the smallest units of the currency (integer, not float\/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0.
@@ -144,6 +145,26 @@ type AnswerPreCheckoutQuery
 -- | Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the field pre_checkout_query. Use this method to respond to such pre-checkout queries. On success, 'True' is returned. Note: The Bot API must receive an answer within 10 seconds after the pre-checkout query was sent.
 answerPreCheckoutQuery :: AnswerPreCheckoutQueryRequest -> ClientM (Response Bool)
 answerPreCheckoutQuery = client (Proxy @AnswerPreCheckoutQuery)
+
+-- ** 'refundStarPayment'
+
+data RefundStarPaymentRequest = RefundStarPaymentRequest
+  { refundStarPaymentUserId :: UserId -- ^ Identifier of the user whose payment will be refunded.
+  , refundStarPaymentTelegramPaymentChargeId :: Text -- ^ Telegram payment identifier.
+  }
+  deriving (Generic, Show)
+
+instance ToJSON RefundStarPaymentRequest where toJSON = gtoJSON
+instance FromJSON RefundStarPaymentRequest where parseJSON = gparseJSON
+
+type RefundStarPayment
+  =  "refundStarPayment"
+  :> ReqBody '[JSON] RefundStarPaymentRequest
+  :> Post '[JSON] (Response Bool)
+
+-- | Refunds a successful payment in [Telegram Stars](https://t.me/BotNews/90). Returns 'True' on success.
+refundStarPayment :: RefundStarPaymentRequest -> ClientM (Response Bool)
+refundStarPayment = client (Proxy @RefundStarPayment)
 
 foldMap makeDefault
   [ ''SendInvoiceRequest

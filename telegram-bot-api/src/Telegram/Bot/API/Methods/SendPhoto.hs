@@ -69,9 +69,11 @@ data SendPhotoRequest = SendPhotoRequest
   , sendPhotoCaption :: Maybe Text -- ^ Photo caption (may also be used when resending Photos by file_id), 0-1024 characters after entities parsing
   , sendPhotoParseMode :: Maybe ParseMode  -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , sendPhotoCaptionEntities :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of /parse_mode/.
+  , sendPhotoShowCaptionAboveMedia :: Maybe Bool -- ^ Pass 'True', if the caption must be shown above the message media.
   , sendPhotoHasSpoiler :: Maybe Bool -- ^ Pass 'True' if the photo needs to be covered with a spoiler animation.
   , sendPhotoDisableNotification :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
   , sendPhotoProtectContent      :: Maybe Bool -- ^ Protects the contents of the sent message from forwarding and saving.
+  , sendPhotoMessageEffectId :: Maybe Text -- ^ Unique identifier of the message effect to be added to the message; for private chats only.
   , sendPhotoReplyToMessageId :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
   , sendPhotoReplyParameters :: Maybe ReplyParameters -- ^ Description of the message to reply to.
   , sendPhotoReplyMarkup :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
