@@ -1,5 +1,36 @@
 # telegram-bot-api
 
+## 7.4 -- 2024-06-02
+
+- Types:
+  - `InlineQueryResult` type extended with `show_caption_above_media` field.
+  - `provider_token` field documentation was updated for `InputMessageContent` type.
+  - `InputMediaGeneric` type extended with `show_caption_above_media` field.
+  - `Message` type extended with `effect_id`, `show_caption_above_media` fields.
+  - `MessageEntity` type extended with `MessageEntityExpandableBlockquote` constructor.
+- Methods:
+  - `sendGame` method request extended with `message_effect_id` field.
+  - `copyMessage` method request extended with `show_caption_above_media` field.
+  - `editMessageCaption` method request extended with `show_caption_above_media` field.
+  - `sendAnimation` method request extended with `message_effect_id`, `show_caption_above_media` fields.
+  - `sendAudio` method request extended with `message_effect_id` field.
+  - `sendContact` method request extended with `message_effect_id` field.
+  - `sendDice` method request extended with `message_effect_id` field.
+  - `sendDocument` method request extended with `message_effect_id` field.
+  - `sendLocation` method request extended with `message_effect_id` field.
+  - `sendMediaGroup` method request extended with `message_effect_id` field.
+  - `sendMessage` method request extended with `message_effect_id` field.
+  - `sendPhoto` method request extended with `message_effect_id`, `show_caption_above_media` fields.
+  - `sendPoll` method request extended with `message_effect_id` field.
+  - `sendPoll` method request extended with `message_effect_id` field.
+  - `sendSticker` method request extended with `message_effect_id` field.
+  - `sendVideo` method request extended with `message_effect_id`, `show_caption_above_media` fields.
+  - `sendVideoNote` method request extended with `message_effect_id` field.
+  - `sendVoice` method request extended with `message_effect_id`, `show_caption_above_media` fields.
+  - `provider_token` field documentation was updated for `createInvoiceLink` method.
+  - `provider_token` field documentation was updated for `sendInvoice` method.
+  - `refundStarPayment` method added.
+
 ## 7.3.1 -- 2024-05-26
 
 - Fix parsers for `InlineQueryResult`, `BackgroundType`, `ChatBoostSource`, `MessageOrigin`.
