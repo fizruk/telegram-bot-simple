@@ -35,8 +35,8 @@ updateToAction update _
       Just $ InlineEcho queryId msg
   | isJust $ updateMessageSticker update = do
     fileId <- stickerFileId <$> updateMessageSticker update
-    chatId <- updateChatId update
-    pure $ StickerEcho (InputFileId fileId) chatId
+    chatOfUser <- updateChatId update
+    pure $ StickerEcho (InputFileId fileId) chatOfUser
   | otherwise = case updateMessageText update of
       Just text -> Just (Echo text)
       Nothing   -> Nothing

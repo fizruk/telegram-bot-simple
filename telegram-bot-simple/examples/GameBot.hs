@@ -104,7 +104,11 @@ handleAction BotSettings{..} action model = case action of
           { inlineQueryResultTitle = Just msg
           , inlineQueryResultInputMessageContent = Just gameMsg
           }
-        gameMsg = (defaultInputTextMessageContent gameMessageText) { inputMessageContentParseMode = Just "HTML" }
+        gameMsg = InputTextMessageContent
+          { inputMessageContentMessageText = gameMessageText
+          , inputMessageContentParseMode = Just "HTML"
+          , inputMessageContentDisableWebPagePrefiew = Nothing
+          }
         inlineQueryResult = InlineQueryResultGame
           { inlineQueryResultGameGeneric = genericResult
           , inlineQueryResultGameGameShortName = gameName
@@ -737,4 +741,3 @@ renderAgainLink settings txt = do
       H.div ! A.class_ "position-link" $ do
         H.div ! A.class_ "qel-button text-button text-again-button"
           $ toMarkup txt
-

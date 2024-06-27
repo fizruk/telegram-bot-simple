@@ -115,7 +115,9 @@ instance ToMultipart Tmp SendDocumentRequest where
       = (FileData "file" (T.pack $ takeFileName path) ct path)
       : maybe [] (\t -> [FileData "thumbnail" (T.pack $ takeFileName t) "image/jpeg" t]) sendDocumentThumbnail
 
-    DocumentFile path ct = sendDocumentDocument
+    (path, ct) = case sendDocumentDocument of
+      DocumentFile path' ct' -> (path', ct')
+      _ -> error "ToMultipart Tmp SendDocumentRequest: cannot use multipart for links or file ids"
 
 
 instance ToJSON   SendDocumentRequest where toJSON = gtoJSON
