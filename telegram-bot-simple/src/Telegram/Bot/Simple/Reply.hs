@@ -61,6 +61,7 @@ replyMessageToSendMessageRequest :: SomeChatId -> ReplyMessage -> SendMessageReq
 replyMessageToSendMessageRequest someChatId ReplyMessage{..} = SendMessageRequest
   { sendMessageChatId = someChatId
   , sendMessageBusinessConnectionId = Nothing
+  , sendMessageMessageEffectId = Nothing
   , sendMessageMessageThreadId = replyMessageMessageThreadId
   , sendMessageText = replyMessageText
   , sendMessageParseMode = replyMessageParseMode

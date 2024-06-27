@@ -28,4 +28,4 @@ jobs:
           key: ${{ runner.os }}-v2-${{ matrix.ghc }}-${{ github.run_id }}
           restore-keys: ${{ runner.os }}-v2-${{ matrix.ghc }}-
       - run: |
-          cabal build all -fexamples
+          cabal build all -fexamples --ghc-options=-Werror
