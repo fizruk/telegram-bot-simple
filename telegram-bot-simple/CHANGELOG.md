@@ -1,3 +1,8 @@
+0.14.2 -- 2024-08-26
+---
+
+- Fix `ExceptionInLinkedThread` (see [#189](https://github.com/fizruk/telegram-bot-simple/pull/189)).
+
 0.14.1 -- 2024-05-26
 ---
 
