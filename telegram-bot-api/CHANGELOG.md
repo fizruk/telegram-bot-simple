@@ -1,5 +1,9 @@
 # telegram-bot-api
 
+## 7.4.1 -- 2024-10-20
+
+- Fix `inline_messaige_id` type representation (see [#191](https://github.com/fizruk/telegram-bot-simple/pull/191)).
+
 ## 7.4 -- 2024-06-02
 
 - Types:
