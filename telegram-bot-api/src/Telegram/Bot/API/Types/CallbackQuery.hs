@@ -22,7 +22,7 @@ data CallbackQuery = CallbackQuery
   { callbackQueryId              :: CallbackQueryId -- ^ Unique identifier for this query
   , callbackQueryFrom            :: User -- ^ Sender
   , callbackQueryMessage         :: Maybe Message -- ^ Message sent by the bot with the callback button that originated the query. Use 'isInaccessible' to understand whether a message was deleted or is otherwise inaccessible to the bot.
-  , callbackQueryInlineMessageId :: Maybe MessageId -- ^ Identifier of the message sent via the bot in inline mode, that originated the query.
+  , callbackQueryInlineMessageId :: Maybe InlineMessageId -- ^ Identifier of the message sent via the bot in inline mode, that originated the query.
   , callbackQueryChatInstance    :: Text -- ^ Global identifier, uniquely corresponding to the chat to which the message with the callback button was sent. Useful for high scores in games.
   , callbackQueryData            :: Maybe Text -- ^ Data associated with the callback button. Be aware that a bad client can send arbitrary data in this field.
   , callbackQueryGameShortName   :: Maybe Text -- ^ Short name of a Game to be returned, serves as the unique identifier for the game

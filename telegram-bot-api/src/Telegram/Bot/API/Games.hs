@@ -17,7 +17,7 @@ import Telegram.Bot.API.Internal.Utils (deriveJSON')
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types
   ( BusinessConnectionId, ChatId, GameHighScore, InlineKeyboardMarkup
-  , Message, MessageId, MessageThreadId
+  , InlineMessageId, Message, MessageId, MessageThreadId
   , ReplyParameters, UserId
   )
 import Telegram.Bot.API.Internal.TH
@@ -49,7 +49,7 @@ data SetGameScoreRequest = SetGameScoreRequest
   , setGameScoreDisableEditMessage :: Maybe Bool      -- ^ Pass 'True', if the game message should not be automatically edited to include the current scoreboard.
   , setGameScoreChatId             :: Maybe ChatId    -- ^ Required if @inline_message_id@ is not specified. Unique identifier for the target chat
   , setGameScoreMessageId          :: Maybe MessageId -- ^ Required if @inline_message_id@ is not specified. Identifier of the sent message.
-  , setGameScoreInlineMessageId    :: Maybe MessageId -- ^ Required if @chat_id@ and @message_id@ are not specified. Identifier of the inline message.
+  , setGameScoreInlineMessageId    :: Maybe InlineMessageId -- ^ Required if @chat_id@ and @message_id@ are not specified. Identifier of the inline message.
   }
   deriving (Generic, Show)
 
@@ -64,7 +64,7 @@ data GetGameHighScoresRequest = GetGameHighScoresRequest
   { getGameHighScoresUserId          :: UserId          -- ^ Target user id.
   , getGameHighScoresChatId          :: Maybe ChatId    -- ^ Required if @inline_message_id@ is not specified. Unique identifier for the target chat.
   , getGameHighScoresMessageId       :: Maybe MessageId -- ^ Required if @inline_message_id@ is not specified. Identifier of the sent message.
-  , getGameHighScoresInlineMessageId :: Maybe MessageId -- ^ Required if @chat_id@ and @message_id@ are not specified. Identifier of the inline message.
+  , getGameHighScoresInlineMessageId :: Maybe InlineMessageId -- ^ Required if @chat_id@ and @message_id@ are not specified. Identifier of the inline message.
   }
   deriving (Generic, Show)
 
