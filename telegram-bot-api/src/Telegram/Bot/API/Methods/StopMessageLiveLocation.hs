@@ -22,7 +22,7 @@ import Telegram.Bot.API.Internal.TH
 data StopMessageLiveLocationRequest = StopMessageLiveLocationRequest
   { stopMessageLiveLocationChatId :: Maybe SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername)
   , stopMessageLiveLocationMessageId :: Maybe MessageId -- ^ Required if inline_message_id is not specified. Identifier of the message with live location to stop
-  , stopMessageLiveLocationInlineMessageId :: Maybe Text -- ^  	Required if chat_id and message_id are not specified. Identifier of the inline message
+  , stopMessageLiveLocationInlineMessageId :: Maybe InlineMessageId -- ^ Required if chat_id and message_id are not specified. Identifier of the inline message
   , stopMessageLiveLocationReplyMarkup :: Maybe InlineKeyboardMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
   }
   deriving Generic

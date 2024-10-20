@@ -58,6 +58,9 @@ newtype MessageThreadId = MessageThreadId Integer
 instance ToHttpApiData MessageThreadId where
   toUrlPiece a = pack . show @Integer $ coerce a
 
+newtype InlineMessageId = InlineMessageId Text
+  deriving (Eq, Show, ToJSON, FromJSON, Hashable)
+
 -- | The unique identifier of a media message group a message belongs to.
 newtype MediaGroupId = MediaGroupId Text
   deriving (Eq, Show, ToJSON, FromJSON)

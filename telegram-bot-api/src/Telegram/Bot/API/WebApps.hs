@@ -15,7 +15,7 @@ import Servant.Client hiding (Response)
 
 import Telegram.Bot.API.Internal.Utils (deriveJSON')
 import Telegram.Bot.API.MakingRequests (Response)
-import Telegram.Bot.API.InlineMode (InlineQueryId)
+import Telegram.Bot.API.Types.Common (InlineMessageId)
 import Telegram.Bot.API.InlineMode.InlineQueryResult (InlineQueryResult)
 import Telegram.Bot.API.Internal.TH (makeDefault)
 
@@ -33,7 +33,7 @@ data AnswerWebAppQueryRequest = AnswerWebAppQueryRequest
 
 -- | Contains information about an inline message sent by a Web App on behalf of a user.
 newtype SentWebAppMessage = SentWebAppMessage
-  { sentWebAppMessageInlineMessageId :: Maybe InlineQueryId
+  { sentWebAppMessageInlineMessageId :: Maybe InlineMessageId
   }
   deriving (Generic, Show)
 

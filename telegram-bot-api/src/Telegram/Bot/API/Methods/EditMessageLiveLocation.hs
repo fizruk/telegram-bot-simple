@@ -6,7 +6,6 @@ module Telegram.Bot.API.Methods.EditMessageLiveLocation where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Proxy
-import Data.Text
 import GHC.Generics (Generic)
 import Servant.API
 import Servant.Client hiding (Response)
@@ -22,7 +21,7 @@ import Telegram.Bot.API.Internal.TH
 data EditMessageLiveLocationRequest = EditMessageLiveLocationRequest
   { editMessageLiveLocationChatId :: Maybe SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format \@channelusername).
   , editMessageLiveLocationMessageId :: Maybe MessageId -- ^ Required if inline_message_id is not specified. Identifier of the message with live location to stop.
-  , editMessageLiveLocationInlineMessageId :: Maybe Text -- ^  	Required if chat_id and message_id are not specified. Identifier of the inline message.
+  , editMessageLiveLocationInlineMessageId :: Maybe InlineMessageId -- ^ Required if chat_id and message_id are not specified. Identifier of the inline message.
   , editMessageLiveLocationLatitude :: Float -- ^ Latitude of new location.
   , editMessageLiveLocationLongitude :: Float -- ^ Longitude of new location.
   , editMessageLiveLocationLivePeriod :: Maybe Int -- ^ New period in seconds during which the location can be updated, starting from the message send date. If @0x7FFFFFFF@ is specified, then the location can be updated forever. Otherwise, the new value must not exceed the current @live_period@ by more than a day, and the live location expiration date must remain within the next 90 days. If not specified, then @live_period@ remains unchanged.

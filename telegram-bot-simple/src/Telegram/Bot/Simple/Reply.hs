@@ -104,7 +104,7 @@ instance IsString EditMessage where
 
 data EditMessageId
   = EditChatMessageId SomeChatId MessageId
-  | EditInlineMessageId MessageId
+  | EditInlineMessageId InlineMessageId
 
 toEditMessage :: Text -> EditMessage
 toEditMessage msg = EditMessage msg Nothing Nothing Nothing

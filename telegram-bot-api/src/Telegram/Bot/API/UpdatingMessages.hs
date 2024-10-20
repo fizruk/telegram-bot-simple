@@ -34,7 +34,7 @@ instance FromJSON EditMessageResponse where
 data EditMessageTextRequest = EditMessageTextRequest
   { editMessageTextChatId                :: Maybe SomeChatId -- ^ Required if 'editMessageTextInlineMessageId' is not specified. Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
   , editMessageTextMessageId             :: Maybe MessageId -- ^ Required if 'editMessageTextInlineMessageId' is not specified. Identifier of the sent message.
-  , editMessageTextInlineMessageId       :: Maybe MessageId -- ^ Required if 'editMessageTextChatId' and 'editMessageTextMessageId' are not specified. Identifier of the sent message.
+  , editMessageTextInlineMessageId       :: Maybe InlineMessageId -- ^ Required if 'editMessageTextChatId' and 'editMessageTextMessageId' are not specified. Identifier of the sent message.
   , editMessageTextText                  :: Text -- ^ Text of the message to be sent.
   , editMessageTextParseMode             :: Maybe ParseMode -- ^ Send 'MarkdownV2', 'HTML' or 'Markdown' (legacy), if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
   , editMessageEntities                  :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in message text, which can be specified instead of /parse_mode/.
@@ -46,7 +46,7 @@ data EditMessageTextRequest = EditMessageTextRequest
 data EditMessageCaptionRequest = EditMessageCaptionRequest
   { editMessageCaptionChatId           :: Maybe SomeChatId -- ^ Required if 'editMessageCaptionMessageId' is not specified. Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
   , editMessageCaptionMessageId        :: Maybe MessageId -- ^ Required if 'editMessageCaptionInlineMessageId' is not specified. Identifier of the sent message.
-  , editMessageCaptionInlineMessageId  :: Maybe MessageId -- ^ Required if 'editMessageCaptionChatId' and 'editMessageCaptionMessageId' are not specified. Identifier of the sent message.
+  , editMessageCaptionInlineMessageId  :: Maybe InlineMessageId -- ^ Required if 'editMessageCaptionChatId' and 'editMessageCaptionMessageId' are not specified. Identifier of the sent message.
   , editMessageCaptionCaption          :: Maybe Text -- ^ New caption of the message, 0-1024 characters after entities parsing
   , editMessageCaptionParseMode        :: Maybe ParseMode -- ^ Mode for parsing entities in the message caption. See formatting options for more details.
   , editMessageCaptionCaptionEntities  :: Maybe [MessageEntity] -- ^ A JSON-serialized list of special entities that appear in the caption, which can be specified instead of @parse_mode@.
@@ -58,7 +58,7 @@ data EditMessageCaptionRequest = EditMessageCaptionRequest
 data EditMessageMediaRequest = EditMessageMediaRequest
   { editMessageMediaChatId           :: Maybe SomeChatId -- ^ Required if 'editMessageMediaMessageId' is not specified. Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
   , editMessageMediaMessageId        :: Maybe MessageId -- ^ Required if 'editMessageMediaInlineMessageId' is not specified. Identifier of the sent message.
-  , editMessageMediaInlineMessageId  :: Maybe MessageId -- ^ Required if 'editMessageMediaChatId' and 'editMessageMediaMessageId' are not specified. Identifier of the sent message.
+  , editMessageMediaInlineMessageId  :: Maybe InlineMessageId -- ^ Required if 'editMessageMediaChatId' and 'editMessageMediaMessageId' are not specified. Identifier of the sent message.
   , editMessageMediaMedia            :: InputMedia -- ^ A JSON-serialized object for a new media content of the message
   , editMessageMediaReplyMarkup      :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 } deriving (Generic)
@@ -69,7 +69,7 @@ instance ToJSON EditMessageMediaRequest where toJSON = gtoJSON
 data EditMessageReplyMarkupRequest = EditMessageReplyMarkupRequest
   { editMessageReplyMarkupChatId           :: Maybe SomeChatId -- ^ Required if 'editMessageReplyMarkupMessageId' is not specified. Unique identifier for the target chat or username of the target channel (in the format @\@channelusername@).
   , editMessageReplyMarkupMessageId        :: Maybe MessageId -- ^ Required if 'editMessageReplyMarkupInlineMessageId' is not specified. Identifier of the sent message.
-  , editMessageReplyMarkupInlineMessageId  :: Maybe MessageId -- ^ Required if 'editMessageReplyMarkupChatId' and 'editMessageReplyMarkupMessageId' are not specified. Identifier of the sent message.
+  , editMessageReplyMarkupInlineMessageId  :: Maybe InlineMessageId -- ^ Required if 'editMessageReplyMarkupChatId' and 'editMessageReplyMarkupMessageId' are not specified. Identifier of the sent message.
   , editMessageReplyMarkupReplyMarkup      :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 } deriving (Generic)
 
