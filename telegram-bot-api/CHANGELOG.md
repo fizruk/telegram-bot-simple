@@ -1,5 +1,10 @@
 # telegram-bot-api
 
+## 7.4.2 -- 2024-10-31
+
+- Fix `ChatFullInfo` type `active_usernames` attribute (see [#192](https://github.com/fizruk/telegram-bot-simple/pull/192)).
+- Fix compilation warnings (see [#193](https://github.com/fizruk/telegram-bot-simple/pull/193)).
+
 ## 7.4.1 -- 2024-10-20
 
 - Fix `inline_messaige_id` type representation (see [#191](https://github.com/fizruk/telegram-bot-simple/pull/191)).

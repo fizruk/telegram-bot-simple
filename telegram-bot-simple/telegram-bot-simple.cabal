@@ -70,7 +70,7 @@ library
     , split
     , stm
     , template-haskell
-    , telegram-bot-api >= 7.4.1
+    , telegram-bot-api >= 7.4.2
     , text
     , time
     , transformers
