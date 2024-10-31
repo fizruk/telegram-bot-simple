@@ -6,7 +6,6 @@ module Telegram.Bot.API.Methods.StopMessageLiveLocation where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))
 import Data.Proxy
-import Data.Text
 import GHC.Generics (Generic)
 import Servant.API
 import Servant.Client hiding (Response)
