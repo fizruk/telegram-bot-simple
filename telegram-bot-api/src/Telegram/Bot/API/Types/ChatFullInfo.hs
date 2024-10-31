@@ -37,7 +37,7 @@ data ChatFullInfo = ChatFullInfo
   , chatFullInfoAccentColorId    :: Maybe Int -- ^ Identifier of the accent color for the chat name and backgrounds of the chat photo, reply header, and link preview. See [accent colors](https://core.telegram.org/bots/api#accent-colors) for more details. Returned only in 'getChat'. Always returned in 'getChat'.
   , chatFullInfoMaxReactionCount :: Int -- ^ The maximum number of reactions that can be set on a message in the chat.
   , chatFullInfoPhoto            :: Maybe ChatPhoto -- ^ Chat photo. Returned only in getChat.
-  , chatFullInfoActiveUsernames  :: Maybe Text      -- ^ If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in 'getChat'.
+  , chatFullInfoActiveUsernames  :: Maybe [Text]      -- ^ If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in 'getChat'.
   , chatFullInfoBirthdate        :: Maybe Birthdate -- ^ For private chats, the date of birth of the user.
   , chatFullInfoBusinessIntro    :: Maybe BusinessIntro -- ^ For private chats with business accounts, the intro of the business.
   , chatFullInfoBusinessLocation :: Maybe BusinessLocation -- ^ For private chats with business accounts, the location of the business.
