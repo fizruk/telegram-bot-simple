@@ -18,7 +18,7 @@ import Telegram.Bot.API.Internal.TH
 -- ** 'getChatMenuButton'
 
 -- | Request parameters for 'getChatMenuButton'.
-data GetChatMenuButtonRequest = GetChatMenuButtonRequest
+newtype GetChatMenuButtonRequest = GetChatMenuButtonRequest
   { getChatMenuButtonRequestChatId     :: Maybe ChatId     -- ^ Unique identifier for the target private chat. If not specified, default bot's menu button will be returned.
   }
   deriving Generic

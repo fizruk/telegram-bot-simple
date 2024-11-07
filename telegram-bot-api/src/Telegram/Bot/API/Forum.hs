@@ -188,7 +188,7 @@ editGeneralForumTopic = client (Proxy @EditGeneralForumTopic)
 
 -- ** 'closeGeneralForumTopic'
 
-data CloseGeneralForumTopicRequest = CloseGeneralForumTopicRequest
+newtype CloseGeneralForumTopicRequest = CloseGeneralForumTopicRequest
   { closeGeneralForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
   }
   deriving Generic
@@ -206,7 +206,7 @@ closeGeneralForumTopic = client (Proxy @CloseGeneralForumTopic)
 
 -- ** 'reopenGeneralForumTopic'
 
-data ReopenGeneralForumTopicRequest = ReopenGeneralForumTopicRequest
+newtype ReopenGeneralForumTopicRequest = ReopenGeneralForumTopicRequest
   { reopenGeneralForumTopicRequestChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
   }
   deriving Generic
@@ -224,7 +224,7 @@ reopenGeneralForumTopic = client (Proxy @ReopenGeneralForumTopic)
 
 -- ** 'hideGeneralForumTopic'
 
-data HideGeneralForumTopicRequest = HideGeneralForumTopicRequest
+newtype HideGeneralForumTopicRequest = HideGeneralForumTopicRequest
   { hideGeneralForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername).
   }
   deriving Generic
@@ -242,7 +242,7 @@ hideGeneralForumTopic = client (Proxy @HideGeneralForumTopic)
 
 -- ** 'unhideGeneralForumTopic'
 
-data UnhideGeneralForumTopicRequest = UnhideGeneralForumTopicRequest
+newtype UnhideGeneralForumTopicRequest = UnhideGeneralForumTopicRequest
   { unhideGeneralForumTopicChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
   }
   deriving Generic

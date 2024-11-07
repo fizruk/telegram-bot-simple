@@ -4,7 +4,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE CPP #-}
 module Telegram.Bot.API.Internal.Utils where
 
@@ -95,7 +94,7 @@ instance GSomeJSON f => GSomeJSON (D1 d f) where
 
 instance (ToJSON a, FromJSON a) => GSomeJSON (C1 c (S1 s (K1 i a))) where
   gsomeToJSON (M1 (M1 (K1 x))) = toJSON x
-  gsomeParseJSON js = (M1 . M1 . K1) <$> parseJSON js
+  gsomeParseJSON js = M1 . M1 . K1 <$> parseJSON js
 
 instance (GSomeJSON f, GSomeJSON g) => GSomeJSON (f :+: g) where
   gsomeToJSON (L1 x) = gsomeToJSON x

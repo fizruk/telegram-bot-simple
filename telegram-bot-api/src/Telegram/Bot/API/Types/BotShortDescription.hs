@@ -9,7 +9,7 @@ import Telegram.Bot.API.Internal.Utils
 -- ** 'BotShortDescription'
 
 -- | This object represents the bot's short description.
-data BotShortDescription = BotShortDescription
+newtype BotShortDescription = BotShortDescription
   { botShortDescriptionShortDescription :: Text -- ^ The bot's short description.
   }
   deriving (Generic, Show)

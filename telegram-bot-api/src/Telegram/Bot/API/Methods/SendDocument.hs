@@ -94,25 +94,25 @@ pattern DocumentFile x y = MakeDocumentFile (InputFile x y)
 instance ToMultipart Tmp SendDocumentRequest where
   toMultipart SendDocumentRequest{..} = MultipartData fields files where
     fields =
-      [ Input "document" $ T.pack $ "attach://file"
+      [ Input "document" "attach://file"
       , Input "chat_id" $ case sendDocumentChatId of
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <>
-      (   (maybe id (\t -> ((Input "message_thread_id") (T.pack $ show t):)) sendDocumentMessageThreadId)
-        $ (maybe id (\_ -> ((Input "thumbnail" "attach://thumbnail"):)) sendDocumentThumbnail)
-        $ (maybe id (\t -> ((Input "caption" t):)) sendDocumentCaption)
-        $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentParseMode)
-        $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentCaptionEntities)
-        $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendDocumentDisableNotification)
-        $ (maybe id (\t -> ((Input "disable_content_type_detection" (bool "false" "true" t)):)) sendDocumentDisableContentTypeDetection)
-        $ (maybe id (\t -> ((Input "protect_content" (bool "false" "true" t)):)) sendDocumentProtectContent)
-        $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyToMessageId)
-        $ (maybe id (\t -> ((Input "reply_parameters" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyParameters)
-        $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendDocumentReplyMarkup)
+          maybe id (\t -> (Input "message_thread_id" (T.pack $ show t) :)) sendDocumentMessageThreadId
+        ( maybe id (const (Input "thumbnail" "attach://thumbnail" :)) sendDocumentThumbnail
+        $ maybe id (\t -> (Input "caption" t :)) sendDocumentCaption
+        $ maybe id (\t -> (Input "parse_mode" (TL.toStrict $ encodeToLazyText t) :)) sendDocumentParseMode
+        $ maybe id (\t -> (Input "caption_entities" (TL.toStrict $ encodeToLazyText t) :)) sendDocumentCaptionEntities
+        $ maybe id (\t -> (Input "disable_notification" (bool "false" "true" t) :)) sendDocumentDisableNotification
+        $ maybe id (\t -> (Input "disable_content_type_detection" (bool "false" "true" t) :)) sendDocumentDisableContentTypeDetection
+        $ maybe id (\t -> (Input "protect_content" (bool "false" "true" t) :)) sendDocumentProtectContent
+        $ maybe id (\t -> (Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t) :)) sendDocumentReplyToMessageId
+        $ maybe id (\t -> (Input "reply_parameters" (TL.toStrict $ encodeToLazyText t) :)) sendDocumentReplyParameters
+        $ maybe id (\t -> (Input "reply_markup" (TL.toStrict $ encodeToLazyText t) :)) sendDocumentReplyMarkup
         [])
     files
-      = (FileData "file" (T.pack $ takeFileName path) ct path)
+      = FileData "file" (T.pack $ takeFileName path) ct path
       : maybe [] (\t -> [FileData "thumbnail" (T.pack $ takeFileName t) "image/jpeg" t]) sendDocumentThumbnail
 
     (path, ct) = case sendDocumentDocument of
