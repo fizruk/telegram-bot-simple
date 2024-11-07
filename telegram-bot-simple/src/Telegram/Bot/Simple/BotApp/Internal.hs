@@ -109,7 +109,9 @@ processAction BotApp{..} botEnv@BotEnv{..} update action = do
       (newModel, effects) -> do
         writeTVar botModelVar newModel
         return effects
-  mapM_ ((liftIO . issueAction botEnv update) <=< runBotM (BotContext botUser update)) effects
+  let runBotAndIssueAction
+        = (liftIO . issueAction botEnv update) <=< runBotM (BotContext botUser update)
+  mapM_ runBotAndIssueAction effects
 
 -- | A job to wait for the next action and process it.
 processActionJob :: BotApp model action -> BotEnv model action -> ClientM ()
@@ -122,7 +124,10 @@ processActionsIndefinitely
   :: BotApp model action -> BotEnv model action -> IO ThreadId
 processActionsIndefinitely botApp botEnv = do
   a <- asyncLink $ forever $ do
-    runClientM (processActionJob botApp botEnv) (botClientEnv botEnv)
+    res <- runClientM (processActionJob botApp botEnv) (botClientEnv botEnv)
+    case res of
+      Left err -> print err
+      Right _ -> return ()
   return (asyncThreadId a)
 
 -- | Start 'Telegram.Update' polling for a bot.
