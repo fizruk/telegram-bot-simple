@@ -1,5 +1,11 @@
 # telegram-bot-api
 
+## 7.4.3 -- 2024-11-07
+
+- Remove unused packages (see [#194](https://github.com/fizruk/telegram-bot-simple/pull/194)).
+- Remove unused pragmas and apply other hlint suggestions (see [#195](https://github.com/fizruk/telegram-bot-simple/pull/195)).
+
+
 ## 7.4.2 -- 2024-10-31
 
 - Fix `ChatFullInfo` type `active_usernames` attribute (see [#192](https://github.com/fizruk/telegram-bot-simple/pull/192)).

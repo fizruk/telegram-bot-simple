@@ -1,3 +1,9 @@
+0.14.4 -- 2024-11-07
+---
+
+- Print failures from telegram-bot-api thrown in bot action handlers (see [#197](https://github.com/fizruk/telegram-bot-simple/pull/197)).
+- Support `telegram-bot-api-.7.4.3`.
+
 0.14.3 -- 2024-10-20
 ---
 
