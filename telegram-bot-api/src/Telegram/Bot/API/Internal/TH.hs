@@ -63,7 +63,7 @@ constructType :: Name -> [Type] -> Q Type
 constructType typeN tys = foldr arrAp baseTy (filter (not . isMaybeTy) tys)
   where
     baseTy = conT typeN
-    arrAp a b = appT (appT arrowT (pure a)) b
+    arrAp a = appT (appT arrowT (pure a))
 
 
 -- Predicates over TH

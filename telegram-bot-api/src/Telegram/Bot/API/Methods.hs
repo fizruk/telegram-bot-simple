@@ -1,18 +1,10 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Telegram.Bot.API.Methods
   ( module Telegram.Bot.API.Types.ParseMode
   , module Telegram.Bot.API.Types.SomeReplyMarkup
-  
+
   , module Telegram.Bot.API.Methods.AnswerCallbackQuery
   , module Telegram.Bot.API.Methods.ApproveChatJoinRequest
   , module Telegram.Bot.API.Methods.BanChatMember

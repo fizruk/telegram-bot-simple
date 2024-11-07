@@ -1,5 +1,4 @@
 {-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Telegram.Bot.API.Types.ReactionType where
@@ -16,7 +15,7 @@ import qualified Data.Text as Text
 -- ** 'ReactionType'
 
 -- | This object describes the type of a reaction. Currently, it can be one of
--- 
+--
 -- * 'ReactionTypeEmoji',
 -- * 'ReactionTypeCustomEmoji'.
 --

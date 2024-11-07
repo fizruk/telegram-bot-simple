@@ -106,7 +106,7 @@ sendSticker r =
 -- ** 'getCustomEmojiStickers'
 
 -- | Request parameters for 'getCustomEmojiStickers'.
-data GetCustomEmojiStickersRequest = GetCustomEmojiStickersRequest
+newtype GetCustomEmojiStickersRequest = GetCustomEmojiStickersRequest
   { getCustomEmojiStickersRequestCustomEmojiIds :: [Text] -- ^ List of custom emoji identifiers. At most 200 custom emoji identifiers can be specified.
   }
   deriving Generic

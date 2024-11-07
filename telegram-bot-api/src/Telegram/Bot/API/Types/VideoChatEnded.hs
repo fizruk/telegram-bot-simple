@@ -11,7 +11,7 @@ import Telegram.Bot.API.Internal.Utils
 -- ** 'VideoChatEnded'
 
 -- | This object represents a service message about a video chat ended in the chat.
-data VideoChatEnded = VideoChatEnded
+newtype VideoChatEnded = VideoChatEnded
   { videoChatEndedDuration :: Seconds -- ^ Video chat duration in seconds.
   }
   deriving (Generic, Show)
@@ -22,7 +22,7 @@ instance FromJSON VideoChatEnded where parseJSON = gparseJSON
 
 -- ** 'VideoChatParticipantsInvited'
 
-data VideoChatParticipantsInvited = VideoChatParticipantsInvited
+newtype VideoChatParticipantsInvited = VideoChatParticipantsInvited
   { videoChatParticipantsInvitedUsers :: Maybe [User] -- ^ New members that were invited to the video chat.
   }
   deriving (Generic, Show)

@@ -10,7 +10,7 @@ import Telegram.Bot.API.Internal.Utils
 -- ** 'CopyMessageId'
 
 -- | This object represents result of copyMessage request.
-data CopyMessageId = CopyMessageId
+newtype CopyMessageId = CopyMessageId
   { copyMessageIdMessageId :: MessageId -- ^ the MessageId of the sent message.
   }
   deriving (Generic, Show)

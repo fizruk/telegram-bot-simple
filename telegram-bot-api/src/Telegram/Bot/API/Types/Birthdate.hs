@@ -1,5 +1,4 @@
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Telegram.Bot.API.Types.Birthdate where
 
 import Data.Aeson (FromJSON (..), ToJSON (..))

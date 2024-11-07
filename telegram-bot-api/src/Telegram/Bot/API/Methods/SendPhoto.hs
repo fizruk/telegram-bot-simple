@@ -83,25 +83,25 @@ data SendPhotoRequest = SendPhotoRequest
 instance ToMultipart Tmp SendPhotoRequest where
   toMultipart SendPhotoRequest{..} = MultipartData fields files where
     fields =
-      [ Input "photo" $ T.pack $ "attach://file"
+      [ Input "photo" "attach://file"
       , Input "chat_id" $ case sendPhotoChatId of
           SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
           SomeChatUsername txt -> txt
       ] <>
-      (   (maybe id (\t -> ((Input "message_thread_id" (T.pack $ show t)):)) sendPhotoMessageThreadId)
-        $ (maybe id (\_ -> ((Input "thumb" "attach://thumb"):)) sendPhotoThumb)
-        $ (maybe id (\t -> ((Input "caption" t):)) sendPhotoCaption)
-        $ (maybe id (\t -> ((Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t)):)) sendPhotoParseMode)
-        $ (maybe id (\t -> ((Input "caption_entities" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoCaptionEntities)
-        $ (maybe id (\t -> ((Input "has_spoiler" (bool "false" "true" t)):)) sendPhotoHasSpoiler)
-        $ (maybe id (\t -> ((Input "disable_notification" (bool "false" "true" t)):)) sendPhotoDisableNotification)
-        $ (maybe id (\t -> ((Input "protect_content" (bool "false" "true" t)):)) sendPhotoProtectContent)
-        $ (maybe id (\t -> ((Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyToMessageId)
-        $ (maybe id (\t -> ((Input "reply_parameters" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyParameters)
-        $ (maybe id (\t -> ((Input "reply_markup" (TL.toStrict $ encodeToLazyText t)):)) sendPhotoReplyMarkup)
+          maybe id (\t -> (Input "message_thread_id" (T.pack $ show t) :)) sendPhotoMessageThreadId
+        ( maybe id (const (Input "thumb" "attach://thumb" :)) sendPhotoThumb
+        $ maybe id (\t -> (Input "caption" t :)) sendPhotoCaption
+        $ maybe id (\t -> (Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t) :)) sendPhotoParseMode
+        $ maybe id (\t -> (Input "caption_entities" (TL.toStrict $ encodeToLazyText t) :)) sendPhotoCaptionEntities
+        $ maybe id (\t -> (Input "has_spoiler" (bool "false" "true" t) :)) sendPhotoHasSpoiler
+        $ maybe id (\t -> (Input "disable_notification" (bool "false" "true" t) :)) sendPhotoDisableNotification
+        $ maybe id (\t -> (Input "protect_content" (bool "false" "true" t) :)) sendPhotoProtectContent
+        $ maybe id (\t -> (Input "reply_to_message_id" (TL.toStrict $ encodeToLazyText t) :)) sendPhotoReplyToMessageId
+        $ maybe id (\t -> (Input "reply_parameters" (TL.toStrict $ encodeToLazyText t) :)) sendPhotoReplyParameters
+        $ maybe id (\t -> (Input "reply_markup" (TL.toStrict $ encodeToLazyText t) :)) sendPhotoReplyMarkup
         [])
     files
-      = (FileData "file" (T.pack $ takeFileName path) ct path)
+      = FileData "file" (T.pack $ takeFileName path) ct path
       : maybe [] (\t -> [FileData "thumb" (T.pack $ takeFileName t) "image/jpeg" t]) sendPhotoThumb
 
     (path, ct) = case sendPhotoPhoto of

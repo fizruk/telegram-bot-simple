@@ -10,7 +10,7 @@ import Telegram.Bot.API.Types.BackgroundType
 -- ** 'ChatBackground'
 
 -- | This object represents a chat background.
-data ChatBackground = ChatBackground
+newtype ChatBackground = ChatBackground
   { chatBackgroundType :: BackgroundType -- ^ Type of the background.
   }
   deriving (Generic, Show)
