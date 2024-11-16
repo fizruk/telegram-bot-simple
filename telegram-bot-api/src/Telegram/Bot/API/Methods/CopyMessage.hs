@@ -36,7 +36,7 @@ copyMessage = client (Proxy @CopyMessage)
 -- | Request parameters for 'copyMessage'.
 data CopyMessageRequest = CopyMessageRequest
   { copyMessageChatId :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (in the format @channelusername).
-  , copyMessageMessageThreadId :: Maybe Message -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
+  , copyMessageMessageThreadId :: Maybe MessageThreadId -- ^ Unique identifier for the target message thread (topic) of the forum; for forum supergroups only.
   , copyMessageFromChatId :: SomeChatId -- ^ Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
   , copyMessageMessageId :: MessageId -- ^ Message identifier in the chat specified in from_chat_id
   , copyMessageCaption :: Maybe Text -- ^ New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
