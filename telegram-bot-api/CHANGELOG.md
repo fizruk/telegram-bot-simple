@@ -1,5 +1,9 @@
 # telegram-bot-api
 
+## 7.4.4 -- 2024-11-24
+
+- Fix `message_thread_id` for `copyMessage`, `copyMessages` (see [#198](https://github.com/fizruk/telegram-bot-simple/pull/198)).
+
 ## 7.4.3 -- 2024-11-07
 
 - Remove unused packages (see [#194](https://github.com/fizruk/telegram-bot-simple/pull/194)).
