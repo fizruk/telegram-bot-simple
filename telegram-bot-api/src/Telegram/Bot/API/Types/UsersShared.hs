@@ -13,7 +13,7 @@ import Telegram.Bot.API.Internal.Utils
 -- | This object contains information about the users whose identifiers were shared with the bot using a 'KeyboardButtonRequestUsers' button.
 data UsersShared = UsersShared
   { usersSharedRequestId :: RequestId -- ^ Identifier of the request.
-  , usersSharedUserId :: [SharedUser] -- ^ Information about users shared with the bot.
+  , usersSharedUsers :: [SharedUser] -- ^ Information about users shared with the bot.
   }
   deriving (Generic, Show)
 
