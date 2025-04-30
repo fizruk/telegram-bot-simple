@@ -75,8 +75,11 @@ newtype PollId = PollId Text
 newtype ShippingOptionId = ShippingOptionId Text
   deriving (Eq, Show, Generic, ToJSON, FromJSON)
 
-newtype WebAppInfo = WebAppInfo { webAppInfoUrl :: Text }
-  deriving (Generic, Show, ToJSON, FromJSON)
+data WebAppInfo = WebAppInfo { webAppInfoUrl :: Text }
+  deriving (Generic, Show)
+
+instance ToJSON WebAppInfo where toJSON = gtoJSON
+instance FromJSON WebAppInfo where parseJSON = gparseJSON
 
 newtype CallbackQueryId = CallbackQueryId Text
   deriving (Eq, Show, Generic, ToJSON, FromJSON)
