@@ -14,8 +14,6 @@ import Servant.Multipart.API
 import Servant.Multipart.Client
 import Servant.Client hiding (Response)
 
-import qualified Data.Text as T
-
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Internal.TH
