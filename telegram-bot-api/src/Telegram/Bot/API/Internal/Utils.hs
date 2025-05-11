@@ -13,6 +13,7 @@ import Data.Aeson.TH (deriveJSON)
 import Data.Aeson.Types (Options(..), defaultOptions, Parser, Pair)
 import Data.Char (isUpper, toUpper, toLower)
 import Data.List (intercalate)
+import Data.Text (Text)
 import GHC.Generics
 import Language.Haskell.TH
 import Servant.Multipart.API (MultipartData(MultipartData), Input)
@@ -23,6 +24,7 @@ import qualified Data.Aeson.KeyMap as Map
 #else
 import qualified Data.HashMap.Strict as Map
 #endif
+import qualified Data.Text as T
 
 deriveJSON' :: Name -> Q [Dec]
 deriveJSON' name = deriveJSON (jsonOptions (nameBase name)) name
@@ -115,3 +117,11 @@ isNull _ = False
 addMultipartFields :: [Input] -> MultipartData tag -> MultipartData tag
 addMultipartFields newFields (MultipartData currenFields files)
       = MultipartData (newFields <> currenFields) files
+
+showText :: Show a => a -> Text
+#if MIN_VERSION_text(2,1,2)
+showText = T.show
+#else
+showText = T.pack . show
+#endif
+{-# INLINE showText #-}

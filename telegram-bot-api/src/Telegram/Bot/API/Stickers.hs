@@ -13,6 +13,8 @@ import Control.Monad.IO.Class
 import Data.Aeson
 import Data.Aeson.Text
 import Data.Bool
+import Data.Functor
+import Data.Maybe (catMaybes)
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
@@ -23,13 +25,10 @@ import Servant.Client hiding (Response)
 import Servant.Multipart.API
 import Servant.Multipart.Client
 
+import Telegram.Bot.API.Internal.TH (makeDefault)
 import Telegram.Bot.API.Internal.Utils
 import Telegram.Bot.API.MakingRequests (Response)
 import Telegram.Bot.API.Types
-import Data.Maybe (catMaybes)
-import Data.Functor
-import Telegram.Bot.API.Internal.TH (makeDefault)
-
 
 -- | Type of uploaded sticker file. Static or animated.
 data StickerType
@@ -66,11 +65,11 @@ instance ToMultipart Tmp SendStickerRequest where
     makeFile "sticker" sendStickerSticker (MultipartData fields []) where
     fields =
       [ Input "chat_id" $ case sendStickerChatId of
-          SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
+          SomeChatId (ChatId chat_id) -> showText chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
       [ sendStickerMessageThreadId <&>
-        \t -> Input "message_thread_id" (T.pack $ show t)
+        \t -> Input "message_thread_id" (showText t)
       , sendStickerDisableNotification <&>
         \t -> Input "disable_notification" (bool "false" "true" t)
       , sendStickerProtectContent <&>

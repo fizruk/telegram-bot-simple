@@ -69,11 +69,11 @@ instance ToMultipart Tmp SendVideoRequest where
     MultipartData fields [] where
     fields =
       [ Input "chat_id" $ case sendVideoChatId of
-          SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
+          SomeChatId (ChatId chat_id) -> showText chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
       [ sendVideoMessageThreadId <&>
-        \t -> Input "message_thread_id" (T.pack $ show t)
+        \t -> Input "message_thread_id" (showText t)
       , sendVideoCaption <&>
         \t -> Input "caption" t
       , sendVideoParseMode <&>

@@ -32,7 +32,7 @@ import           Servant.Client                      (ClientEnv, ClientError,
 import           Servant.Multipart.API
 import           Servant.Multipart.Client            (genBoundary)
 
-import           Telegram.Bot.API.Internal.Utils     (gtoJSON)
+import           Telegram.Bot.API.Internal.Utils     (gtoJSON, showText)
 import           Telegram.Bot.API.MakingRequests     (Response)
 import           Telegram.Bot.API.Types              (InputFile, makeFile)
 import Telegram.Bot.API.Internal.TH (makeDefault)
@@ -67,7 +67,7 @@ instance ToMultipart Tmp SetWebhookRequest where
           <> catMaybes
             [ setWebhookSecretToken <&> \t -> Input "secret_token" $ Text.pack t,
               setWebhookIpAddress <&> \t -> Input "ip_address" $ Text.pack t,
-              setWebhookMaxConnections <&> \t -> Input "max_connections" $ Text.pack $ show t,
+              setWebhookMaxConnections <&> \t -> Input "max_connections" $ showText t,
               setWebhookDropPendingUpdates <&> \t -> Input "drop_pending_updates" (bool "false" "true" t),
               setWebhookAllowedUpdates <&> \t -> Input "allowed_updates" (arrToJson t)
             ]

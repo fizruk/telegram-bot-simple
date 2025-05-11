@@ -68,11 +68,11 @@ instance ToMultipart Tmp SendAnimationRequest where
     MultipartData fields [] where
     fields =
       [ Input "chat_id" $ case sendAnimationChatId of
-          SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
+          SomeChatId (ChatId chat_id) -> showText chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
       [ sendAnimationMessageThreadId <&>
-        \t -> Input "message_thread_id" (T.pack $ show t)
+        \t -> Input "message_thread_id" (showText t)
       , sendAnimationCaption <&>
         \t -> Input "caption" t
       , sendAnimationParseMode <&>
