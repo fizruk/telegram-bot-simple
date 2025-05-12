@@ -1,5 +1,11 @@
 # telegram-bot-api
 
+## 7.4.5 -- 2025-05-12
+
+- Fix `UsersShared` data type (see [#200](https://github.com/fizruk/telegram-bot-simple/pull/200)).
+- Fix `WebAppInfo` data type (see [#202](https://github.com/fizruk/telegram-bot-simple/pull/202)).
+- Fix support of `text-2.1.2.0` (see [#203](https://github.com/fizruk/telegram-bot-simple/pull/203)).
+
 ## 7.4.4 -- 2024-11-24
 
 - Fix `message_thread_id` for `copyMessage`, `copyMessages` (see [#198](https://github.com/fizruk/telegram-bot-simple/pull/198)).
