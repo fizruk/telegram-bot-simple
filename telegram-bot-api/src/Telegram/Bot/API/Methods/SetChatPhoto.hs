@@ -14,11 +14,10 @@ import Servant.Multipart.API
 import Servant.Multipart.Client
 import Servant.Client hiding (Response)
 
-import qualified Data.Text as T
-
 import Telegram.Bot.API.MakingRequests
 import Telegram.Bot.API.Types
 import Telegram.Bot.API.Internal.TH
+import Telegram.Bot.API.Internal.Utils (showText)
 
 -- ** 'setChatPhoto'
 
@@ -33,7 +32,7 @@ instance ToMultipart Tmp SetChatPhotoRequest where
     makeFile "photo" setChatPhotoPhoto (MultipartData fields []) where
     fields =
       [ Input "chat_id" $ case setChatPhotoChatId of
-          SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
+          SomeChatId (ChatId chat_id) -> showText chat_id
           SomeChatUsername txt -> txt
       ]
 

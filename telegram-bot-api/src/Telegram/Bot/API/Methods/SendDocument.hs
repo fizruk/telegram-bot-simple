@@ -96,10 +96,10 @@ instance ToMultipart Tmp SendDocumentRequest where
     fields =
       [ Input "document" "attach://file"
       , Input "chat_id" $ case sendDocumentChatId of
-          SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
+          SomeChatId (ChatId chat_id) -> showText chat_id
           SomeChatUsername txt -> txt
       ] <>
-          maybe id (\t -> (Input "message_thread_id" (T.pack $ show t) :)) sendDocumentMessageThreadId
+          maybe id (\t -> (Input "message_thread_id" (showText t) :)) sendDocumentMessageThreadId
         ( maybe id (const (Input "thumbnail" "attach://thumbnail" :)) sendDocumentThumbnail
         $ maybe id (\t -> (Input "caption" t :)) sendDocumentCaption
         $ maybe id (\t -> (Input "parse_mode" (TL.toStrict $ encodeToLazyText t) :)) sendDocumentParseMode

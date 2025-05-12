@@ -24,7 +24,6 @@ import Servant.Multipart.API
 import Servant.Multipart.Client
 import Servant.Client hiding (Response)
 
-import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 
 import Telegram.Bot.API.Internal.Utils
@@ -66,11 +65,11 @@ instance ToMultipart Tmp SendAudioRequest where
     MultipartData fields [] where
     fields =
       [ Input "chat_id" $ case sendAudioChatId of
-          SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
+          SomeChatId (ChatId chat_id) -> showText chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
       [ sendAudioMessageThreadId <&>
-        \t -> Input "message_thread_id" (T.pack $ show t)
+        \t -> Input "message_thread_id" (showText t)
       , sendAudioCaption <&>
         \t -> Input "caption" t
       , sendAudioParseMode <&>

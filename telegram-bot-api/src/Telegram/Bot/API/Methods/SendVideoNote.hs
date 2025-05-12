@@ -24,7 +24,6 @@ import Servant.Multipart.API
 import Servant.Multipart.Client
 import Servant.Client hiding (Response)
 
-import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 
 import Telegram.Bot.API.Internal.Utils
@@ -61,11 +60,11 @@ instance ToMultipart Tmp SendVideoNoteRequest where
     MultipartData fields [] where
     fields =
       [ Input "chat_id" $ case sendVideoNoteChatId of
-          SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
+          SomeChatId (ChatId chat_id) -> showText chat_id
           SomeChatUsername txt -> txt
       ] <> catMaybes
       [ sendVideoNoteMessageThreadId <&>
-        \t -> Input "message_thread_id" (T.pack $ show t)
+        \t -> Input "message_thread_id" (showText t)
       , sendVideoNoteDisableNotification <&>
         \t -> Input "disable_notification" (bool "false" "true" t)
       , sendVideoNoteProtectContent <&>

@@ -85,10 +85,10 @@ instance ToMultipart Tmp SendPhotoRequest where
     fields =
       [ Input "photo" "attach://file"
       , Input "chat_id" $ case sendPhotoChatId of
-          SomeChatId (ChatId chat_id) -> T.pack $ show chat_id
+          SomeChatId (ChatId chat_id) -> showText chat_id
           SomeChatUsername txt -> txt
       ] <>
-          maybe id (\t -> (Input "message_thread_id" (T.pack $ show t) :)) sendPhotoMessageThreadId
+          maybe id (\t -> (Input "message_thread_id" (showText t) :)) sendPhotoMessageThreadId
         ( maybe id (const (Input "thumb" "attach://thumb" :)) sendPhotoThumb
         $ maybe id (\t -> (Input "caption" t :)) sendPhotoCaption
         $ maybe id (\t -> (Input "parse_mode" (TL.toStrict . TL.replace "\"" "" $ encodeToLazyText t) :)) sendPhotoParseMode
