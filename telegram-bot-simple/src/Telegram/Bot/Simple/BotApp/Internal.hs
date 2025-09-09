@@ -68,7 +68,7 @@ runJobTask botEnv@BotEnv{..} task = do
   res <- flip runClientM botClientEnv $
     mapM_ ((liftIO . issueAction botEnv Nothing) <=< runBotM (BotContext botUser Nothing)) effects
   case res of
-    Left err -> print err
+    Left err -> print ("runJobTask" :: String, err)
     Right _  -> return ()
 
 -- | Schedule a cron-like bot job.
@@ -126,7 +126,7 @@ processActionsIndefinitely botApp botEnv = do
   a <- asyncLink $ forever $ do
     res <- runClientM (processActionJob botApp botEnv) (botClientEnv botEnv)
     case res of
-      Left err -> print err
+      Left err -> print ("processActionsIndefinitely" :: String, err)
       Right _ -> return ()
   return (asyncThreadId a)
 
@@ -154,7 +154,7 @@ startPolling handleUpdate = go Nothing
 
       nextUpdateId <- case res of
         Left servantErr -> do
-          liftIO (print servantErr)
+          liftIO $ print ("startPolling.go" :: String, servantErr)
           pure lastUpdateId
         Right result -> do
           let updateValues = Telegram.responseResult result
