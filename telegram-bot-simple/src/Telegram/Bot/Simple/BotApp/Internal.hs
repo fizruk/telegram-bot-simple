@@ -1,23 +1,75 @@
 {-# LANGUAGE DeriveFunctor       #-}
+{-# LANGUAGE LambdaCase          #-}
+{-# LANGUAGE ImportQualifiedPost #-}
+{-# LANGUAGE NumericUnderscores  #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications    #-}
 module Telegram.Bot.Simple.BotApp.Internal where
 
-import           Control.Concurrent       (ThreadId, threadDelay)
-import           Control.Concurrent.Async (Async, async, asyncThreadId, link)
-import           Control.Concurrent.STM
-import           Control.Monad           (forever, void, (<=<))
-import           Control.Monad.Except    (catchError)
-import           Control.Monad.Trans     (liftIO)
-import           Data.Bifunctor          (first)
-import           Data.Text               (Text)
-import           Servant.Client          (ClientEnv, ClientM, runClientM)
-import qualified System.Cron             as Cron
-
-import qualified Telegram.Bot.API        as Telegram
-import           Telegram.Bot.Simple.Eff
-import Data.Either (partitionEithers)
+import Control.Concurrent (ThreadId, threadDelay)
+import Control.Concurrent.Async (Async, async, asyncThreadId, link)
+import Control.Concurrent.STM
+import Control.Exception (fromException)
+import Control.Monad (forever, void, (<=<))
+import Control.Monad.Except (catchError)
+import Control.Monad.Trans (liftIO)
 import Data.Aeson.Types (parseEither, parseJSON)
+import Data.Bifunctor (first)
+import Data.Coerce (coerce)
+import Data.Either (partitionEithers)
+import Data.Text (Text)
+import Network.HTTP.Client (HttpException(..), HttpExceptionContent(..))
+import Servant.Client (ClientEnv, ClientError(..), ClientM, runClientM)
+import System.Cron qualified as Cron
+
+import Telegram.Bot.API qualified as Telegram
+import Telegram.Bot.Simple.Eff
+
+-- | A policy on how to act on retries.
+data RetryPolicy = RetryPolicy
+  { retryPolicyAmountRetries :: Maybe Int
+    -- ^ Amount of retries. 'Nothing' means there will be no retries.
+
+  , retryPolicyWaitSeconds :: Telegram.Seconds
+    -- ^ Waiting interval between retries.
+  }
+
+-- | No retries will be performed.
+noRetryPolicy :: RetryPolicy
+noRetryPolicy = RetryPolicy Nothing 0
+
+-- | Default policy: 10 retries, 1 second interval between retries.
+defaultRetryPolicy :: RetryPolicy
+defaultRetryPolicy = RetryPolicy (Just 10) 1
+
+-- | Retries 'runClientM' according to retry policy.
+retryClientM
+  :: RetryPolicy -- ^ Bot's retry policy.
+  -> ClientM a -- ^ Action.
+  -> ClientEnv -- ^ Client environment.
+  -> IO (Either ClientError a)
+retryClientM RetryPolicy{..} action clientEnv = case retryPolicyAmountRetries of
+  Nothing -> runClientM action clientEnv
+  Just actualRetries -> do
+    let go retries
+          | retries <= 1 = do
+              print @String "Too many retries"
+              runClientM action clientEnv
+          | otherwise = do
+              runClientM action clientEnv >>= \case
+                Left err -> case err of
+                  ConnectionError exc -> case fromException exc of
+                    -- Underlying http-client fails to establish connection
+                    Just (HttpExceptionRequest _req ConnectionTimeout) -> do
+                      print $ concat
+                        ["connection timeout. ", show retries, " retries left."]
+                      threadDelay (coerce retryPolicyWaitSeconds * 1_000_000)
+                      go (pred retries)
+                    _ -> pure (Left err)
+                  _ -> pure (Left err)
+                Right result -> pure (Right result)
+    go actualRetries
 
 -- | A bot application.
 data BotApp model action = BotApp
@@ -51,6 +103,8 @@ data BotEnv model action = BotEnv
     -- This includes 'Telegram.Token'.
   , botUser         :: Telegram.User
     -- ^ Information about the bot in the form of 'Telegram.User'.
+  , botRetryPolicy  :: RetryPolicy
+    -- ^ Retry policy on actions involving 'ClientM' that have failed to fire.
   }
 
 instance Functor (BotJob model) where
@@ -88,6 +142,7 @@ defaultBotEnv BotApp{..} env = BotEnv
   <*> newTQueueIO
   <*> pure env
   <*> (either (error . show) Telegram.responseResult <$> runClientM Telegram.getMe env)
+  <*> pure defaultRetryPolicy
 
 -- | Issue a new action for the bot to process.
 issueAction :: BotEnv model action -> Maybe Telegram.Update -> Maybe action -> IO ()
@@ -122,9 +177,9 @@ processActionJob botApp botEnv@BotEnv{..} = do
 -- | Process incoming actions indefinitely.
 processActionsIndefinitely
   :: BotApp model action -> BotEnv model action -> IO ThreadId
-processActionsIndefinitely botApp botEnv = do
+processActionsIndefinitely botApp botEnv@BotEnv{..} = do
   a <- asyncLink $ forever $ do
-    res <- runClientM (processActionJob botApp botEnv) (botClientEnv botEnv)
+    res <- retryClientM botRetryPolicy (processActionJob botApp botEnv) botClientEnv
     case res of
       Left err -> print ("processActionsIndefinitely" :: String, err)
       Right _ -> return ()
