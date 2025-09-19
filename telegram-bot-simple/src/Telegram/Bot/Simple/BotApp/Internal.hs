@@ -12,7 +12,7 @@ import Control.Concurrent (ThreadId, threadDelay)
 import Control.Concurrent.Async (Async, async, asyncThreadId, forConcurrently_, link)
 import Control.Concurrent.STM
 import Control.Exception (fromException)
-import Control.Monad (forever, forM, void, (<=<))
+import Control.Monad (forever, forM, void, when, (<=<))
 import Control.Monad.Except (catchError)
 import Control.Monad.Trans (liftIO)
 import Data.Aeson.Types (parseEither, parseJSON)
@@ -185,12 +185,12 @@ processActionsIndefinitely
   :: BotApp model action -> BotEnv model action -> IO ThreadId
 processActionsIndefinitely botApp botEnv@BotEnv{..} = do
   a <- asyncLink $ do
-    let retryQueues = HashMap.toList $ retryPolicyRetries botRetryPolicy
-        fallback = (succ $ HashMap.size (retryPolicyRetries botRetryPolicy), botActionsQueue)
-    forConcurrently_ retryQueues \retryData -> forever do
+    let retryQueues = zip (repeat True) $ HashMap.toList $ retryPolicyRetries botRetryPolicy
+        fallback = (False, (succ $ HashMap.size (retryPolicyRetries botRetryPolicy), botActionsQueue))
+    forConcurrently_ (fallback : retryQueues) \(itShouldWait, retryData) -> forever do
       processRetries botRetryPolicy botApp botEnv retryData
-      threadDelay (coerce (retryPolicyWaitSeconds botRetryPolicy) * 1_000_000)
-    forever $ processRetries botRetryPolicy botApp botEnv fallback
+      when itShouldWait
+        $ threadDelay (coerce (retryPolicyWaitSeconds botRetryPolicy) * 1_000_000)
   return (asyncThreadId a)
 
 -- | Start 'Telegram.Update' polling for a bot.
