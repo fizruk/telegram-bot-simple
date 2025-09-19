@@ -31,7 +31,7 @@ import Telegram.Bot.Simple.Eff
 
 -- | A policy on how to act on retries.
 data RetryPolicy action = RetryPolicy
-  { retryPolicyRetries :: HashMap Int (TQueue (Maybe Telegram.Update, action))
+  { retryPolicyRetries :: HashMap Int (TBQueue (Maybe Telegram.Update, action))
     -- ^ Amount of retries. 'Nothing' means there will be no retries.
 
   , retryPolicyWaitSeconds :: Telegram.Seconds
@@ -46,7 +46,7 @@ noRetryPolicy = RetryPolicy HashMap.empty 0
 defaultRetryPolicy :: IO (RetryPolicy action)
 defaultRetryPolicy = do
   retryPolicyRetries <- HashMap.fromList <$> forM [1..10] \key -> do
-    queue <- newTQueueIO
+    queue <- newTBQueueIO 20_000
     pure (key, queue)
   let retryPolicyWaitSeconds = 1
   pure RetryPolicy {..}
@@ -55,10 +55,10 @@ processRetries
   :: RetryPolicy action
   -> BotApp model action
   -> BotEnv model action
-  -> (Int, TQueue (Maybe Telegram.Update, action))
+  -> (Int, TBQueue (Maybe Telegram.Update, action))
   -> IO ()
 processRetries RetryPolicy{..} botApp botEnv@BotEnv{..} (key, rqueue) = do
-  (update, action) <- liftIO . atomically $ readTQueue rqueue
+  (update, action) <- liftIO . atomically $ readTBQueue rqueue
   runClientM (processAction botApp botEnv update action) botClientEnv >>= \case
     Left err -> case err of
       ConnectionError exc -> case fromException exc of
@@ -71,7 +71,7 @@ processRetries RetryPolicy{..} botApp botEnv@BotEnv{..} (key, rqueue) = do
               print $ concat
                 [ "retries exhausted or queue not found: ", show retries, " left. Request:"]
               print ("processRetries" :: String, retries, err)
-            Just queue -> liftIO $ atomically $ writeTQueue queue (update, action)
+            Just queue -> liftIO $ atomically $ writeTBQueue queue (update, action)
         _ -> print ("processRetries" :: String, err)
       _ -> print ("processRetries" :: String, err)
     Right _ -> pure ()
@@ -101,7 +101,7 @@ data BotJob model action = BotJob
 data BotEnv model action = BotEnv
   { botModelVar     :: TVar model
     -- ^ A transactional variable with bot's current state.
-  , botActionsQueue :: TQueue (Maybe Telegram.Update, action)
+  , botActionsQueue :: TBQueue (Maybe Telegram.Update, action)
     -- ^ A queue of @action@s to process (with associated 'Telegram.Update's).
   , botClientEnv    :: ClientEnv
     -- ^ HTTP client environment (where and how exactly to make requests to Telegram Bot API).
@@ -144,7 +144,7 @@ scheduleBotJobs botEnv jobs = concat
 defaultBotEnv :: BotApp model action -> ClientEnv -> IO (BotEnv model action)
 defaultBotEnv BotApp{..} env = BotEnv
   <$> newTVarIO botInitialModel
-  <*> newTQueueIO
+  <*> newTBQueueIO 20_000
   <*> pure env
   <*> (either (error . show) Telegram.responseResult <$> runClientM Telegram.getMe env)
   <*> defaultRetryPolicy
@@ -152,7 +152,7 @@ defaultBotEnv BotApp{..} env = BotEnv
 -- | Issue a new action for the bot to process.
 issueAction :: BotEnv model action -> Maybe Telegram.Update -> Maybe action -> IO ()
 issueAction BotEnv{..} update (Just action) = atomically $
-  writeTQueue botActionsQueue (update, action)
+  writeTBQueue botActionsQueue (update, action)
 issueAction _ _ _ = pure ()
 
 -- | Process one action.
@@ -176,7 +176,7 @@ processAction BotApp{..} botEnv@BotEnv{..} update action = do
 -- | A job to wait for the next action and process it.
 processActionJob :: BotApp model action -> BotEnv model action -> ClientM ()
 processActionJob botApp botEnv@BotEnv{..} = do
-  (update, action) <- liftIO . atomically $ readTQueue botActionsQueue
+  (update, action) <- liftIO . atomically $ readTBQueue botActionsQueue
   processAction botApp botEnv update action
 
 -- | Process incoming actions indefinitely.
