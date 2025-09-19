@@ -57,24 +57,25 @@ processRetries
   -> BotEnv model action
   -> (Int, TBQueue (Maybe Telegram.Update, action))
   -> IO ()
-processRetries RetryPolicy{..} botApp botEnv@BotEnv{..} (key, rqueue) = do
-  (update, action) <- liftIO . atomically $ readTBQueue rqueue
-  runClientM (processAction botApp botEnv update action) botClientEnv >>= \case
-    Left err -> case err of
-      ConnectionError exc -> case fromException exc of
-        -- Underlying http-client fails to establish connection
-        Just (HttpExceptionRequest _req ConnectionTimeout) -> do
-          let retries = pred key
-          print $ concat ["connection timeout. ", show retries, " retries left."]
-          case HashMap.lookup retries retryPolicyRetries of
-            Nothing -> do
-              print $ concat
-                [ "retries exhausted or queue not found: ", show retries, " left. Request:"]
-              print ("processRetries" :: String, retries, err)
-            Just queue -> liftIO $ atomically $ writeTBQueue queue (update, action)
+processRetries RetryPolicy{..} botApp botEnv@BotEnv{..} (key, rqueue) =
+  (liftIO . atomically . tryReadTBQueue) rqueue >>= \case
+    Nothing -> pure ()
+    Just (update, action) -> runClientM (processAction botApp botEnv update action) botClientEnv >>= \case
+      Left err -> case err of
+        ConnectionError exc -> case fromException exc of
+          -- Underlying http-client fails to establish connection
+          Just (HttpExceptionRequest _req ConnectionTimeout) -> do
+            let retries = pred key
+            print $ concat ["connection timeout. ", show retries, " retries left."]
+            case HashMap.lookup retries retryPolicyRetries of
+              Nothing -> do
+                print $ concat
+                  [ "retries exhausted or queue not found: ", show retries, " left. Request:"]
+                print ("processRetries" :: String, retries, err)
+              Just queue -> liftIO $ atomically $ writeTBQueue queue (update, action)
+          _ -> print ("processRetries" :: String, err)
         _ -> print ("processRetries" :: String, err)
-      _ -> print ("processRetries" :: String, err)
-    Right _ -> pure ()
+      Right _ -> pure ()
 
 -- | A bot application.
 data BotApp model action = BotApp
