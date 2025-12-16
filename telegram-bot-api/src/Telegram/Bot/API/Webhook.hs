@@ -24,9 +24,10 @@ import           Data.Bool                           (bool)
 import           Data.Functor                        (void, (<&>))
 import           Data.Maybe                          (catMaybes, fromJust,
                                                       isJust)
+import           Data.Proxy                          (Proxy (Proxy))
 import qualified Data.Text                           as Text
 import           GHC.Generics                        (Generic)
-import           Servant
+import           Servant.API                         ((:>), Get, JSON, ReqBody)
 import           Servant.Client                      (ClientEnv, ClientError,
                                                       client, runClientM)
 import           Servant.Multipart.API

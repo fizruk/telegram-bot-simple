@@ -263,7 +263,6 @@ library
     , servant-client
     , servant-multipart-api
     , servant-multipart-client
-    , servant-server
     , template-haskell
     , text
     , time
