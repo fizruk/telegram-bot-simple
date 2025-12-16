@@ -51,29 +51,15 @@ library
     , aeson-pretty
     , async
     , base >=4.9 && <5
-    , bytestring
     , cron >=0.7.0
-    , filepath
     , hashable
-    , http-api-data
-    , http-client
-    , http-client-tls
-    , monad-control
     , mtl
     , pretty-show
-    , profunctors
-    , servant
     , servant-client
-    , servant-multipart-api
-    , servant-multipart-client
     , servant-server
-    , split
     , stm
-    , template-haskell
     , telegram-bot-api >= 7.4.3
     , text
-    , time
-    , transformers
     , unordered-containers
     , warp
     , warp-tls
