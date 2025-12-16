@@ -20,7 +20,7 @@ import           Telegram.Bot.Simple.Eff
 -- 'conversationBot' 'Telegram.updateChatId' bot
 -- @
 conversationBot
-  :: (Eq conversation, Hashable conversation)
+  :: (Hashable conversation)
   => (Telegram.Update -> Maybe conversation)   -- ^ How to disambiguate conversations.
   -> BotApp model action
   -> BotApp (HashMap (Maybe conversation) model) (Maybe conversation, action)
